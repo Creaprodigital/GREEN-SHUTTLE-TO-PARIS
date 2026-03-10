@@ -55,6 +55,12 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   ])
   const [newAdminEmail, setNewAdminEmail] = useState('')
   const [newAdminPassword, setNewAdminPassword] = useState('')
+  const [pendingImages, setPendingImages] = useState<Record<string, { file: File; preview: string }>>({})
+  const [selectedFiles, setSelectedFiles] = useState<Record<string, File | null>>({
+    business: null,
+    firstclass: null,
+    suv: null
+  })
 
   const filteredBookings = bookings.filter(b => {
     const matchesStatus = filterStatus === 'all' || b.status === filterStatus
@@ -93,7 +99,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     }
   }
 
-  const handleImageUpload = (vehicleType: string, file: File) => {
+  const handleFileSelect = (vehicleType: string, file: File) => {
     if (!file.type.startsWith('image/')) {
       toast.error('Please select a valid image file')
       return
@@ -104,6 +110,19 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
       return
     }
 
+    setSelectedFiles((current) => ({
+      ...current,
+      [vehicleType]: file
+    }))
+  }
+
+  const handleValidateUpload = (vehicleType: string) => {
+    const file = selectedFiles[vehicleType]
+    if (!file) {
+      toast.error('No file selected')
+      return
+    }
+
     const reader = new FileReader()
     reader.onload = (e) => {
       const base64String = e.target?.result as string
@@ -111,12 +130,23 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
         ...current,
         [vehicleType]: base64String
       }))
+      setSelectedFiles((current) => ({
+        ...current,
+        [vehicleType]: null
+      }))
       toast.success(`Image uploaded for ${vehicleType}`)
     }
     reader.onerror = () => {
       toast.error('Failed to upload image')
     }
     reader.readAsDataURL(file)
+  }
+
+  const handleCancelUpload = (vehicleType: string) => {
+    setSelectedFiles((current) => ({
+      ...current,
+      [vehicleType]: null
+    }))
   }
 
   const handleAddAdmin = () => {
@@ -237,7 +267,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                             <label className="text-sm font-medium uppercase tracking-wide mb-2 block">
                               Upload Image File
                             </label>
-                            <div className="flex gap-2">
+                            <div className="space-y-3">
                               <input
                                 type="file"
                                 id={`file-${vehicle.id}`}
@@ -246,17 +276,46 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                 onChange={(e) => {
                                   const file = e.target.files?.[0]
                                   if (file) {
-                                    handleImageUpload(vehicle.id, file)
+                                    handleFileSelect(vehicle.id, file)
                                   }
                                 }}
                               />
                               <Button
                                 onClick={() => document.getElementById(`file-${vehicle.id}`)?.click()}
-                                className="flex-1 h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+                                className="w-full h-12 bg-secondary text-foreground hover:bg-secondary/80 font-medium uppercase tracking-widest border-2 border-border"
+                                variant="outline"
                               >
                                 <Upload className="mr-2" size={20} />
                                 Choose Image
                               </Button>
+                              {selectedFiles[vehicle.id] && (
+                                <div className="space-y-2">
+                                  <div className="p-3 bg-secondary rounded-lg border-2 border-accent/30">
+                                    <p className="text-sm font-medium text-foreground truncate">
+                                      {selectedFiles[vehicle.id]?.name}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      {(selectedFiles[vehicle.id]!.size / 1024 / 1024).toFixed(2)} MB
+                                    </p>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Button
+                                      onClick={() => handleValidateUpload(vehicle.id)}
+                                      className="flex-1 h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+                                    >
+                                      <CheckCircle className="mr-2" size={20} weight="fill" />
+                                      Valider
+                                    </Button>
+                                    <Button
+                                      onClick={() => handleCancelUpload(vehicle.id)}
+                                      variant="outline"
+                                      className="h-12 px-4 border-2 border-border hover:bg-destructive/10 hover:text-destructive font-medium uppercase tracking-widest"
+                                    >
+                                      <XCircle size={20} />
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                             <p className="text-xs text-muted-foreground mt-2">
                               Maximum 5MB • JPG, PNG, WebP, GIF
