@@ -93,14 +93,6 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     }
   }
 
-  const handleImageUpdate = (vehicleType: string, imageUrl: string) => {
-    setVehicleImages((current) => ({
-      ...current,
-      [vehicleType]: imageUrl
-    }))
-    toast.success(`Image updated for ${vehicleType}`)
-  }
-
   const handleImageUpload = (vehicleType: string, file: File) => {
     if (!file.type.startsWith('image/')) {
       toast.error('Please select a valid image file')
@@ -206,7 +198,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                 Vehicle Images
               </h2>
               <p className="text-foreground/70">
-                Manage vehicle images by providing image URLs
+                Upload vehicle images directly from your computer
               </p>
             </div>
 
@@ -268,36 +260,6 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                             </div>
                             <p className="text-xs text-muted-foreground mt-2">
                               Maximum 5MB • JPG, PNG, WebP, GIF
-                            </p>
-                          </div>
-                          
-                          <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                              <div className="w-full border-t border-border"></div>
-                            </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                              <span className="bg-card px-2 text-muted-foreground">Or</span>
-                            </div>
-                          </div>
-
-                          <div>
-                            <label className="text-sm font-medium uppercase tracking-wide mb-2 block">
-                              Image URL
-                            </label>
-                            <Input
-                              id={`vehicle-url-${vehicle.id}`}
-                              type="url"
-                              defaultValue={vehicleImages?.[vehicle.id] || ''}
-                              onBlur={(e) => {
-                                if (e.target.value.trim() && !e.target.value.startsWith('data:')) {
-                                  handleImageUpdate(vehicle.id, e.target.value.trim())
-                                }
-                              }}
-                              placeholder="https://example.com/image.jpg"
-                              className="h-12 bg-secondary border-border"
-                            />
-                            <p className="text-xs text-muted-foreground mt-2">
-                              Enter a direct image URL
                             </p>
                           </div>
                         </div>
