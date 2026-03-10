@@ -2,9 +2,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Car, MapPin, Calendar, Clock, User as UserIcon } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
+import { VehicleClass } from '@/types/fleet'
 import { motion } from 'framer-motion'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { useKV } from '@github/spark/hooks'
 
 interface ClientDashboardProps {
   userEmail: string
@@ -23,14 +25,9 @@ const statusColors = {
   cancelled: 'bg-red-500/20 text-red-500 border-red-500/30'
 }
 
-const serviceLabels = {
-  business: 'Business Class',
-  firstclass: 'First Class',
-  suv: 'Premium SUV'
-}
-
 export default function ClientDashboard({ userEmail, bookings, onLogout, onNavigateToHome, onNavigateToChauffeurPrive, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: ClientDashboardProps) {
   const userBookings = bookings.filter(b => b.userEmail === userEmail)
+  const [fleet] = useKV<VehicleClass[]>('fleet', [])
 
   return (
     <>
@@ -77,7 +74,7 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-xl font-semibold uppercase tracking-wide">
-                          {serviceLabels[booking.serviceType]}
+                          {fleet?.find(v => v.id === booking.vehicleType)?.title || booking.vehicleType || 'Réservation'}
                         </CardTitle>
                         <CardDescription className="mt-1 flex items-center gap-2">
                           <UserIcon size={16} />

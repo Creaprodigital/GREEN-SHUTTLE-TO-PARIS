@@ -42,11 +42,7 @@ const statusColors = {
   cancelled: 'bg-red-500/20 text-red-500 border-red-500/30'
 }
 
-const serviceLabels = {
-  business: 'Business Class',
-  firstclass: 'First Class',
-  suv: 'Premium SUV'
-}
+
 
 export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdateBooking, onDeleteBooking, onNavigateToHome, onNavigateToChauffeurPrive, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: AdminDashboardProps) {
   const [filterStatus, setFilterStatus] = useState<string>('all')
@@ -57,7 +53,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   const [newAdminEmail, setNewAdminEmail] = useState('')
   const [newAdminPassword, setNewAdminPassword] = useState('')
   
-  const [fleetData, setFleetData] = useKV<VehicleClass[]>('fleet-data', DEFAULT_FLEET)
+  const [fleetData, setFleetData] = useKV<VehicleClass[]>('fleet', DEFAULT_FLEET)
   const [editingVehicle, setEditingVehicle] = useState<string | null>(null)
   const [uploadingImage, setUploadingImage] = useState<string | null>(null)
   const [editedTitle, setEditedTitle] = useState<string>('')
@@ -914,7 +910,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-xl font-semibold uppercase tracking-wide">
-                          {serviceLabels[booking.serviceType]}
+                          {fleetData?.find(v => v.id === booking.vehicleType)?.title || booking.vehicleType || 'Réservation'}
                         </CardTitle>
                         <CardDescription className="mt-1">
                           Client: {booking.userEmail}
