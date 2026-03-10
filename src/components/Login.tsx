@@ -24,7 +24,7 @@ export default function Login({ onLogin, onNavigateToHome, onNavigateToAirportTr
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [adminAccounts] = useKV<AdminAccount[]>('admin-accounts', [
-    { email: 'admin@greenshuttle.com', password: 'admin123' }
+    { email: 'admin@admin.fr', password: 'admin' }
   ])
 
   const handleSubmit = (e: React.FormEvent) => {
