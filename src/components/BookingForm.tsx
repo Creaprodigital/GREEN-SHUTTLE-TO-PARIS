@@ -30,6 +30,10 @@ export default function BookingForm() {
   const [hourlyDuration, setHourlyDuration] = useState('2')
   const [pickup, setPickup] = useState('')
   const [destination, setDestination] = useState('')
+  const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null)
+  const [destinationCoords, setDestinationCoords] = useState<{ lat: number; lng: number } | null>(null)
+  const [distanceKm, setDistanceKm] = useState<number>(0)
+  const [durationMinutes, setDurationMinutes] = useState<number>(0)
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
   const [returnDate, setReturnDate] = useState('')
@@ -62,7 +66,11 @@ export default function BookingForm() {
       basePrice = useLowSeason ? (vehiclePricing.lowSeasonTourBasePrice || vehiclePricing.tourBasePrice) : vehiclePricing.tourBasePrice
     } else {
       const pricePerKm = useLowSeason ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
-      basePrice = pricePerKm * 50
+      const pricePerMinute = useLowSeason ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
+      
+      const kmPrice = distanceKm > 0 ? pricePerKm * distanceKm : pricePerKm * 50
+      const minutePrice = durationMinutes > 0 ? pricePerMinute * durationMinutes : 0
+      basePrice = kmPrice + minutePrice
       
       if (transferType === 'roundtrip') {
         basePrice *= 2
@@ -76,6 +84,35 @@ export default function BookingForm() {
 
     return basePrice + optionsPrice
   }
+
+  useEffect(() => {
+    if (serviceType !== 'transfer' || !pickupCoords || !destinationCoords) {
+      setDistanceKm(0)
+      setDurationMinutes(0)
+      return
+    }
+
+    const google = (window as any).google
+    if (!google || !google.maps) return
+
+    const service = new google.maps.DistanceMatrixService()
+    service.getDistanceMatrix(
+      {
+        origins: [pickupCoords],
+        destinations: [destinationCoords],
+        travelMode: google.maps.TravelMode.DRIVING,
+      },
+      (response: any, status: any) => {
+        if (status === 'OK' && response.rows[0]?.elements[0]?.status === 'OK') {
+          const element = response.rows[0].elements[0]
+          const distanceMeters = element.distance.value
+          const durationSeconds = element.duration.value
+          setDistanceKm(distanceMeters / 1000)
+          setDurationMinutes(Math.ceil(durationSeconds / 60))
+        }
+      }
+    )
+  }, [pickupCoords, destinationCoords, serviceType])
 
   const validateStep1 = () => {
     if (!pickup || !date || !time) {
@@ -166,6 +203,10 @@ export default function BookingForm() {
     setHourlyDuration('2')
     setPickup('')
     setDestination('')
+    setPickupCoords(null)
+    setDestinationCoords(null)
+    setDistanceKm(0)
+    setDurationMinutes(0)
     setDate('')
     setTime('')
     setReturnDate('')
@@ -306,7 +347,10 @@ export default function BookingForm() {
                       <PlacesAutocomplete
                         id="pickup"
                         value={pickup}
-                        onChange={setPickup}
+                        onChange={(value, coords) => {
+                          setPickup(value)
+                          setPickupCoords(coords || null)
+                        }}
                         placeholder="Adresse de départ"
                         className="h-12 bg-secondary border-border"
                         icon={<MapPin size={20} />}
@@ -319,7 +363,10 @@ export default function BookingForm() {
                         <PlacesAutocomplete
                           id="destination"
                           value={destination}
-                          onChange={setDestination}
+                          onChange={(value, coords) => {
+                            setDestination(value)
+                            setDestinationCoords(coords || null)
+                          }}
                           placeholder="Adresse d'arrivée"
                           className="h-12 bg-secondary border-border"
                           icon={<MapPin size={20} weight="fill" />}
@@ -546,13 +593,31 @@ export default function BookingForm() {
                     <div className="bg-accent/10 border-2 border-accent/30 rounded-lg p-5 space-y-3">
                       <h4 className="font-semibold uppercase tracking-wide text-sm flex items-center gap-2">
                         <CurrencyEur size={18} weight="bold" />
-                        Estimation du Prix
+                        Prix de la Course
                       </h4>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Véhicule:</span>
+                          <span className="text-muted-foreground">Véhicule avec Chauffeur:</span>
                           <span className="font-medium">{fleet?.find(v => v.id === vehicleType)?.title}</span>
                         </div>
+                        {serviceType === 'transfer' && distanceKm > 0 && (
+                          <>
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="text-muted-foreground">Distance:</span>
+                              <span className="font-medium">{distanceKm.toFixed(1)} km</span>
+                            </div>
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="text-muted-foreground">Durée estimée:</span>
+                              <span className="font-medium">{durationMinutes} min</span>
+                            </div>
+                          </>
+                        )}
+                        {serviceType === 'hourly' && (
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="text-muted-foreground">Durée:</span>
+                            <span className="font-medium">{hourlyDuration} heure{parseInt(hourlyDuration) > 1 ? 's' : ''}</span>
+                          </div>
+                        )}
                         {selectedOptions.length > 0 && (
                           <>
                             {selectedOptions.map(optionId => {
@@ -569,13 +634,10 @@ export default function BookingForm() {
                         )}
                         <div className="border-t border-accent/20 pt-2 mt-2">
                           <div className="flex justify-between items-center">
-                            <span className="font-semibold uppercase tracking-wide">Total Estimé:</span>
+                            <span className="font-semibold uppercase tracking-wide">Total:</span>
                             <span className="text-2xl font-bold text-accent">{calculatePrice(vehicleType).toFixed(2)}€</span>
                           </div>
                         </div>
-                        <p className="text-[10px] text-muted-foreground text-center mt-2">
-                          * Prix estimatif, le tarif final sera calculé en fonction de la distance réelle et de la durée du trajet
-                        </p>
                       </div>
                     </div>
                   )}

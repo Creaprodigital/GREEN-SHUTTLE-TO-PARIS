@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 interface PlacesAutocompleteProps {
   value: string
-  onChange: (value: string) => void
+  onChange: (value: string, coords?: { lat: number; lng: number }) => void
   placeholder?: string
   className?: string
   id?: string
@@ -39,7 +39,11 @@ export default function PlacesAutocomplete({
       const place = autocompleteRef.current?.getPlace()
       if (place?.formatted_address) {
         setInputValue(place.formatted_address)
-        onChange(place.formatted_address)
+        const coords = place.geometry?.location ? {
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng()
+        } : undefined
+        onChange(place.formatted_address, coords)
       }
     })
 
