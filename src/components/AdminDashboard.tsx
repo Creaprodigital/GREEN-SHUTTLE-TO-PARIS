@@ -55,6 +55,8 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   const [fleetData, setFleetData] = useKV<Record<VehicleClassType, VehicleClass>>('fleet-data', DEFAULT_FLEET)
   const [editingVehicle, setEditingVehicle] = useState<VehicleClassType | null>(null)
   const [uploadingImage, setUploadingImage] = useState<VehicleClassType | null>(null)
+  const [editedTitle, setEditedTitle] = useState<string>('')
+  const [editedDescription, setEditedDescription] = useState<string>('')
 
   const filteredBookings = bookings.filter(b => {
     const matchesStatus = filterStatus === 'all' || b.status === filterStatus
@@ -409,15 +411,9 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                 </Label>
                                 <Input
                                   id={`title-${vehicleKey}`}
-                                  defaultValue={vehicle.title}
+                                  value={editedTitle}
+                                  onChange={(e) => setEditedTitle(e.target.value)}
                                   className="h-12 bg-secondary border-border"
-                                  onBlur={(e) => {
-                                    if (e.target.value !== vehicle.title) {
-                                      handleUpdateVehicle(vehicleKey, { title: e.target.value })
-                                    } else {
-                                      setEditingVehicle(null)
-                                    }
-                                  }}
                                 />
                               </div>
                               <div className="space-y-2">
@@ -426,24 +422,30 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                 </Label>
                                 <Textarea
                                   id={`desc-${vehicleKey}`}
-                                  defaultValue={vehicle.description}
+                                  value={editedDescription}
+                                  onChange={(e) => setEditedDescription(e.target.value)}
                                   className="min-h-[100px] bg-secondary border-border"
-                                  onBlur={(e) => {
-                                    if (e.target.value !== vehicle.description) {
-                                      handleUpdateVehicle(vehicleKey, { description: e.target.value })
-                                    } else {
-                                      setEditingVehicle(null)
-                                    }
-                                  }}
                                 />
                               </div>
-                              <Button
-                                variant="outline"
-                                onClick={() => setEditingVehicle(null)}
-                                className="w-full h-12"
-                              >
-                                Cancel
-                              </Button>
+                              <div className="flex gap-2">
+                                <Button
+                                  onClick={() => handleUpdateVehicle(vehicleKey, { 
+                                    title: editedTitle, 
+                                    description: editedDescription 
+                                  })}
+                                  className="flex-1 h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+                                >
+                                  <Check className="mr-2" size={20} />
+                                  Valider
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  onClick={() => setEditingVehicle(null)}
+                                  className="h-12 px-6"
+                                >
+                                  Annuler
+                                </Button>
+                              </div>
                             </div>
                           ) : (
                             <div className="space-y-4">
@@ -452,7 +454,11 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                 <p className="text-foreground">{vehicle.description}</p>
                               </div>
                               <Button
-                                onClick={() => setEditingVehicle(vehicleKey)}
+                                onClick={() => {
+                                  setEditingVehicle(vehicleKey)
+                                  setEditedTitle(vehicle.title)
+                                  setEditedDescription(vehicle.description)
+                                }}
                                 className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
                               >
                                 Edit Details
