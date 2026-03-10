@@ -1,5 +1,5 @@
 import { Separator } from '@/components/ui/separator'
-import { Phone } from '@phosphor-icons/react'
+import { Phone, Envelope } from '@phosphor-icons/react'
 
 export default function Footer() {
   return (
@@ -13,13 +13,22 @@ export default function Footer() {
             <p className="text-muted-foreground text-sm font-light mb-4">
               Premier chauffeur service delivering excellence to Paris and beyond.
             </p>
-            <a 
-              href="tel:+33199990000" 
-              className="flex items-center gap-2 text-foreground hover:text-accent transition-colors font-medium"
-            >
-              <Phone size={20} weight="fill" />
-              <span>+33 1 99 99 00 00</span>
-            </a>
+            <div className="space-y-2">
+              <a 
+                href="tel:+33199990000" 
+                className="flex items-center gap-2 text-foreground hover:text-accent transition-colors font-medium"
+              >
+                <Phone size={20} weight="fill" />
+                <span>+33 1 99 99 00 00</span>
+              </a>
+              <a 
+                href="mailto:contact@greenshuttletoparis.com" 
+                className="flex items-center gap-2 text-foreground hover:text-accent transition-colors font-medium"
+              >
+                <Envelope size={20} weight="fill" />
+                <span>contact@greenshuttletoparis.com</span>
+              </a>
+            </div>
           </div>
 
           <div>
