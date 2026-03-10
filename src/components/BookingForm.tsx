@@ -19,10 +19,10 @@ import { ServiceOption, VehiclePricing, DEFAULT_PRICING, DEFAULT_OPTIONS } from 
 
 export default function BookingForm() {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
-  const [fleet] = useKV<VehicleClass[]>('fleet-data', DEFAULT_FLEET)
+  const [fleet] = useKV<VehicleClass[]>('fleet', DEFAULT_FLEET)
   const [serviceOptions] = useKV<ServiceOption[]>('service-options', DEFAULT_OPTIONS)
-  const [pricing] = useKV<VehiclePricing[]>('vehicle-pricing', DEFAULT_PRICING)
-  const [useLowSeason] = useKV<boolean>('use-low-season', false)
+  const [pricing] = useKV<VehiclePricing[]>('pricing', DEFAULT_PRICING)
+  const [activePricingMode] = useKV<'high-demand' | 'low-season'>('active-pricing-mode', 'high-demand')
   const [currentStep, setCurrentStep] = useState(1)
   
   const [serviceType, setServiceType] = useState<'transfer' | 'hourly' | 'tour'>('transfer')
@@ -64,7 +64,7 @@ export default function BookingForm() {
     console.log('Duration:', durationMinutes, 'min')
     console.log('Transfer type:', transferType)
     console.log('Hourly duration:', hourlyDuration)
-    console.log('Use low season:', useLowSeason)
+    console.log('Active pricing mode:', activePricingMode)
     console.log('Selected options:', selectedOptions)
     
     if (!fleet || fleet.length === 0) {
@@ -92,15 +92,15 @@ export default function BookingForm() {
       
       if (serviceType === 'hourly') {
         const hours = parseInt(hourlyDuration)
-        const pricePerHour = useLowSeason ? (vehiclePricing.lowSeasonPricePerHour || vehiclePricing.pricePerHour) : vehiclePricing.pricePerHour
+        const pricePerHour = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerHour || vehiclePricing.pricePerHour) : vehiclePricing.pricePerHour
         basePrice = pricePerHour * hours
         console.log(`⏱️ Hourly: ${hours}h × ${pricePerHour}€/h = ${basePrice}€`)
       } else if (serviceType === 'tour') {
-        basePrice = useLowSeason ? (vehiclePricing.lowSeasonTourBasePrice || vehiclePricing.tourBasePrice) : vehiclePricing.tourBasePrice
+        basePrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonTourBasePrice || vehiclePricing.tourBasePrice) : vehiclePricing.tourBasePrice
         console.log(`🗺️ Tour: prix de base = ${basePrice}€`)
       } else {
-        const pricePerKm = useLowSeason ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
-        const pricePerMinute = useLowSeason ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
+        const pricePerKm = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
+        const pricePerMinute = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
         const minimumPrice = vehiclePricing.pricePerHour || 40
         
         console.log(`💰 Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€, Prix minimum: ${minimumPrice}€`)
@@ -150,7 +150,7 @@ export default function BookingForm() {
 
     console.log('📋 Prix finaux calculés:', prices)
     return prices
-  }, [fleet, pricing, serviceType, hourlyDuration, useLowSeason, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions, pickup, destination])
+  }, [fleet, pricing, serviceType, hourlyDuration, activePricingMode, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions, pickup, destination])
 
   const calculatePrice = (vehicleId: string): number => {
     return vehiclePrices[vehicleId] || 0
