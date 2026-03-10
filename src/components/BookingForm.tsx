@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { MapPin, Calendar, Clock, Users, ArrowRight, ArrowLeft, User, Phone, EnvelopeSimple, CreditCard, Money, Bank, Check } from '@phosphor-icons/react'
+import { MapPin, Calendar, Clock, Users, ArrowRight, ArrowLeft, User, Phone, EnvelopeSimple, CreditCard, Money, Bank, Check, Suitcase } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
@@ -27,7 +27,10 @@ export default function BookingForm() {
   const [destination, setDestination] = useState('')
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
+  const [returnDate, setReturnDate] = useState('')
+  const [returnTime, setReturnTime] = useState('')
   const [passengers, setPassengers] = useState('1')
+  const [luggage, setLuggage] = useState('0')
   
   const [vehicleType, setVehicleType] = useState('')
   
@@ -46,6 +49,10 @@ export default function BookingForm() {
     }
     if (serviceType === 'transfer' && !destination) {
       toast.error('Veuillez indiquer la destination')
+      return false
+    }
+    if (serviceType === 'transfer' && transferType === 'roundtrip' && (!returnDate || !returnTime)) {
+      toast.error('Veuillez indiquer la date et l\'heure de retour')
       return false
     }
     return true
@@ -96,7 +103,10 @@ export default function BookingForm() {
       destination: serviceType === 'transfer' || serviceType === 'tour' ? destination : undefined,
       date,
       time,
+      returnDate: serviceType === 'transfer' && transferType === 'roundtrip' ? returnDate : undefined,
+      returnTime: serviceType === 'transfer' && transferType === 'roundtrip' ? returnTime : undefined,
       passengers,
+      luggage: serviceType === 'transfer' ? luggage : undefined,
       vehicleType,
       firstName,
       lastName,
@@ -122,7 +132,10 @@ export default function BookingForm() {
     setDestination('')
     setDate('')
     setTime('')
+    setReturnDate('')
+    setReturnTime('')
     setPassengers('1')
+    setLuggage('0')
     setVehicleType('')
     setFirstName('')
     setLastName('')
@@ -324,7 +337,64 @@ export default function BookingForm() {
                         </Select>
                       </div>
                     </div>
+
+                    {serviceType === 'transfer' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="luggage" className="text-sm font-medium uppercase tracking-wide">Nombre de Valises</Label>
+                        <div className="relative">
+                          <Suitcase className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                          <Select value={luggage} onValueChange={setLuggage}>
+                            <SelectTrigger id="luggage" className="pl-11 h-12 bg-secondary border-border">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+                                <SelectItem key={num} value={num.toString()}>
+                                  {num} {num <= 1 ? 'Valise' : 'Valises'}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    )}
                   </div>
+
+                  {serviceType === 'transfer' && transferType === 'roundtrip' && (
+                    <div className="border-t border-border pt-5 mt-2">
+                      <h4 className="text-sm font-medium uppercase tracking-wide mb-4 text-accent">Informations de Retour</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="space-y-2">
+                          <Label htmlFor="returnDate" className="text-sm font-medium uppercase tracking-wide">Date de Retour</Label>
+                          <div className="relative">
+                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                            <Input
+                              id="returnDate"
+                              type="date"
+                              value={returnDate}
+                              onChange={(e) => setReturnDate(e.target.value)}
+                              min={date || new Date().toISOString().split('T')[0]}
+                              className="pl-11 h-12 bg-secondary border-border"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="returnTime" className="text-sm font-medium uppercase tracking-wide">Heure de Retour</Label>
+                          <div className="relative">
+                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                            <Input
+                              id="returnTime"
+                              type="time"
+                              value={returnTime}
+                              onChange={(e) => setReturnTime(e.target.value)}
+                              className="pl-11 h-12 bg-secondary border-border"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="flex justify-end pt-4">
                     <Button type="button" onClick={handleNext} className="w-full md:w-auto h-12 px-8 text-base bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-widest">
@@ -595,9 +665,15 @@ export default function BookingForm() {
                         </div>
                       )}
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Date:</span>
+                        <span className="text-muted-foreground">Date départ:</span>
                         <span className="font-medium">{date || '-'} à {time || '-'}</span>
                       </div>
+                      {serviceType === 'transfer' && transferType === 'roundtrip' && returnDate && returnTime && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Date retour:</span>
+                          <span className="font-medium">{returnDate} à {returnTime}</span>
+                        </div>
+                      )}
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Véhicule:</span>
                         <span className="font-medium">{fleet?.find(v => v.id === vehicleType)?.title || '-'}</span>
@@ -606,6 +682,12 @@ export default function BookingForm() {
                         <span className="text-muted-foreground">Passagers:</span>
                         <span className="font-medium">{passengers}</span>
                       </div>
+                      {serviceType === 'transfer' && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Valises:</span>
+                          <span className="font-medium">{luggage}</span>
+                        </div>
+                      )}
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Client:</span>
                         <span className="font-medium">{firstName} {lastName}</span>

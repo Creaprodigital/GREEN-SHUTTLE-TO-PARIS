@@ -9,7 +9,10 @@ export interface Booking {
   destination?: string
   date: string
   time: string
+  returnDate?: string
+  returnTime?: string
   passengers: string
+  luggage?: string
   vehicleType: string
   firstName: string
   lastName: string
