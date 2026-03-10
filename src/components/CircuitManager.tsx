@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Plus, Trash, MapPin, Path, X, Check, ArrowUp, ArrowDown } from '@phosphor-icons/react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Plus, Trash, MapPin, Path, X, Check, ArrowUp, ArrowDown, Info } from '@phosphor-icons/react'
 import { Circuit, CircuitStop } from '@/types/circuit'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
@@ -396,9 +397,16 @@ export default function CircuitManager() {
                       {circuit.name}
                     </h3>
                     <p className="text-sm text-muted-foreground mt-1">{circuit.description}</p>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {circuit.stops.length} étape{circuit.stops.length > 1 ? 's' : ''}
-                    </p>
+                    <div className="flex items-center gap-4 mt-2">
+                      <p className="text-xs text-muted-foreground">
+                        {circuit.stops.length} étape{circuit.stops.length > 1 ? 's' : ''}
+                      </p>
+                      {circuit.price !== undefined && (
+                        <p className="text-sm font-semibold text-accent">
+                          Prix: {circuit.price.toFixed(2)} €
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -494,6 +502,34 @@ export default function CircuitManager() {
                       }
                       onBlur={handleUpdateCircuitInfo}
                       className="min-h-[100px] bg-secondary border-border"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="circuit-price" className="text-sm font-medium uppercase tracking-wide flex items-center gap-2">
+                      Prix du Circuit (€)
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info size={16} className="text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p className="text-sm">Prix fixe pour ce circuit touristique. Ce prix sera appliqué lors de la réservation.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </Label>
+                    <Input
+                      id="circuit-price"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={editingCircuit.price || ''}
+                      onChange={(e) =>
+                        setEditingCircuit({ ...editingCircuit, price: e.target.value ? parseFloat(e.target.value) : undefined })
+                      }
+                      onBlur={handleUpdateCircuitInfo}
+                      placeholder="150.00"
+                      className="h-11 bg-secondary border-border"
                     />
                   </div>
 

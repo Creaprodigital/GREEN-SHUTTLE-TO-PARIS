@@ -15,6 +15,7 @@ export interface Circuit {
   stops: CircuitStop[]
   totalDistance?: number
   totalDuration?: number
+  price?: number
   createdAt: string
   updatedAt: string
 }
