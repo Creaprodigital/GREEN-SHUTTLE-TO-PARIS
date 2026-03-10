@@ -27,9 +27,10 @@ interface ZonePricingManagerProps {
 export default function ZonePricingManager({ onClose }: ZonePricingManagerProps) {
   const [zones, setZones] = useKV<PricingZone[]>('pricing-zones', [])
   const [zonePricings, setZonePricings] = useKV<ZonePricing[]>('zone-pricings', [])
+  const [hasCleanedUp, setHasCleanedUp] = useState(false)
   
   useEffect(() => {
-    if (!zonePricings || zonePricings.length === 0) return
+    if (hasCleanedUp || !zonePricings || zonePricings.length === 0) return
     
     const validVehicleIds = DEFAULT_FLEET.map(v => v.id)
     const invalidPricings = zonePricings.filter(p => !validVehicleIds.includes(p.vehicleId))
@@ -39,7 +40,9 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
       setZonePricings(validPricings)
       toast.info(`${invalidPricings.length} forfait(s) avec des véhicules invalides supprimé(s)`)
     }
-  }, [zonePricings, setZonePricings])
+    
+    setHasCleanedUp(true)
+  }, [zonePricings, setZonePricings, hasCleanedUp])
   const [isCreatingZone, setIsCreatingZone] = useState(false)
   const [isCreatingPricing, setIsCreatingPricing] = useState(false)
   const [editingZone, setEditingZone] = useState<PricingZone | null>(null)
