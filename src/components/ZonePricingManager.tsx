@@ -188,29 +188,44 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
   const handleDrawCircle = (center: google.maps.LatLng) => {
     const radiusInKm = circleRadius
     const radiusInDegrees = radiusInKm / 111
-    const numPoints = 36
     
-    const circlePoints: { lat: number; lng: number }[] = []
+    const centerPoint = { lat: center.lat(), lng: center.lng() }
     
-    for (let i = 0; i < numPoints; i++) {
-      const angle = (i / numPoints) * 2 * Math.PI
-      const lat = center.lat() + radiusInDegrees * Math.cos(angle)
-      const lng = center.lng() + (radiusInDegrees * Math.sin(angle)) / Math.cos(center.lat() * Math.PI / 180)
-      circlePoints.push({ lat, lng })
+    const controlPoints = [
+      { lat: center.lat() + radiusInDegrees, lng: center.lng() },
+      { lat: center.lat(), lng: center.lng() + radiusInDegrees / Math.cos(center.lat() * Math.PI / 180) },
+      { lat: center.lat() - radiusInDegrees, lng: center.lng() },
+      { lat: center.lat(), lng: center.lng() - radiusInDegrees / Math.cos(center.lat() * Math.PI / 180) },
+    ]
+    
+    const generateCircleFromRadius = (center: { lat: number; lng: number }, radius: number) => {
+      const numPoints = 36
+      const circlePoints: { lat: number; lng: number }[] = []
+      
+      for (let i = 0; i < numPoints; i++) {
+        const angle = (i / numPoints) * 2 * Math.PI
+        const lat = center.lat + radius * Math.cos(angle)
+        const lng = center.lng + (radius * Math.sin(angle)) / Math.cos(center.lat * Math.PI / 180)
+        circlePoints.push({ lat, lng })
+      }
+      
+      return circlePoints
     }
+    
+    const circlePoints = generateCircleFromRadius(centerPoint, radiusInDegrees)
     
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
     
-    circlePoints.forEach((point, index) => {
+    controlPoints.forEach((point, index) => {
       const marker = new google.maps.Marker({
         position: point,
         map: mapInstanceRef.current,
         draggable: true,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
-          scale: 6,
-          fillColor: newZoneColor,
+          scale: 8,
+          fillColor: '#FF0000',
           fillOpacity: 1,
           strokeColor: '#ffffff',
           strokeWeight: 2,
@@ -220,16 +235,30 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
       marker.addListener('drag', () => {
         const newPos = marker.getPosition()
         if (newPos) {
-          setDrawingPoints(prev => {
-            const updated = [...prev]
-            updated[index] = { lat: newPos.lat(), lng: newPos.lng() }
-            
-            if (drawingPolygonRef.current) {
-              drawingPolygonRef.current.setPath(updated)
+          const dx = newPos.lat() - centerPoint.lat
+          const dy = (newPos.lng() - centerPoint.lng) * Math.cos(centerPoint.lat * Math.PI / 180)
+          const newRadius = Math.sqrt(dx * dx + dy * dy)
+          
+          const newCirclePoints = generateCircleFromRadius(centerPoint, newRadius)
+          
+          const newControlPoints = [
+            { lat: centerPoint.lat + newRadius, lng: centerPoint.lng },
+            { lat: centerPoint.lat, lng: centerPoint.lng + newRadius / Math.cos(centerPoint.lat * Math.PI / 180) },
+            { lat: centerPoint.lat - newRadius, lng: centerPoint.lng },
+            { lat: centerPoint.lat, lng: centerPoint.lng - newRadius / Math.cos(centerPoint.lat * Math.PI / 180) },
+          ]
+          
+          markersRef.current.forEach((m, i) => {
+            if (i !== index) {
+              m.setPosition(newControlPoints[i])
             }
-            
-            return updated
           })
+          
+          setDrawingPoints(newCirclePoints)
+          
+          if (drawingPolygonRef.current) {
+            drawingPolygonRef.current.setPath(newCirclePoints)
+          }
         }
       })
       
@@ -252,34 +281,53 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
       map: mapInstanceRef.current,
     })
     
-    toast.success('Cercle créé - Vous pouvez déplacer les points pour ajuster la forme')
+    toast.success('Cercle créé - Déplacez les 4 points rouges pour ajuster le rayon')
   }
 
-  const handleDrawRectangle = (corner: google.maps.LatLng) => {
+  const handleDrawRectangle = (center: google.maps.LatLng) => {
     const widthInKm = rectangleWidth
     const heightInKm = rectangleHeight
     const widthInDegrees = widthInKm / 111
     const heightInDegrees = heightInKm / 111
     
-    const rectanglePoints: { lat: number; lng: number }[] = [
-      { lat: corner.lat(), lng: corner.lng() },
-      { lat: corner.lat(), lng: corner.lng() + widthInDegrees / Math.cos(corner.lat() * Math.PI / 180) },
-      { lat: corner.lat() + heightInDegrees, lng: corner.lng() + widthInDegrees / Math.cos(corner.lat() * Math.PI / 180) },
-      { lat: corner.lat() + heightInDegrees, lng: corner.lng() },
+    const centerPoint = { lat: center.lat(), lng: center.lng() }
+    
+    const halfWidth = widthInDegrees / 2
+    const halfHeight = heightInDegrees / 2
+    
+    const controlPoints = [
+      { lat: centerPoint.lat + halfHeight, lng: centerPoint.lng },
+      { lat: centerPoint.lat, lng: centerPoint.lng + halfWidth / Math.cos(centerPoint.lat * Math.PI / 180) },
+      { lat: centerPoint.lat - halfHeight, lng: centerPoint.lng },
+      { lat: centerPoint.lat, lng: centerPoint.lng - halfWidth / Math.cos(centerPoint.lat * Math.PI / 180) },
     ]
+    
+    const generateRectangleFromDimensions = (center: { lat: number; lng: number }, width: number, height: number) => {
+      const halfW = width / 2
+      const halfH = height / 2
+      
+      return [
+        { lat: center.lat - halfH, lng: center.lng - halfW / Math.cos(center.lat * Math.PI / 180) },
+        { lat: center.lat - halfH, lng: center.lng + halfW / Math.cos(center.lat * Math.PI / 180) },
+        { lat: center.lat + halfH, lng: center.lng + halfW / Math.cos(center.lat * Math.PI / 180) },
+        { lat: center.lat + halfH, lng: center.lng - halfW / Math.cos(center.lat * Math.PI / 180) },
+      ]
+    }
+    
+    const rectanglePoints = generateRectangleFromDimensions(centerPoint, widthInDegrees, heightInDegrees)
     
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
     
-    rectanglePoints.forEach((point, index) => {
+    controlPoints.forEach((point, index) => {
       const marker = new google.maps.Marker({
         position: point,
         map: mapInstanceRef.current,
         draggable: true,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
-          scale: 6,
-          fillColor: newZoneColor,
+          scale: 8,
+          fillColor: '#FF0000',
           fillOpacity: 1,
           strokeColor: '#ffffff',
           strokeWeight: 2,
@@ -289,16 +337,35 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
       marker.addListener('drag', () => {
         const newPos = marker.getPosition()
         if (newPos) {
-          setDrawingPoints(prev => {
-            const updated = [...prev]
-            updated[index] = { lat: newPos.lat(), lng: newPos.lng() }
-            
-            if (drawingPolygonRef.current) {
-              drawingPolygonRef.current.setPath(updated)
+          let newWidth = widthInDegrees
+          let newHeight = heightInDegrees
+          
+          if (index === 0 || index === 2) {
+            newHeight = Math.abs(newPos.lat() - centerPoint.lat) * 2
+          } else {
+            newWidth = Math.abs((newPos.lng() - centerPoint.lng) * Math.cos(centerPoint.lat * Math.PI / 180)) * 2
+          }
+          
+          const newRectanglePoints = generateRectangleFromDimensions(centerPoint, newWidth, newHeight)
+          
+          const newControlPoints = [
+            { lat: centerPoint.lat + newHeight / 2, lng: centerPoint.lng },
+            { lat: centerPoint.lat, lng: centerPoint.lng + newWidth / 2 / Math.cos(centerPoint.lat * Math.PI / 180) },
+            { lat: centerPoint.lat - newHeight / 2, lng: centerPoint.lng },
+            { lat: centerPoint.lat, lng: centerPoint.lng - newWidth / 2 / Math.cos(centerPoint.lat * Math.PI / 180) },
+          ]
+          
+          markersRef.current.forEach((m, i) => {
+            if (i !== index) {
+              m.setPosition(newControlPoints[i])
             }
-            
-            return updated
           })
+          
+          setDrawingPoints(newRectanglePoints)
+          
+          if (drawingPolygonRef.current) {
+            drawingPolygonRef.current.setPath(newRectanglePoints)
+          }
         }
       })
       
@@ -321,7 +388,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
       map: mapInstanceRef.current,
     })
     
-    toast.success('Rectangle créé - Vous pouvez déplacer les points pour ajuster la forme')
+    toast.success('Rectangle créé - Déplacez les 4 points rouges pour ajuster les dimensions')
   }
 
   const handleStartEditingZone = (zone: PricingZone) => {
