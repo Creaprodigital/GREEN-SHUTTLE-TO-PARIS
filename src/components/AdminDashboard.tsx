@@ -122,6 +122,14 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
       const preview = e.target?.result as string
       const img = new Image()
       img.onload = () => {
+        const maxRecommendedWidth = 1920
+        const maxRecommendedHeight = 1080
+        
+        let dimensionWarning = ''
+        if (img.width > maxRecommendedWidth || img.height > maxRecommendedHeight) {
+          dimensionWarning = `Image dimensions (${img.width}×${img.height}) exceed recommended maximum of ${maxRecommendedWidth}×${maxRecommendedHeight}px. Large images may impact performance.`
+        }
+
         setSelectedFiles((current) => ({
           ...current,
           [vehicleType]: {
@@ -133,7 +141,12 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
             }
           }
         }))
-        toast.success('Image loaded - click Valider to confirm upload')
+        
+        if (dimensionWarning) {
+          toast.warning(dimensionWarning, { duration: 5000 })
+        } else {
+          toast.success('Image loaded - click Valider to confirm upload')
+        }
       }
       img.onerror = () => {
         toast.error('Failed to load image')
@@ -338,12 +351,26 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                       {selectedFiles[vehicle.id]?.dimensions && (
                                         <div>
                                           <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Dimensions</p>
-                                          <p className="text-sm font-medium text-accent">
+                                          <p className={`text-sm font-medium ${
+                                            selectedFiles[vehicle.id]!.dimensions!.width > 1920 || 
+                                            selectedFiles[vehicle.id]!.dimensions!.height > 1080
+                                              ? 'text-yellow-500'
+                                              : 'text-accent'
+                                          }`}>
                                             {selectedFiles[vehicle.id]!.dimensions!.width} × {selectedFiles[vehicle.id]!.dimensions!.height}
                                           </p>
                                         </div>
                                       )}
                                     </div>
+                                    {selectedFiles[vehicle.id]?.dimensions && 
+                                     (selectedFiles[vehicle.id]!.dimensions!.width > 1920 || 
+                                      selectedFiles[vehicle.id]!.dimensions!.height > 1080) && (
+                                      <div className="flex items-start gap-2 p-2 bg-yellow-500/10 border border-yellow-500/30 rounded">
+                                        <p className="text-xs text-yellow-500">
+                                          ⚠️ Exceeds recommended 1920×1080px. May impact performance.
+                                        </p>
+                                      </div>
+                                    )}
                                   </div>
                                   <div className="flex gap-2">
                                     <Button
@@ -365,9 +392,14 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                               )}
                             </div>
                             {!selectedFiles[vehicle.id] && (
-                              <p className="text-xs text-muted-foreground mt-2">
-                                Maximum 5MB • JPG, PNG, WebP, GIF
-                              </p>
+                              <div className="mt-2 space-y-1">
+                                <p className="text-xs text-muted-foreground">
+                                  Maximum 5MB • JPG, PNG, WebP, GIF
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  Recommended: 1920×1080px or smaller
+                                </p>
+                              </div>
                             )}
                           </div>
                         </div>
