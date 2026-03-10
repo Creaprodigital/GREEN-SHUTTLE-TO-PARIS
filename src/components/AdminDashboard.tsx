@@ -8,11 +8,12 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Slider } from '@/components/ui/slider'
+import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple, X, CurrencyCircleDollar, Sparkle, Info } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
-import { VehiclePricing, DEFAULT_PRICING, ServiceOption, DEFAULT_OPTIONS } from '@/types/pricing'
+import { VehiclePricing, DEFAULT_PRICING, ServiceOption, DEFAULT_OPTIONS, PricingSettings } from '@/types/pricing'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import Header from '@/components/Header'
@@ -74,6 +75,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   const [newOptionDescription, setNewOptionDescription] = useState('')
   const [newOptionPrice, setNewOptionPrice] = useState('')
   const [activePricingMode, setActivePricingMode] = useKV<'high-demand' | 'low-season'>('active-pricing-mode', 'high-demand')
+  const [pricingSettings, setPricingSettings] = useKV<PricingSettings>('pricing-settings', { roundToWholeEuro: false })
 
   const filteredBookings = bookings.filter(b => {
     const matchesStatus = filterStatus === 'all' || b.status === filterStatus
@@ -943,6 +945,40 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                   >
                     {activePricingMode === 'high-demand' ? '🔥 Tarifs Forte demande' : '❄️ Tarifs Basse Saison'}
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-accent/20 mb-6">
+              <CardContent className="py-6">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <CurrencyCircleDollar size={32} className="text-accent" weight="fill" />
+                    <div>
+                      <h3 className="text-xl font-semibold uppercase tracking-wide">
+                        Arrondissement des Tarifs
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Arrondir automatiquement tous les prix calculés à .00€
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className={`text-sm font-medium uppercase tracking-wide ${pricingSettings?.roundToWholeEuro ? 'text-accent' : 'text-muted-foreground'}`}>
+                      {pricingSettings?.roundToWholeEuro ? 'Activé' : 'Désactivé'}
+                    </span>
+                    <Switch
+                      checked={pricingSettings?.roundToWholeEuro || false}
+                      onCheckedChange={(checked) => {
+                        setPricingSettings((current) => ({
+                          ...current,
+                          roundToWholeEuro: checked
+                        }))
+                        toast.success(checked ? 'Arrondissement activé - les prix seront arrondis à .00€' : 'Arrondissement désactivé')
+                      }}
+                      className="data-[state=checked]:bg-accent"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>

@@ -15,7 +15,7 @@ import { useKV } from '@github/spark/hooks'
 import PlacesAutocomplete from '@/components/PlacesAutocomplete'
 import { Booking } from '@/types/booking'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
-import { ServiceOption, VehiclePricing, DEFAULT_PRICING, DEFAULT_OPTIONS } from '@/types/pricing'
+import { ServiceOption, VehiclePricing, DEFAULT_PRICING, DEFAULT_OPTIONS, PricingSettings } from '@/types/pricing'
 
 export default function BookingForm() {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
@@ -23,6 +23,7 @@ export default function BookingForm() {
   const [serviceOptions] = useKV<ServiceOption[]>('service-options', DEFAULT_OPTIONS)
   const [pricing] = useKV<VehiclePricing[]>('pricing', DEFAULT_PRICING)
   const [activePricingMode] = useKV<'high-demand' | 'low-season'>('active-pricing-mode', 'high-demand')
+  const [pricingSettings] = useKV<PricingSettings>('pricing-settings', { roundToWholeEuro: false })
   const [currentStep, setCurrentStep] = useState(1)
   
   const [serviceType, setServiceType] = useState<'transfer' | 'hourly' | 'tour'>('transfer')
@@ -143,14 +144,20 @@ export default function BookingForm() {
         return sum + price
       }, 0)
 
-      const totalPrice = basePrice + optionsPrice
+      let totalPrice = basePrice + optionsPrice
+      
+      if (pricingSettings?.roundToWholeEuro) {
+        totalPrice = Math.ceil(totalPrice)
+        console.log(`🔄 Prix arrondi à .00€: ${totalPrice.toFixed(2)}€`)
+      }
+      
       console.log(`✅ Total ${vehicle.title}: ${basePrice.toFixed(2)}€ + ${optionsPrice.toFixed(2)}€ options = ${totalPrice.toFixed(2)}€`)
       prices[vehicle.id] = totalPrice
     })
 
     console.log('📋 Prix finaux calculés:', prices)
     return prices
-  }, [fleet, pricing, serviceType, hourlyDuration, activePricingMode, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions, pickup, destination])
+  }, [fleet, pricing, serviceType, hourlyDuration, activePricingMode, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions, pickup, destination, pricingSettings])
 
   const calculatePrice = (vehicleId: string): number => {
     return vehiclePrices[vehicleId] || 0

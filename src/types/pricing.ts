@@ -12,6 +12,10 @@ export interface VehiclePricing {
   lowSeasonMinimumTransferPrice?: number
 }
 
+export interface PricingSettings {
+  roundToWholeEuro: boolean
+}
+
 export interface ServiceOption {
   id: string
   name: string
