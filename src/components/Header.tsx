@@ -6,13 +6,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 interface HeaderProps {
   onNavigateToLogin?: (isAdmin: boolean) => void
   onNavigateToAirportTransfer?: () => void
+  onNavigateToCorporateEvent?: () => void
   onNavigateToHome?: () => void
   onLogout?: () => void
   userEmail?: string
   isAdmin?: boolean
 }
 
-export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer, onNavigateToHome, onLogout, userEmail, isAdmin }: HeaderProps) {
+export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer, onNavigateToCorporateEvent, onNavigateToHome, onLogout, userEmail, isAdmin }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false)
 
@@ -95,6 +96,15 @@ export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer,
                           className="w-full text-left px-4 py-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                         >
                           Transfert Aéroports / Gares
+                        </button>
+                        <button
+                          onClick={() => {
+                            setServicesDropdownOpen(false)
+                            onNavigateToCorporateEvent?.()
+                          }}
+                          className="w-full text-left px-4 py-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                        >
+                          Corporate & Événementiel
                         </button>
                       </motion.div>
                     )}
@@ -197,6 +207,15 @@ export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer,
                         className="block text-foreground/70 hover:text-accent text-sm transition-colors py-2"
                       >
                         Transfert Aéroports / Gares
+                      </button>
+                      <button
+                        onClick={() => {
+                          setMobileMenuOpen(false)
+                          onNavigateToCorporateEvent?.()
+                        }}
+                        className="block text-foreground/70 hover:text-accent text-sm transition-colors py-2"
+                      >
+                        Corporate & Événementiel
                       </button>
                     </div>
                   </div>

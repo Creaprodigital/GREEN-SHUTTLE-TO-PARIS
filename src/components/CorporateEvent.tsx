@@ -3,20 +3,20 @@ import { CheckCircle } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 import Header from '@/components/Header'
 
-interface AirportTransferProps {
+interface CorporateEventProps {
   onBackToHome?: () => void
   onNavigateToAirportTransfer?: () => void
   onNavigateToCorporateEvent?: () => void
 }
 
-export default function AirportTransfer({ onBackToHome, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: AirportTransferProps) {
+export default function CorporateEvent({ onBackToHome, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: CorporateEventProps) {
   const benefits = [
-    "Votre accueil dès votre arrivée à l'aéroport",
-    "Votre relève à n'importe quel bagage",
-    "Votre arrivée jusqu'à votre second vol",
-    "Organiser un transport VIP jusqu'à votre hôtel ou chez vous, un chauffeur privé",
-    "Votre aide dans les procédures douanières et les contrôles de sécurité obligatoires",
-    "Récupérer vos bagages à l'arrivée et les ré-enregistrer pour votre vol de correspondance"
+    "Organisation complète de vos déplacements professionnels",
+    "Véhicules haut de gamme pour vos événements d'entreprise",
+    "Chauffeurs professionnels multilingues",
+    "Service discret et ponctuel pour vos collaborateurs",
+    "Gestion de groupe pour séminaires et conférences",
+    "Coordination en temps réel pour vos événements"
   ]
 
   return (
@@ -24,12 +24,11 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
       <Header 
         onNavigateToHome={onBackToHome}
         onNavigateToAirportTransfer={onNavigateToAirportTransfer}
-        onNavigateToCorporateEvent={onNavigateToCorporateEvent}
       />
       <div className="min-h-screen bg-background">
         <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden mt-20">
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?q=80&w=2070')] bg-cover bg-center opacity-40 mix-blend-overlay" />
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=2069')] bg-cover bg-center opacity-40 mix-blend-overlay" />
         </div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -39,9 +38,9 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 uppercase tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
-              Transfert Aéroports/
+              Corporate &
               <br />
-              Gares avec chauffeur privé
+              Événementiel
             </h1>
             <Button 
               size="lg"
@@ -62,29 +61,29 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6" style={{ fontFamily: 'var(--font-display)' }}>
-              Service de transfert <span className="text-accent">aéroports & gares avec chauffeur privé</span>, service proposé 
-              24 heures sur 24, 7 jours sur 7, pour vous accompagner de ou vers les aéroports et gares.
+              Service de <span className="text-accent">transport corporate & événementiel</span>, disponible 
+              24 heures sur 24, 7 jours sur 7, pour accompagner vos événements professionnels.
             </h2>
             
             <div className="space-y-6 text-foreground/80 leading-relaxed">
               <p>
-                Haimouri International vous propose un service de transfert en toute tranquillité vers les aéroports/gares et vers destination. 
-                Nous réglons et ne rendre votre expérience de voyage aussi agréable et facile que possible. En tant que spécialiste du transfert haut de gamme, 
-                Nous répondons à tous vos besoins personnalisés. 7J sur 7, 24h/24, et nous sommes en mesure de vous offrir un service premium 
-                avec rapidité et efficacité personnalisées.
+                Haimouri International vous propose un service de transport corporate et événementiel haut de gamme adapté 
+                à tous vos besoins professionnels. Que ce soit pour des réunions d'affaires, des séminaires, des conférences 
+                ou des événements d'entreprise, nous mettons à votre disposition notre expertise et notre flotte de véhicules 
+                premium pour garantir le succès de vos déplacements.
               </p>
               
               <p>
-                Nos agents vous accueillent directement à l'arrivée, dès que soit à la porte de l'avion ou à la reception des bagages. 
-                Ils pourront également se charger de compagner et de retirer tous les affaires sur place, à charger les bagages pour 
-                exemple, du compagne et de retransmission à la demande de vente envois.
+                Nos chauffeurs professionnels sont formés pour répondre aux exigences du monde des affaires. Discrétion, 
+                ponctualité et présentation irréprochable sont nos maîtres-mots. Nous comprenons l'importance de chaque 
+                rendez-vous professionnel et nous nous engageons à vous offrir un service de qualité supérieure.
               </p>
               
               <p>
-                Nos chauffeurs professionnels sont ponctuels, discrets, et élégamment présentés avec une parfaite maîtrise de l'itinéraire et un excellent 
-                souci du, soutenable avec des chauffeurs compétents et courtois. Que vous voyagiez seul ou en groupe, nous disposons de véhicules spacieux, 
-                élégant & classe haut, standing, confortables et modernes. Nous proposons un service de transfert à la carte. 
-                Classe V (membre en option) et particulièrement ornemental, équipés des dernières technologies pour vous assurer un trajet optimal.
+                Nos véhicules sont équipés des dernières technologies pour vous permettre de travailler en déplacement. 
+                Wi-Fi à bord, prises électriques, et espaces confortables sont mis à votre disposition pour que chaque 
+                trajet soit productif. Nous proposons également des services de coordination pour les événements de groupe, 
+                assurant une logistique parfaite pour vos équipes.
               </p>
             </div>
           </motion.div>
@@ -98,8 +97,8 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
           >
             <div className="relative h-[400px] rounded-lg overflow-hidden">
               <img 
-                src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?q=80&w=2070" 
-                alt="Chauffeur ouvrant la porte"
+                src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=2084" 
+                alt="Business meeting"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -117,12 +116,12 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
               transition={{ duration: 0.6 }}
             >
               <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 uppercase" style={{ fontFamily: 'var(--font-display)' }}>
-                Un transfert à la carte
+                Un service sur mesure
               </h2>
               
               <p className="text-foreground/80 leading-relaxed mb-6">
-                La création de nos clients est notre priorité. C'est pourquoi nous proposons un service de transfert totalement modulable, 
-                de la simple prestation ou service 'Meet & Greet' en vous offrant quelques exemples :
+                La satisfaction de nos clients corporate est notre priorité absolue. C'est pourquoi nous proposons 
+                un service totalement personnalisable, adapté à vos besoins spécifiques :
               </p>
 
               <div className="flex justify-start mb-8">
@@ -169,10 +168,10 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
               className="order-2 lg:order-1"
             >
               <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 uppercase" style={{ fontFamily: 'var(--font-display)' }}>
-                Vous souhaitez réserver{' '}
-                <span className="text-accent">un transfert</span>
+                Vous souhaitez organiser{' '}
+                <span className="text-accent">un événement</span>
                 <br />
-                pour votre prochain voyage ?
+                ou un déplacement corporate ?
               </h2>
               
               <p className="text-foreground/80 leading-relaxed mb-8">
@@ -184,7 +183,7 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
                   size="lg"
                   className="bg-foreground text-background hover:bg-foreground/90 font-semibold uppercase tracking-wider"
                 >
-                  Demander un chauffeur
+                  Demander un devis
                 </Button>
                 <a 
                   href="tel:+33184112034" 
@@ -204,8 +203,8 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
             >
               <div className="relative h-[400px] rounded-lg overflow-hidden">
                 <img 
-                  src="https://images.unsplash.com/photo-1540962351504-03099e0a754b?q=80&w=2070" 
-                  alt="Luxury car at sunset"
+                  src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=2112" 
+                  alt="Corporate event"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -225,8 +224,8 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
             >
               <div className="relative h-[400px] rounded-lg overflow-hidden">
                 <img 
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2070" 
-                  alt="Business professionals"
+                  src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070" 
+                  alt="Professional team"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -239,15 +238,14 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
               transition={{ duration: 0.6 }}
             >
               <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 uppercase" style={{ fontFamily: 'var(--font-display)' }}>
-                Ponctualité
+                Professionnalisme
               </h2>
               
               <p className="text-foreground/80 leading-relaxed">
-                Nous comprenons également l'importance de la ponctualité lors des transferts, d'aéroports. 
-                Nous respectons la valeur de parvenir en les formules de transfert à votre désire à l'importance et envers votre transfert 
-                garantissent vente déterir avec arrivée ponctué et en avance, des promotions transfert sur vue des changements tarifs. 
-                Nous commiterons également nos ressources au mieux afin de vous facilitent, 
-                professionnelle à titre privatif de différents aspects aussi ne seuz.
+                Nous comprenons l'importance de la discrétion et du professionnalisme dans le monde des affaires. 
+                Nos chauffeurs sont formés pour offrir un service haut de gamme tout en respectant la confidentialité 
+                de vos échanges professionnels. Chaque détail est pensé pour que vous puissiez vous concentrer sur 
+                l'essentiel : vos affaires.
               </p>
             </motion.div>
           </div>
@@ -265,14 +263,15 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
               className="order-2 lg:order-1"
             >
               <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 uppercase" style={{ fontFamily: 'var(--font-display)' }}>
-                Une sélection
+                Flotte premium
                 <br />
-                drastique
+                pour vos événements
               </h2>
               
               <p className="text-foreground/80 leading-relaxed">
-                Nos chauffeurs possèdent plusieurs dizaines de véhicules soient votre transport selon les spécificités de votre besoin. 
-                Luxueuses, Berlines ou configurations tout pouvais des véhicules royales pour ainsi votre trajet haut niveau d'élégance International.
+                Notre flotte de véhicules haut de gamme est spécialement sélectionnée pour répondre aux exigences 
+                des événements corporate. Berlines de luxe, SUV premium et vans VIP sont à votre disposition pour 
+                transporter vos invités et collaborateurs dans le plus grand confort.
               </p>
             </motion.div>
 
@@ -285,8 +284,8 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
             >
               <div className="relative h-[400px] rounded-lg overflow-hidden">
                 <img 
-                  src="https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=2070" 
-                  alt="Luxury vehicle selection"
+                  src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2070" 
+                  alt="Luxury fleet"
                   className="w-full h-full object-cover"
                 />
               </div>

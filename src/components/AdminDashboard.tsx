@@ -30,6 +30,7 @@ interface AdminDashboardProps {
   onDeleteBooking: (id: string) => void
   onNavigateToHome: () => void
   onNavigateToAirportTransfer: () => void
+  onNavigateToCorporateEvent?: () => void
 }
 
 const statusColors = {
@@ -45,7 +46,7 @@ const serviceLabels = {
   suv: 'Premium SUV'
 }
 
-export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdateBooking, onDeleteBooking, onNavigateToHome, onNavigateToAirportTransfer }: AdminDashboardProps) {
+export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdateBooking, onDeleteBooking, onNavigateToHome, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: AdminDashboardProps) {
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [adminAccounts, setAdminAccounts] = useKV<AdminAccount[]>('admin-accounts', [

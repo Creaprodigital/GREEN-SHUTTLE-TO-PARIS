@@ -11,6 +11,7 @@ interface ClientDashboardProps {
   onLogout: () => void
   onNavigateToHome: () => void
   onNavigateToAirportTransfer: () => void
+  onNavigateToCorporateEvent?: () => void
 }
 
 const statusColors = {
@@ -26,7 +27,7 @@ const serviceLabels = {
   suv: 'Premium SUV'
 }
 
-export default function ClientDashboard({ userEmail, bookings, onLogout, onNavigateToHome, onNavigateToAirportTransfer }: ClientDashboardProps) {
+export default function ClientDashboard({ userEmail, bookings, onLogout, onNavigateToHome, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: ClientDashboardProps) {
   const userBookings = bookings.filter(b => b.userEmail === userEmail)
 
   return (

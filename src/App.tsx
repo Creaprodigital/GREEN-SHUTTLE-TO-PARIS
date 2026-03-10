@@ -5,10 +5,11 @@ import Login from '@/components/Login'
 import ClientDashboard from '@/components/ClientDashboard'
 import AdminDashboard from '@/components/AdminDashboard'
 import AirportTransfer from '@/components/AirportTransfer'
+import CorporateEvent from '@/components/CorporateEvent'
 import { useKV } from '@github/spark/hooks'
 import { Booking } from '@/types/booking'
 
-type View = 'home' | 'login' | 'client' | 'admin' | 'airport-transfer'
+type View = 'home' | 'login' | 'client' | 'admin' | 'airport-transfer' | 'corporate-event'
 
 function App() {
   const [view, setView] = useState<View>('home')
@@ -55,10 +56,12 @@ function App() {
         <Home 
           onNavigateToLogin={handleNavigateToLogin}
           onNavigateToAirportTransfer={() => setView('airport-transfer')}
+          onNavigateToCorporateEvent={() => setView('corporate-event')}
         />
       )}
-      {view === 'login' && <Login onLogin={handleLogin} onNavigateToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} isAdminMode={isAdminMode} />}
-      {view === 'airport-transfer' && <AirportTransfer onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} />}
+      {view === 'login' && <Login onLogin={handleLogin} onNavigateToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} onNavigateToCorporateEvent={() => setView('corporate-event')} isAdminMode={isAdminMode} />}
+      {view === 'airport-transfer' && <AirportTransfer onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} onNavigateToCorporateEvent={() => setView('corporate-event')} />}
+      {view === 'corporate-event' && <CorporateEvent onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} onNavigateToCorporateEvent={() => setView('corporate-event')} />}
       {view === 'client' && currentUser && (
         <ClientDashboard
           userEmail={currentUser.email}
@@ -66,6 +69,7 @@ function App() {
           onLogout={handleLogout}
           onNavigateToHome={() => setView('home')}
           onNavigateToAirportTransfer={() => setView('airport-transfer')}
+          onNavigateToCorporateEvent={() => setView('corporate-event')}
         />
       )}
       {view === 'admin' && currentUser && (
@@ -77,6 +81,7 @@ function App() {
           onDeleteBooking={handleDeleteBooking}
           onNavigateToHome={() => setView('home')}
           onNavigateToAirportTransfer={() => setView('airport-transfer')}
+          onNavigateToCorporateEvent={() => setView('corporate-event')}
         />
       )}
     </div>

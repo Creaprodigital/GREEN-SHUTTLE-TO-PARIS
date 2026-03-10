@@ -8,14 +8,16 @@ import Footer from '@/components/Footer'
 interface HomeProps {
   onNavigateToLogin: (isAdmin: boolean) => void
   onNavigateToAirportTransfer: () => void
+  onNavigateToCorporateEvent?: () => void
 }
 
-export default function Home({ onNavigateToLogin, onNavigateToAirportTransfer }: HomeProps) {
+export default function Home({ onNavigateToLogin, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: HomeProps) {
   return (
     <>
       <Header 
         onNavigateToLogin={onNavigateToLogin}
         onNavigateToAirportTransfer={onNavigateToAirportTransfer}
+        onNavigateToCorporateEvent={onNavigateToCorporateEvent}
       />
       <div id="accueil">
         <Hero />
