@@ -43,7 +43,7 @@ export interface ServiceOption {
 
 export const DEFAULT_PRICING: VehiclePricing[] = [
   {
-    vehicleId: 'eco',
+    vehicleId: 'berline',
     pricePerKm: 1.5,
     pricePerMinute: 0.5,
     pricePerHour: 30,
@@ -259,142 +259,142 @@ export const PREDEFINED_ZONES: PricingZone[] = [
 ]
 
 export const PREDEFINED_ZONE_PRICINGS: Omit<ZonePricing, 'id' | 'createdAt'>[] = [
-  { fromZoneId: 'zone-cdg', toZoneId: 'zone-paris-centre', vehicleId: 'eco', fixedPrice: 55 },
+  { fromZoneId: 'zone-cdg', toZoneId: 'zone-paris-centre', vehicleId: 'berline', fixedPrice: 55 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-paris-centre', vehicleId: 'business', fixedPrice: 75 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-paris-centre', vehicleId: 'van', fixedPrice: 95 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-paris-centre', vehicleId: 'first', fixedPrice: 130 },
   
-  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-cdg', vehicleId: 'eco', fixedPrice: 55 },
+  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-cdg', vehicleId: 'berline', fixedPrice: 55 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-cdg', vehicleId: 'business', fixedPrice: 75 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-cdg', vehicleId: 'van', fixedPrice: 95 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-cdg', vehicleId: 'first', fixedPrice: 130 },
 
-  { fromZoneId: 'zone-orly', toZoneId: 'zone-paris-centre', vehicleId: 'eco', fixedPrice: 45 },
+  { fromZoneId: 'zone-orly', toZoneId: 'zone-paris-centre', vehicleId: 'berline', fixedPrice: 45 },
   { fromZoneId: 'zone-orly', toZoneId: 'zone-paris-centre', vehicleId: 'business', fixedPrice: 60 },
   { fromZoneId: 'zone-orly', toZoneId: 'zone-paris-centre', vehicleId: 'van', fixedPrice: 75 },
   { fromZoneId: 'zone-orly', toZoneId: 'zone-paris-centre', vehicleId: 'first', fixedPrice: 100 },
 
-  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-orly', vehicleId: 'eco', fixedPrice: 45 },
+  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-orly', vehicleId: 'berline', fixedPrice: 45 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-orly', vehicleId: 'business', fixedPrice: 60 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-orly', vehicleId: 'van', fixedPrice: 75 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-orly', vehicleId: 'first', fixedPrice: 100 },
 
-  { fromZoneId: 'zone-beauvais', toZoneId: 'zone-paris-centre', vehicleId: 'eco', fixedPrice: 120 },
+  { fromZoneId: 'zone-beauvais', toZoneId: 'zone-paris-centre', vehicleId: 'berline', fixedPrice: 120 },
   { fromZoneId: 'zone-beauvais', toZoneId: 'zone-paris-centre', vehicleId: 'business', fixedPrice: 150 },
   { fromZoneId: 'zone-beauvais', toZoneId: 'zone-paris-centre', vehicleId: 'van', fixedPrice: 180 },
   { fromZoneId: 'zone-beauvais', toZoneId: 'zone-paris-centre', vehicleId: 'first', fixedPrice: 230 },
 
-  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-beauvais', vehicleId: 'eco', fixedPrice: 120 },
+  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-beauvais', vehicleId: 'berline', fixedPrice: 120 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-beauvais', vehicleId: 'business', fixedPrice: 150 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-beauvais', vehicleId: 'van', fixedPrice: 180 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-beauvais', vehicleId: 'first', fixedPrice: 230 },
 
-  { fromZoneId: 'zone-cdg', toZoneId: 'zone-la-defense', vehicleId: 'eco', fixedPrice: 65 },
+  { fromZoneId: 'zone-cdg', toZoneId: 'zone-la-defense', vehicleId: 'berline', fixedPrice: 65 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-la-defense', vehicleId: 'business', fixedPrice: 85 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-la-defense', vehicleId: 'van', fixedPrice: 105 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-la-defense', vehicleId: 'first', fixedPrice: 140 },
 
-  { fromZoneId: 'zone-la-defense', toZoneId: 'zone-cdg', vehicleId: 'eco', fixedPrice: 65 },
+  { fromZoneId: 'zone-la-defense', toZoneId: 'zone-cdg', vehicleId: 'berline', fixedPrice: 65 },
   { fromZoneId: 'zone-la-defense', toZoneId: 'zone-cdg', vehicleId: 'business', fixedPrice: 85 },
   { fromZoneId: 'zone-la-defense', toZoneId: 'zone-cdg', vehicleId: 'van', fixedPrice: 105 },
   { fromZoneId: 'zone-la-defense', toZoneId: 'zone-cdg', vehicleId: 'first', fixedPrice: 140 },
 
-  { fromZoneId: 'zone-gare-nord', toZoneId: 'zone-paris-centre', vehicleId: 'eco', fixedPrice: 25 },
+  { fromZoneId: 'zone-gare-nord', toZoneId: 'zone-paris-centre', vehicleId: 'berline', fixedPrice: 25 },
   { fromZoneId: 'zone-gare-nord', toZoneId: 'zone-paris-centre', vehicleId: 'business', fixedPrice: 35 },
   { fromZoneId: 'zone-gare-nord', toZoneId: 'zone-paris-centre', vehicleId: 'van', fixedPrice: 45 },
   { fromZoneId: 'zone-gare-nord', toZoneId: 'zone-paris-centre', vehicleId: 'first', fixedPrice: 60 },
 
-  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-nord', vehicleId: 'eco', fixedPrice: 25 },
+  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-nord', vehicleId: 'berline', fixedPrice: 25 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-nord', vehicleId: 'business', fixedPrice: 35 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-nord', vehicleId: 'van', fixedPrice: 45 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-nord', vehicleId: 'first', fixedPrice: 60 },
 
-  { fromZoneId: 'zone-gare-lyon', toZoneId: 'zone-paris-centre', vehicleId: 'eco', fixedPrice: 25 },
+  { fromZoneId: 'zone-gare-lyon', toZoneId: 'zone-paris-centre', vehicleId: 'berline', fixedPrice: 25 },
   { fromZoneId: 'zone-gare-lyon', toZoneId: 'zone-paris-centre', vehicleId: 'business', fixedPrice: 35 },
   { fromZoneId: 'zone-gare-lyon', toZoneId: 'zone-paris-centre', vehicleId: 'van', fixedPrice: 45 },
   { fromZoneId: 'zone-gare-lyon', toZoneId: 'zone-paris-centre', vehicleId: 'first', fixedPrice: 60 },
 
-  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-lyon', vehicleId: 'eco', fixedPrice: 25 },
+  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-lyon', vehicleId: 'berline', fixedPrice: 25 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-lyon', vehicleId: 'business', fixedPrice: 35 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-lyon', vehicleId: 'van', fixedPrice: 45 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-lyon', vehicleId: 'first', fixedPrice: 60 },
 
-  { fromZoneId: 'zone-gare-montparnasse', toZoneId: 'zone-paris-centre', vehicleId: 'eco', fixedPrice: 25 },
+  { fromZoneId: 'zone-gare-montparnasse', toZoneId: 'zone-paris-centre', vehicleId: 'berline', fixedPrice: 25 },
   { fromZoneId: 'zone-gare-montparnasse', toZoneId: 'zone-paris-centre', vehicleId: 'business', fixedPrice: 35 },
   { fromZoneId: 'zone-gare-montparnasse', toZoneId: 'zone-paris-centre', vehicleId: 'van', fixedPrice: 45 },
   { fromZoneId: 'zone-gare-montparnasse', toZoneId: 'zone-paris-centre', vehicleId: 'first', fixedPrice: 60 },
 
-  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-montparnasse', vehicleId: 'eco', fixedPrice: 25 },
+  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-montparnasse', vehicleId: 'berline', fixedPrice: 25 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-montparnasse', vehicleId: 'business', fixedPrice: 35 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-montparnasse', vehicleId: 'van', fixedPrice: 45 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-gare-montparnasse', vehicleId: 'first', fixedPrice: 60 },
 
-  { fromZoneId: 'zone-cdg', toZoneId: 'zone-disneyland', vehicleId: 'eco', fixedPrice: 80 },
+  { fromZoneId: 'zone-cdg', toZoneId: 'zone-disneyland', vehicleId: 'berline', fixedPrice: 80 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-disneyland', vehicleId: 'business', fixedPrice: 100 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-disneyland', vehicleId: 'van', fixedPrice: 120 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-disneyland', vehicleId: 'first', fixedPrice: 160 },
 
-  { fromZoneId: 'zone-disneyland', toZoneId: 'zone-cdg', vehicleId: 'eco', fixedPrice: 80 },
+  { fromZoneId: 'zone-disneyland', toZoneId: 'zone-cdg', vehicleId: 'berline', fixedPrice: 80 },
   { fromZoneId: 'zone-disneyland', toZoneId: 'zone-cdg', vehicleId: 'business', fixedPrice: 100 },
   { fromZoneId: 'zone-disneyland', toZoneId: 'zone-cdg', vehicleId: 'van', fixedPrice: 120 },
   { fromZoneId: 'zone-disneyland', toZoneId: 'zone-cdg', vehicleId: 'first', fixedPrice: 160 },
 
-  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-disneyland', vehicleId: 'eco', fixedPrice: 70 },
+  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-disneyland', vehicleId: 'berline', fixedPrice: 70 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-disneyland', vehicleId: 'business', fixedPrice: 90 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-disneyland', vehicleId: 'van', fixedPrice: 110 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-disneyland', vehicleId: 'first', fixedPrice: 150 },
 
-  { fromZoneId: 'zone-disneyland', toZoneId: 'zone-paris-centre', vehicleId: 'eco', fixedPrice: 70 },
+  { fromZoneId: 'zone-disneyland', toZoneId: 'zone-paris-centre', vehicleId: 'berline', fixedPrice: 70 },
   { fromZoneId: 'zone-disneyland', toZoneId: 'zone-paris-centre', vehicleId: 'business', fixedPrice: 90 },
   { fromZoneId: 'zone-disneyland', toZoneId: 'zone-paris-centre', vehicleId: 'van', fixedPrice: 110 },
   { fromZoneId: 'zone-disneyland', toZoneId: 'zone-paris-centre', vehicleId: 'first', fixedPrice: 150 },
 
-  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-versailles', vehicleId: 'eco', fixedPrice: 50 },
+  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-versailles', vehicleId: 'berline', fixedPrice: 50 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-versailles', vehicleId: 'business', fixedPrice: 65 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-versailles', vehicleId: 'van', fixedPrice: 80 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-versailles', vehicleId: 'first', fixedPrice: 110 },
 
-  { fromZoneId: 'zone-versailles', toZoneId: 'zone-paris-centre', vehicleId: 'eco', fixedPrice: 50 },
+  { fromZoneId: 'zone-versailles', toZoneId: 'zone-paris-centre', vehicleId: 'berline', fixedPrice: 50 },
   { fromZoneId: 'zone-versailles', toZoneId: 'zone-paris-centre', vehicleId: 'business', fixedPrice: 65 },
   { fromZoneId: 'zone-versailles', toZoneId: 'zone-paris-centre', vehicleId: 'van', fixedPrice: 80 },
   { fromZoneId: 'zone-versailles', toZoneId: 'zone-paris-centre', vehicleId: 'first', fixedPrice: 110 },
 
-  { fromZoneId: 'zone-cdg', toZoneId: 'zone-orly', vehicleId: 'eco', fixedPrice: 85 },
+  { fromZoneId: 'zone-cdg', toZoneId: 'zone-orly', vehicleId: 'berline', fixedPrice: 85 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-orly', vehicleId: 'business', fixedPrice: 110 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-orly', vehicleId: 'van', fixedPrice: 135 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-orly', vehicleId: 'first', fixedPrice: 180 },
 
-  { fromZoneId: 'zone-orly', toZoneId: 'zone-cdg', vehicleId: 'eco', fixedPrice: 85 },
+  { fromZoneId: 'zone-orly', toZoneId: 'zone-cdg', vehicleId: 'berline', fixedPrice: 85 },
   { fromZoneId: 'zone-orly', toZoneId: 'zone-cdg', vehicleId: 'business', fixedPrice: 110 },
   { fromZoneId: 'zone-orly', toZoneId: 'zone-cdg', vehicleId: 'van', fixedPrice: 135 },
   { fromZoneId: 'zone-orly', toZoneId: 'zone-cdg', vehicleId: 'first', fixedPrice: 180 },
 
-  { fromZoneId: 'zone-la-defense', toZoneId: 'zone-paris-centre', vehicleId: 'eco', fixedPrice: 30 },
+  { fromZoneId: 'zone-la-defense', toZoneId: 'zone-paris-centre', vehicleId: 'berline', fixedPrice: 30 },
   { fromZoneId: 'zone-la-defense', toZoneId: 'zone-paris-centre', vehicleId: 'business', fixedPrice: 40 },
   { fromZoneId: 'zone-la-defense', toZoneId: 'zone-paris-centre', vehicleId: 'van', fixedPrice: 50 },
   { fromZoneId: 'zone-la-defense', toZoneId: 'zone-paris-centre', vehicleId: 'first', fixedPrice: 70 },
 
-  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-la-defense', vehicleId: 'eco', fixedPrice: 30 },
+  { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-la-defense', vehicleId: 'berline', fixedPrice: 30 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-la-defense', vehicleId: 'business', fixedPrice: 40 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-la-defense', vehicleId: 'van', fixedPrice: 50 },
   { fromZoneId: 'zone-paris-centre', toZoneId: 'zone-la-defense', vehicleId: 'first', fixedPrice: 70 },
 
-  { fromZoneId: 'zone-cdg', toZoneId: 'zone-versailles', vehicleId: 'eco', fixedPrice: 95 },
+  { fromZoneId: 'zone-cdg', toZoneId: 'zone-versailles', vehicleId: 'berline', fixedPrice: 95 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-versailles', vehicleId: 'business', fixedPrice: 120 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-versailles', vehicleId: 'van', fixedPrice: 145 },
   { fromZoneId: 'zone-cdg', toZoneId: 'zone-versailles', vehicleId: 'first', fixedPrice: 190 },
 
-  { fromZoneId: 'zone-versailles', toZoneId: 'zone-cdg', vehicleId: 'eco', fixedPrice: 95 },
+  { fromZoneId: 'zone-versailles', toZoneId: 'zone-cdg', vehicleId: 'berline', fixedPrice: 95 },
   { fromZoneId: 'zone-versailles', toZoneId: 'zone-cdg', vehicleId: 'business', fixedPrice: 120 },
   { fromZoneId: 'zone-versailles', toZoneId: 'zone-cdg', vehicleId: 'van', fixedPrice: 145 },
   { fromZoneId: 'zone-versailles', toZoneId: 'zone-cdg', vehicleId: 'first', fixedPrice: 190 },
 
-  { fromZoneId: 'zone-orly', toZoneId: 'zone-versailles', vehicleId: 'eco', fixedPrice: 60 },
+  { fromZoneId: 'zone-orly', toZoneId: 'zone-versailles', vehicleId: 'berline', fixedPrice: 60 },
   { fromZoneId: 'zone-orly', toZoneId: 'zone-versailles', vehicleId: 'business', fixedPrice: 75 },
   { fromZoneId: 'zone-orly', toZoneId: 'zone-versailles', vehicleId: 'van', fixedPrice: 90 },
   { fromZoneId: 'zone-orly', toZoneId: 'zone-versailles', vehicleId: 'first', fixedPrice: 120 },
 
-  { fromZoneId: 'zone-versailles', toZoneId: 'zone-orly', vehicleId: 'eco', fixedPrice: 60 },
+  { fromZoneId: 'zone-versailles', toZoneId: 'zone-orly', vehicleId: 'berline', fixedPrice: 60 },
   { fromZoneId: 'zone-versailles', toZoneId: 'zone-orly', vehicleId: 'business', fixedPrice: 75 },
   { fromZoneId: 'zone-versailles', toZoneId: 'zone-orly', vehicleId: 'van', fixedPrice: 90 },
   { fromZoneId: 'zone-versailles', toZoneId: 'zone-orly', vehicleId: 'first', fixedPrice: 120 }

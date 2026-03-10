@@ -15,30 +15,30 @@ export interface VehicleClass {
 
 export const DEFAULT_FLEET: VehicleClass[] = [
   {
-    id: 'eco',
-    title: 'ECO',
-    description: 'Confortable et économique, parfait pour vos trajets quotidiens en ville.',
+    id: 'berline',
+    title: 'BERLINE',
+    description: 'Berline confortable pour vos déplacements professionnels et personnels. Idéale pour 1 à 3 passagers avec bagages.',
     image: '',
     order: 1
   },
   {
-    id: 'business',
-    title: 'BUSINESS CLASS',
-    description: 'Élégance et confort pour vos déplacements professionnels.',
+    id: 'van',
+    title: 'VAN',
+    description: 'Van spacieux jusqu\'à 7 passagers. Parfait pour les groupes, familles et déplacements avec bagages volumineux.',
     image: '',
     order: 2
   },
   {
-    id: 'van',
-    title: 'VAN CLASS',
-    description: 'Spacieux et pratique pour les groupes et les familles.',
+    id: 'business',
+    title: 'BUSINESS',
+    description: 'Véhicule haut de gamme pour vos rendez-vous d\'affaires. Confort et élégance pour une expérience premium.',
     image: '',
     order: 3
   },
   {
     id: 'first',
     title: 'FIRST CLASS',
-    description: 'Le summum du luxe et du raffinement pour une expérience exceptionnelle.',
+    description: 'Le summum du luxe et du raffinement. Service VIP avec véhicules d\'exception pour une expérience inoubliable.',
     image: '',
     order: 4
   }
