@@ -28,9 +28,9 @@ export default function Hero() {
           transition={{ duration: 0.6 }}
         >
           <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-foreground mb-6 tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
-            Haimouri
+            Green Shuttle
             <br />
-            International
+            To Paris
           </h1>
           <div className="w-24 h-0.5 bg-accent mx-auto mb-6" />
           <p className="text-lg sm:text-xl text-foreground/80 max-w-2xl mx-auto mb-8 font-light">
