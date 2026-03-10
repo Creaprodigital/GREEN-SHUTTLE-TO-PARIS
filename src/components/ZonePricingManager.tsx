@@ -7,12 +7,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { MapPin, Plus, Trash, Pencil, CurrencyCircleDollar, Lightning, Copy } from '@phosphor-icons/react'
-import { PricingZone, ZonePricing } from '@/types/pricing'
+import { MapPin, Plus, Trash, Pencil, CurrencyCircleDollar, Lightning, Copy, Download } from '@phosphor-icons/react'
+import { PricingZone, ZonePricing, PREDEFINED_ZONES, PREDEFINED_ZONE_PRICINGS } from '@/types/pricing'
 import { DEFAULT_FLEET } from '@/types/fleet'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 
 const ZONE_COLORS = [
   '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
@@ -43,6 +44,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
   const [bulkFromZone, setBulkFromZone] = useState('')
   const [bulkToZones, setBulkToZones] = useState<string[]>([])
   const [bulkPrices, setBulkPrices] = useState<Record<string, Record<string, string>>>({})
+  const [isLoadPredefinedDialogOpen, setIsLoadPredefinedDialogOpen] = useState(false)
 
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<google.maps.Map | null>(null)
@@ -329,8 +331,65 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     toast.success('Forfait dupliqué')
   }
 
+  const handleLoadPredefinedZones = () => {
+    const existingZones = zones || []
+    const existingPricings = zonePricings || []
+    
+    const newZones = PREDEFINED_ZONES.filter(
+      predefinedZone => !existingZones.some(zone => zone.id === predefinedZone.id)
+    )
+    
+    const newPricings = PREDEFINED_ZONE_PRICINGS.map((pricing, index) => ({
+      ...pricing,
+      id: `pricing-predefined-${Date.now()}-${index}`,
+      createdAt: new Date().toISOString(),
+    })).filter(
+      predefinedPricing => !existingPricings.some(
+        pricing => 
+          pricing.fromZoneId === predefinedPricing.fromZoneId &&
+          pricing.toZoneId === predefinedPricing.toZoneId &&
+          pricing.vehicleId === predefinedPricing.vehicleId
+      )
+    )
+
+    if (newZones.length === 0 && newPricings.length === 0) {
+      toast.info('Tous les forfaits prédéfinis sont déjà chargés')
+      setIsLoadPredefinedDialogOpen(false)
+      return
+    }
+
+    setZones(current => [...(current || []), ...newZones])
+    setZonePricings(current => [...(current || []), ...newPricings])
+    
+    toast.success(
+      `${newZones.length} zone(s) et ${newPricings.length} forfait(s) prédéfini(s) chargé(s)`
+    )
+    setIsLoadPredefinedDialogOpen(false)
+  }
+
   return (
     <div className="space-y-6">
+      <Card className="bg-card/50 border-border/50">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold mb-1">Forfaits Prédéfinis</h3>
+              <p className="text-sm text-muted-foreground">
+                Chargez rapidement les zones principales (aéroports CDG, Orly, Beauvais, gares, centres-villes) avec leurs forfaits
+              </p>
+            </div>
+            <Button
+              onClick={() => setIsLoadPredefinedDialogOpen(true)}
+              variant="outline"
+              className="gap-2"
+            >
+              <Download />
+              Charger les Forfaits Prédéfinis
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="bg-card/50 border-border/50">
           <CardHeader>
@@ -695,6 +754,47 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
           )}
         </CardContent>
       </Card>
+
+      <AlertDialog open={isLoadPredefinedDialogOpen} onOpenChange={setIsLoadPredefinedDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Charger les Forfaits Prédéfinis</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4">
+              <p>
+                Cette action va charger les zones et forfaits suivants :
+              </p>
+              <div className="space-y-2 text-sm">
+                <div>
+                  <strong className="text-foreground">Zones (10) :</strong>
+                  <ul className="list-disc list-inside ml-2 mt-1 text-muted-foreground">
+                    <li>Aéroports : CDG, Orly, Beauvais</li>
+                    <li>Gares : Gare du Nord, Gare de Lyon, Gare Montparnasse</li>
+                    <li>Zones : Paris Centre, La Défense, Disneyland, Versailles</li>
+                  </ul>
+                </div>
+                <div>
+                  <strong className="text-foreground">Forfaits ({PREDEFINED_ZONE_PRICINGS.length}) :</strong>
+                  <ul className="list-disc list-inside ml-2 mt-1 text-muted-foreground">
+                    <li>Tous les trajets entre aéroports et Paris Centre</li>
+                    <li>Trajets entre gares et Paris Centre</li>
+                    <li>Trajets vers Disneyland et Versailles</li>
+                    <li>Prix pour tous les types de véhicules (Eco, Business, Van, First Class)</li>
+                  </ul>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Note : Les zones et forfaits déjà existants ne seront pas dupliqués.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleLoadPredefinedZones}>
+              Charger
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Dialog open={isBulkPricingDialogOpen} onOpenChange={setIsBulkPricingDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
