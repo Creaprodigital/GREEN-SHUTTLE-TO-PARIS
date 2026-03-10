@@ -138,8 +138,14 @@ export default function BookingForm() {
         basePrice = pricePerHour * hours
         console.log(`⏱️ Hourly: ${hours}h × ${pricePerHour}€/h = ${basePrice}€`)
       } else if (serviceType === 'tour') {
-        basePrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonTourBasePrice || vehiclePricing.tourBasePrice) : vehiclePricing.tourBasePrice
-        console.log(`🗺️ Tour: prix de base = ${basePrice}€`)
+        const selectedCircuit = circuits?.find(c => c.id === selectedCircuitId)
+        if (selectedCircuit && selectedCircuit.price !== undefined) {
+          basePrice = selectedCircuit.price
+          console.log(`🗺️ Tour: prix personnalisé du circuit "${selectedCircuit.name}" = ${basePrice}€`)
+        } else {
+          basePrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonTourBasePrice || vehiclePricing.tourBasePrice) : vehiclePricing.tourBasePrice
+          console.log(`🗺️ Tour: prix de base par défaut = ${basePrice}€`)
+        }
       } else {
         const fromZone = findZoneForPoint(pickupCoords)
         const toZone = findZoneForPoint(destinationCoords)
@@ -216,7 +222,7 @@ export default function BookingForm() {
 
     console.log('📋 Prix finaux calculés:', prices)
     return prices
-  }, [fleet, pricing, serviceType, hourlyDuration, activePricingMode, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions, pickup, destination, pricingSettings, pickupCoords, destinationCoords, zones, zonePricings])
+  }, [fleet, pricing, serviceType, hourlyDuration, activePricingMode, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions, pickup, destination, pricingSettings, pickupCoords, destinationCoords, zones, zonePricings, selectedCircuitId, circuits])
 
   const calculatePrice = (vehicleId: string): number => {
     return vehiclePrices[vehicleId] || 0
