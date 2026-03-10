@@ -7,7 +7,6 @@ import { SignIn, User as UserIcon } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import Header from '@/components/Header'
-import { useKV } from '@github/spark/hooks'
 
 interface LoginProps {
   onLogin: (email: string, isAdmin: boolean) => void
@@ -15,44 +14,36 @@ interface LoginProps {
   onNavigateToAirportTransfer: () => void
 }
 
-interface AdminAccount {
-  email: string
-  password: string
-}
-
 export default function Login({ onLogin, onNavigateToHome, onNavigateToAirportTransfer }: LoginProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [adminAccounts] = useKV<AdminAccount[]>('admin-accounts', [
-    { email: 'admin@admin.fr', password: 'admin' }
-  ])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!email) {
-      toast.error('Please enter your email')
+      toast.error('Veuillez entrer votre email')
       return
     }
 
     if (!email.includes('@')) {
-      toast.error('Please enter a valid email')
+      toast.error('Veuillez entrer un email valide')
       return
     }
 
-    const adminAccount = adminAccounts?.find(
-      acc => acc.email.toLowerCase() === email.toLowerCase() && acc.password === password
-    )
-
-    if (adminAccount) {
+    if (email.toLowerCase() === 'admin@admin.fr' && password === 'admin') {
       onLogin(email, true)
-      toast.success('Welcome Admin!')
-    } else if (password) {
-      toast.error('Invalid admin credentials')
-    } else {
-      onLogin(email, false)
-      toast.success('Welcome Client!')
+      toast.success('Bienvenue Admin!')
+      return
     }
+
+    if (password) {
+      toast.error('Identifiants admin invalides')
+      return
+    }
+
+    onLogin(email, false)
+    toast.success('Bienvenue Client!')
   }
 
   return (
