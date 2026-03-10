@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { MapPin, Plus, Trash, Pencil, CurrencyCircleDollar, Lightning, Copy, Download } from '@phosphor-icons/react'
+import { MapPin, Plus, Trash, Pencil, CurrencyCircleDollar, Lightning, Copy, Download, Circle, Square, Polygon as PolygonIcon } from '@phosphor-icons/react'
 import { PricingZone, ZonePricing, PREDEFINED_ZONES, PREDEFINED_ZONE_PRICINGS } from '@/types/pricing'
 import { DEFAULT_FLEET } from '@/types/fleet'
 import { useKV } from '@github/spark/hooks'
@@ -36,6 +36,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
   const [newZoneDescription, setNewZoneDescription] = useState('')
   const [newZoneColor, setNewZoneColor] = useState(ZONE_COLORS[0])
   const [drawingPoints, setDrawingPoints] = useState<{ lat: number; lng: number }[]>([])
+  const [drawingMode, setDrawingMode] = useState<'manual' | 'circle' | 'rectangle'>('manual')
   
   const [newPricingFromZone, setNewPricingFromZone] = useState('')
   const [newPricingToZone, setNewPricingToZone] = useState('')
@@ -82,49 +83,55 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     const clickListener = mapInstanceRef.current.addListener('click', (e: google.maps.MapMouseEvent) => {
       if (!isCreatingZone || !e.latLng) return
       
-      const newPoint = { lat: e.latLng.lat(), lng: e.latLng.lng() }
-      
-      const marker = new google.maps.Marker({
-        position: newPoint,
-        map: mapInstanceRef.current,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 6,
-          fillColor: newZoneColor,
-          fillOpacity: 1,
-          strokeColor: '#ffffff',
-          strokeWeight: 2,
-        },
-      })
-      markersRef.current.push(marker)
-
-      setDrawingPoints(prev => {
-        const updatedPoints = [...prev, newPoint]
+      if (drawingMode === 'manual') {
+        const newPoint = { lat: e.latLng.lat(), lng: e.latLng.lng() }
         
-        if (drawingPolygonRef.current) {
-          drawingPolygonRef.current.setMap(null)
-        }
-
-        if (updatedPoints.length >= 3) {
-          drawingPolygonRef.current = new google.maps.Polygon({
-            paths: updatedPoints,
-            strokeColor: newZoneColor,
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
+        const marker = new google.maps.Marker({
+          position: newPoint,
+          map: mapInstanceRef.current,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 6,
             fillColor: newZoneColor,
-            fillOpacity: 0.35,
-            map: mapInstanceRef.current,
-          })
-        }
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 2,
+          },
+        })
+        markersRef.current.push(marker)
 
-        return updatedPoints
-      })
+        setDrawingPoints(prev => {
+          const updatedPoints = [...prev, newPoint]
+          
+          if (drawingPolygonRef.current) {
+            drawingPolygonRef.current.setMap(null)
+          }
+
+          if (updatedPoints.length >= 3) {
+            drawingPolygonRef.current = new google.maps.Polygon({
+              paths: updatedPoints,
+              strokeColor: newZoneColor,
+              strokeOpacity: 0.8,
+              strokeWeight: 2,
+              fillColor: newZoneColor,
+              fillOpacity: 0.35,
+              map: mapInstanceRef.current,
+            })
+          }
+
+          return updatedPoints
+        })
+      } else if (drawingMode === 'circle') {
+        handleDrawCircle(e.latLng)
+      } else if (drawingMode === 'rectangle') {
+        handleDrawRectangle(e.latLng)
+      }
     })
 
     return () => {
       google.maps.event.removeListener(clickListener)
     }
-  }, [isCreatingZone, newZoneColor])
+  }, [isCreatingZone, newZoneColor, drawingMode])
 
   useEffect(() => {
     if (!mapInstanceRef.current) return
@@ -163,6 +170,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     setIsEditingZone(false)
     setEditingZone(null)
     setDrawingPoints([])
+    setDrawingMode('manual')
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
     if (drawingPolygonRef.current) {
@@ -171,7 +179,146 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     }
     setNewZoneName('')
     setNewZoneDescription('')
-    setNewZoneColor(ZONE_COLORS[zones.length % ZONE_COLORS.length])
+    setNewZoneColor(ZONE_COLORS[(zones || []).length % ZONE_COLORS.length])
+  }
+
+  const handleDrawCircle = (center: google.maps.LatLng) => {
+    const radiusInKm = 2
+    const radiusInDegrees = radiusInKm / 111
+    const numPoints = 36
+    
+    const circlePoints: { lat: number; lng: number }[] = []
+    
+    for (let i = 0; i < numPoints; i++) {
+      const angle = (i / numPoints) * 2 * Math.PI
+      const lat = center.lat() + radiusInDegrees * Math.cos(angle)
+      const lng = center.lng() + (radiusInDegrees * Math.sin(angle)) / Math.cos(center.lat() * Math.PI / 180)
+      circlePoints.push({ lat, lng })
+    }
+    
+    markersRef.current.forEach(m => m.setMap(null))
+    markersRef.current = []
+    
+    circlePoints.forEach((point, index) => {
+      const marker = new google.maps.Marker({
+        position: point,
+        map: mapInstanceRef.current,
+        draggable: true,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 6,
+          fillColor: newZoneColor,
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 2,
+        },
+      })
+      
+      marker.addListener('drag', () => {
+        const newPos = marker.getPosition()
+        if (newPos) {
+          setDrawingPoints(prev => {
+            const updated = [...prev]
+            updated[index] = { lat: newPos.lat(), lng: newPos.lng() }
+            
+            if (drawingPolygonRef.current) {
+              drawingPolygonRef.current.setPath(updated)
+            }
+            
+            return updated
+          })
+        }
+      })
+      
+      markersRef.current.push(marker)
+    })
+    
+    setDrawingPoints(circlePoints)
+    
+    if (drawingPolygonRef.current) {
+      drawingPolygonRef.current.setMap(null)
+    }
+    
+    drawingPolygonRef.current = new google.maps.Polygon({
+      paths: circlePoints,
+      strokeColor: newZoneColor,
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: newZoneColor,
+      fillOpacity: 0.35,
+      map: mapInstanceRef.current,
+    })
+    
+    toast.success('Cercle créé - Vous pouvez déplacer les points pour ajuster la forme')
+  }
+
+  const handleDrawRectangle = (corner: google.maps.LatLng) => {
+    const widthInKm = 3
+    const heightInKm = 2
+    const widthInDegrees = widthInKm / 111
+    const heightInDegrees = heightInKm / 111
+    
+    const rectanglePoints: { lat: number; lng: number }[] = [
+      { lat: corner.lat(), lng: corner.lng() },
+      { lat: corner.lat(), lng: corner.lng() + widthInDegrees / Math.cos(corner.lat() * Math.PI / 180) },
+      { lat: corner.lat() + heightInDegrees, lng: corner.lng() + widthInDegrees / Math.cos(corner.lat() * Math.PI / 180) },
+      { lat: corner.lat() + heightInDegrees, lng: corner.lng() },
+    ]
+    
+    markersRef.current.forEach(m => m.setMap(null))
+    markersRef.current = []
+    
+    rectanglePoints.forEach((point, index) => {
+      const marker = new google.maps.Marker({
+        position: point,
+        map: mapInstanceRef.current,
+        draggable: true,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 6,
+          fillColor: newZoneColor,
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 2,
+        },
+      })
+      
+      marker.addListener('drag', () => {
+        const newPos = marker.getPosition()
+        if (newPos) {
+          setDrawingPoints(prev => {
+            const updated = [...prev]
+            updated[index] = { lat: newPos.lat(), lng: newPos.lng() }
+            
+            if (drawingPolygonRef.current) {
+              drawingPolygonRef.current.setPath(updated)
+            }
+            
+            return updated
+          })
+        }
+      })
+      
+      markersRef.current.push(marker)
+    })
+    
+    setDrawingPoints(rectanglePoints)
+    
+    if (drawingPolygonRef.current) {
+      drawingPolygonRef.current.setMap(null)
+    }
+    
+    drawingPolygonRef.current = new google.maps.Polygon({
+      paths: rectanglePoints,
+      strokeColor: newZoneColor,
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: newZoneColor,
+      fillOpacity: 0.35,
+      map: mapInstanceRef.current,
+    })
+    
+    toast.success('Rectangle créé - Vous pouvez déplacer les points pour ajuster la forme')
   }
 
   const handleStartEditingZone = (zone: PricingZone) => {
@@ -257,6 +404,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     setIsEditingZone(false)
     setEditingZone(null)
     setDrawingPoints([])
+    setDrawingMode('manual')
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
     if (drawingPolygonRef.current) {
@@ -511,7 +659,11 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
               {isCreatingZone 
                 ? (isEditingZone 
                     ? 'Déplacez les points existants en les faisant glisser ou cliquez sur la carte pour ajouter de nouveaux points'
-                    : 'Cliquez sur la carte pour dessiner les points de la zone')
+                    : drawingMode === 'manual'
+                      ? 'Cliquez sur la carte pour dessiner les points de la zone manuellement'
+                      : drawingMode === 'circle'
+                        ? 'Cliquez sur la carte pour placer le centre du cercle'
+                        : 'Cliquez sur la carte pour placer le coin du rectangle')
                 : 'Cliquez sur "Nouvelle Zone" pour commencer à dessiner'
               }
             </CardDescription>
@@ -521,6 +673,47 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
               ref={mapRef} 
               className="w-full h-[500px] rounded-lg border border-border/50"
             />
+            
+            {isCreatingZone && !isEditingZone && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex gap-2 p-3 bg-secondary/30 rounded-lg border border-border/50"
+              >
+                <div className="flex-1 space-y-1">
+                  <Label className="text-xs">Mode de dessin</Label>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={drawingMode === 'manual' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setDrawingMode('manual')}
+                      className="flex-1 gap-2"
+                    >
+                      <PolygonIcon />
+                      Manuel
+                    </Button>
+                    <Button
+                      variant={drawingMode === 'circle' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setDrawingMode('circle')}
+                      className="flex-1 gap-2"
+                    >
+                      <Circle />
+                      Cercle
+                    </Button>
+                    <Button
+                      variant={drawingMode === 'rectangle' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setDrawingMode('rectangle')}
+                      className="flex-1 gap-2"
+                    >
+                      <Square />
+                      Rectangle
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
             
             {isCreatingZone && (
               <motion.div
