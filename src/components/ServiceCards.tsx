@@ -3,13 +3,14 @@ import { motion } from 'framer-motion'
 import businessClassImg from '@/assets/images/E.jpg'
 import firstClassImg from '@/assets/images/S.jpg'
 import businessVanImg from '@/assets/images/C.jpg'
+import { useKV } from '@github/spark/hooks'
 
 const services = [
   {
     id: 'business',
     name: 'Business Class',
     description: 'Professional transportation for everyday business needs',
-    image: businessClassImg,
+    defaultImage: businessClassImg,
     features: ['Sedan vehicles', 'Professional drivers', 'Real-time tracking', 'Wi-Fi available'],
     popular: false
   },
@@ -17,7 +18,7 @@ const services = [
     id: 'firstclass',
     name: 'First Class',
     description: 'Premium comfort for those who demand excellence',
-    image: firstClassImg,
+    defaultImage: firstClassImg,
     features: ['Luxury sedans', 'Top-rated drivers', 'Complimentary refreshments', 'Priority support'],
     popular: true
   },
@@ -25,13 +26,19 @@ const services = [
     id: 'businessvan',
     name: 'Business Van',
     description: 'Spacious luxury for groups or extra luggage',
-    image: businessVanImg,
+    defaultImage: businessVanImg,
     features: ['Premium vans', 'Extra space', 'Perfect for groups', 'Premium amenities'],
     popular: false
   }
 ]
 
 export default function ServiceCards() {
+  const [vehicleImages] = useKV<Record<string, string>>('vehicle-images', {
+    business: businessClassImg,
+    firstclass: firstClassImg,
+    suv: businessVanImg
+  })
+
   return (
     <section className="py-16 lg:py-24 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,6 +54,10 @@ export default function ServiceCards() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {services.map((service, index) => {
+            const imageUrl = service.id === 'businessvan' 
+              ? (vehicleImages?.suv || service.defaultImage)
+              : (vehicleImages?.[service.id] || service.defaultImage)
+            
             return (
               <motion.div
                 key={service.id}
@@ -63,7 +74,7 @@ export default function ServiceCards() {
                   )}
                   <div className="relative w-full h-64 overflow-hidden bg-primary">
                     <img 
-                      src={service.image} 
+                      src={imageUrl} 
                       alt={service.name}
                       className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                     />
