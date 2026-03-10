@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -53,37 +53,80 @@ export default function BookingForm() {
   
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'cash' | 'transfer'>('card')
 
-  const calculatePrice = (vehicleId: string): number => {
-    const vehiclePricing = pricing?.find(p => p.vehicleId === vehicleId)
-    if (!vehiclePricing) return 0
-
-    let basePrice = 0
+  const vehiclePrices = useMemo(() => {
+    const prices: Record<string, number> = {}
     
-    if (serviceType === 'hourly') {
-      const hours = parseInt(hourlyDuration)
-      const pricePerHour = useLowSeason ? (vehiclePricing.lowSeasonPricePerHour || vehiclePricing.pricePerHour) : vehiclePricing.pricePerHour
-      basePrice = pricePerHour * hours
-    } else if (serviceType === 'tour') {
-      basePrice = useLowSeason ? (vehiclePricing.lowSeasonTourBasePrice || vehiclePricing.tourBasePrice) : vehiclePricing.tourBasePrice
-    } else {
-      const pricePerKm = useLowSeason ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
-      const pricePerMinute = useLowSeason ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
-      
-      const kmPrice = distanceKm > 0 ? pricePerKm * distanceKm : pricePerKm * 50
-      const minutePrice = durationMinutes > 0 ? pricePerMinute * durationMinutes : 0
-      basePrice = kmPrice + minutePrice
-      
-      if (transferType === 'roundtrip') {
-        basePrice *= 2
-      }
+    console.log('=== CALCUL DES PRIX ===')
+    console.log('Fleet:', fleet?.length, 'véhicules')
+    console.log('Pricing:', pricing?.length, 'tarifs')
+    console.log('Service type:', serviceType)
+    console.log('Distance:', distanceKm, 'km')
+    console.log('Duration:', durationMinutes, 'min')
+    
+    if (!fleet || !pricing) {
+      console.log('Fleet ou pricing manquant')
+      return prices
     }
 
-    const optionsPrice = selectedOptions.reduce((sum, optionId) => {
-      const option = serviceOptions?.find(o => o.id === optionId)
-      return sum + (option?.price || 0)
-    }, 0)
+    fleet.forEach((vehicle) => {
+      const vehiclePricing = pricing.find(p => p.vehicleId === vehicle.id)
+      if (!vehiclePricing) {
+        console.log(`Pas de tarif pour ${vehicle.id}`)
+        prices[vehicle.id] = 0
+        return
+      }
 
-    return basePrice + optionsPrice
+      console.log(`\nCalcul pour ${vehicle.title} (${vehicle.id}):`)
+      console.log('Tarif trouvé:', vehiclePricing)
+
+      let basePrice = 0
+      
+      if (serviceType === 'hourly') {
+        const hours = parseInt(hourlyDuration)
+        const pricePerHour = useLowSeason ? (vehiclePricing.lowSeasonPricePerHour || vehiclePricing.pricePerHour) : vehiclePricing.pricePerHour
+        basePrice = pricePerHour * hours
+        console.log(`Hourly: ${hours}h × ${pricePerHour}€/h = ${basePrice}€`)
+      } else if (serviceType === 'tour') {
+        basePrice = useLowSeason ? (vehiclePricing.lowSeasonTourBasePrice || vehiclePricing.tourBasePrice) : vehiclePricing.tourBasePrice
+        console.log(`Tour: prix de base = ${basePrice}€`)
+      } else {
+        const pricePerKm = useLowSeason ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
+        const pricePerMinute = useLowSeason ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
+        
+        console.log(`Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€`)
+        
+        if (distanceKm > 0 && durationMinutes > 0) {
+          const kmPrice = pricePerKm * distanceKm
+          const minutePrice = pricePerMinute * durationMinutes
+          basePrice = kmPrice + minutePrice
+          console.log(`Transfer: (${distanceKm}km × ${pricePerKm}€) + (${durationMinutes}min × ${pricePerMinute}€) = ${kmPrice}€ + ${minutePrice}€ = ${basePrice}€`)
+          
+          if (transferType === 'roundtrip') {
+            basePrice *= 2
+            console.log(`Aller-retour: × 2 = ${basePrice}€`)
+          }
+        } else {
+          basePrice = 0
+          console.log('Distance ou durée manquante, prix = 0')
+        }
+      }
+
+      const optionsPrice = selectedOptions.reduce((sum, optionId) => {
+        const option = serviceOptions?.find(o => o.id === optionId)
+        return sum + (option?.price || 0)
+      }, 0)
+
+      const totalPrice = basePrice + optionsPrice
+      console.log(`Total: ${basePrice}€ + ${optionsPrice}€ options = ${totalPrice}€`)
+      prices[vehicle.id] = totalPrice
+    })
+
+    console.log('Prix finaux:', prices)
+    return prices
+  }, [fleet, pricing, serviceType, hourlyDuration, useLowSeason, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions])
+
+  const calculatePrice = (vehicleId: string): number => {
+    return vehiclePrices[vehicleId] || 0
   }
 
   useEffect(() => {
