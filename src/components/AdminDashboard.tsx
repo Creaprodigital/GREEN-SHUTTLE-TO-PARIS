@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -78,6 +78,65 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   const [newOptionPrice, setNewOptionPrice] = useState('')
   const [activePricingMode, setActivePricingMode] = useKV<'high-demand' | 'low-season'>('active-pricing-mode', 'high-demand')
   const [pricingSettings, setPricingSettings] = useKV<PricingSettings>('pricing-settings', { roundToWholeEuro: false })
+
+  useEffect(() => {
+    if (!fleetData || !pricingData) return
+    
+    const validVehicleIds = fleetData.map(v => v.id)
+    const invalidPricings = pricingData.filter(p => !validVehicleIds.includes(p.vehicleId))
+    
+    if (invalidPricings.length > 0) {
+      const validPricings = pricingData.filter(p => validVehicleIds.includes(p.vehicleId))
+      const missingPricings = fleetData
+        .filter(v => !pricingData.some(p => p.vehicleId === v.id))
+        .map(v => {
+          const defaultPricing = DEFAULT_PRICING.find(p => p.vehicleId === v.id)
+          if (defaultPricing) return defaultPricing
+          
+          return {
+            vehicleId: v.id,
+            pricePerKm: 1.5,
+            pricePerMinute: 0.5,
+            pricePerHour: 30,
+            tourBasePrice: 150,
+            minimumTransferPrice: 40,
+            lowSeasonPricePerKm: 1.2,
+            lowSeasonPricePerMinute: 0.4,
+            lowSeasonPricePerHour: 25,
+            lowSeasonTourBasePrice: 120,
+            lowSeasonMinimumTransferPrice: 35
+          }
+        })
+      
+      setPricingData([...validPricings, ...missingPricings])
+      toast.info(`Tarifs synchronisés avec la flotte: ${invalidPricings.length} supprimé(s), ${missingPricings.length} ajouté(s)`)
+    }
+    
+    const missingVehicles = fleetData.filter(v => !pricingData.some(p => p.vehicleId === v.id))
+    if (missingVehicles.length > 0 && invalidPricings.length === 0) {
+      const newPricings = missingVehicles.map(v => {
+        const defaultPricing = DEFAULT_PRICING.find(p => p.vehicleId === v.id)
+        if (defaultPricing) return defaultPricing
+        
+        return {
+          vehicleId: v.id,
+          pricePerKm: 1.5,
+          pricePerMinute: 0.5,
+          pricePerHour: 30,
+          tourBasePrice: 150,
+          minimumTransferPrice: 40,
+          lowSeasonPricePerKm: 1.2,
+          lowSeasonPricePerMinute: 0.4,
+          lowSeasonPricePerHour: 25,
+          lowSeasonTourBasePrice: 120,
+          lowSeasonMinimumTransferPrice: 35
+        }
+      })
+      
+      setPricingData((current) => [...(current || []), ...newPricings])
+      toast.info(`${missingVehicles.length} tarif(s) créé(s) pour les nouveaux véhicules`)
+    }
+  }, [fleetData, pricingData, setPricingData])
 
   const filteredBookings = bookings.filter(b => {
     const matchesStatus = filterStatus === 'all' || b.status === filterStatus
