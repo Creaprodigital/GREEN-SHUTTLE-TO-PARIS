@@ -1,16 +1,18 @@
 import { Button } from '@/components/ui/button'
+import { CheckCircle } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
-import { motion } from 'framer-motion'
-interface CorporateEventProps {
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 interface CorporateEventProps {
   onBackToHome?: () => void
   onNavigateToAirportTransfer?: () => void
   onNavigateToCorporateEvent?: () => void
+  onNavigateToEmbassyDelegation?: () => void
 }
 
-export default function CorporateEvent({ onBackToHome, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: CorporateEventProps) {
-    "Service discret
+export default function CorporateEvent({ onBackToHome, onNavigateToAirportTransfer, onNavigateToCorporateEvent, onNavigateToEmbassyDelegation }: CorporateEventProps) {
+  const benefits = [
     "Organisation complète de vos déplacements professionnels",
     "Véhicules haut de gamme pour vos événements d'entreprise",
     "Chauffeurs professionnels multilingues",
@@ -20,11 +22,13 @@ export default function CorporateEvent({ onBackToHome, onNavigateToAirportTransf
   ]
 
   return (
-      
+    <>
       <Header 
         onNavigateToHome={onBackToHome}
         onNavigateToAirportTransfer={onNavigateToAirportTransfer}
-        
+        onNavigateToCorporateEvent={onNavigateToCorporateEvent}
+        onNavigateToEmbassyDelegation={onNavigateToEmbassyDelegation}
+      />
       <div className="min-h-screen bg-background">
         <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden mt-20">
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80">
@@ -32,9 +36,9 @@ export default function CorporateEvent({ onBackToHome, onNavigateToAirportTransf
         </div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            >
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
-          </motion.div>
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 uppercase tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
@@ -46,19 +50,19 @@ export default function CorporateEvent({ onBackToHome, onNavigateToAirportTransf
               size="lg"
               className="bg-foreground text-background hover:bg-foreground/90 font-semibold uppercase tracking-wider"
             >
-              <p>
+              Demander un devis
             </Button>
           </motion.div>
         </div>
       </section>
 
-                ponctualité et présentation 
+      <section className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-              </p>
+            transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6" style={{ fontFamily: 'var(--font-display)' }}>
               Service de <span className="text-accent">transport corporate & événementiel</span>, disponible 
@@ -66,7 +70,7 @@ export default function CorporateEvent({ onBackToHome, onNavigateToAirportTransf
             </h2>
             
             <div className="space-y-6 text-foreground/80 leading-relaxed">
-              <im
+              <p>
                 Haimouri International vous propose un service de transport corporate et événementiel haut de gamme adapté 
                 à tous vos besoins professionnels. Que ce soit pour des réunions d'affaires, des séminaires, des conférences 
                 ou des événements d'entreprise, nous mettons à votre disposition notre expertise et notre flotte de véhicules 
@@ -76,9 +80,9 @@ export default function CorporateEvent({ onBackToHome, onNavigateToAirportTransf
               <p>
                 Nos chauffeurs professionnels sont formés pour répondre aux exigences du monde des affaires. Discrétion, 
                 ponctualité et présentation irréprochable sont nos maîtres-mots. Nous comprenons l'importance de chaque 
-              whileInView={{ opacity: 1, x: 0 }}
+                déplacement dans le cadre professionnel et nous nous engageons à vous offrir une expérience sans faille.
               </p>
-            >
+
               <p>
                 Nos véhicules sont équipés des dernières technologies pour vous permettre de travailler en déplacement. 
                 Wi-Fi à bord, prises électriques, et espaces confortables sont mis à votre disposition pour que chaque 
@@ -86,96 +90,47 @@ export default function CorporateEvent({ onBackToHome, onNavigateToAirportTransf
                 assurant une logistique parfaite pour vos équipes.
               </p>
             </div>
-            </motion.di
+          </motion.div>
 
-            >
-                <div 
-                  className="bg-card border bo
-                  <CheckCircle classN
-                >
-                </Button>
-           
-                >
-                </a
-            </motion.div>
-            <motion.div
-              whileInView={{ opacity: 1, x: 0 }}
-              tr
-            >
-                <img 
-              
-                
-
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              whileInView={{ opacity: 1, x: 0 
-              transition={{ duration: 0.6 }}
-              <div className="relative 
-                  src="https://images.unspla
-             
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {benefits.map((benefit, index) => (
+              <div 
+                key={index}
+                className="bg-card border border-border p-6 flex items-start gap-4"
+              >
+                <CheckCircle className="text-accent shrink-0 mt-1" size={24} weight="fill" />
+                <p className="text-foreground/80">{benefit}</p>
               </div>
-
-              initi
-              
-            >
-                Professionnalisme
-              
-                No
-
-              </p>
-          </div>
+            ))}
+          </motion.div>
+        </div>
       </section>
+
       <section className="py-20 bg-primary">
-          <div cl
-              initial={{ opacity
-              viewport={{
-              classN
-              <h2 classNa
-
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 uppercase" style={{ fontFamily: 'var(--font-display)' }}>
+                Excellence
+                <br />
+                & Disponibilité
               </h2>
-              <p className="text-foreground/8
-                des événements corporate. Berlin
-              </p>
-
-              initial={{ opacity: 0, x: 30 }}
-             
-              className="order-1 lg:order-2"
-              <div cl
-                  src="https:
-                  className="w-full h-full object-cover"
-              </d
-          </div>
-      </section>
-      <Footer />
-  )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+              
               <p className="text-foreground/80 leading-relaxed mb-8">
-                Veuillez nous contacter au
+                Notre service corporate est disponible 24h/24, 7j/7 pour répondre à tous vos besoins. 
+                Que ce soit pour un transfert urgent, un événement planifié ou une mission de dernière minute, 
+                notre équipe est prête à vous accompagner.
               </p>
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -294,6 +249,7 @@ export default function CorporateEvent({ onBackToHome, onNavigateToAirportTransf
         </div>
       </section>
       </div>
+      <Footer />
     </>
   )
 }
