@@ -189,14 +189,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     const radiusInKm = circleRadius
     const radiusInDegrees = radiusInKm / 111
     
-    const centerPoint = { lat: center.lat(), lng: center.lng() }
-    
-    const controlPoints = [
-      { lat: center.lat() + radiusInDegrees, lng: center.lng() },
-      { lat: center.lat(), lng: center.lng() + radiusInDegrees / Math.cos(center.lat() * Math.PI / 180) },
-      { lat: center.lat() - radiusInDegrees, lng: center.lng() },
-      { lat: center.lat(), lng: center.lng() - radiusInDegrees / Math.cos(center.lat() * Math.PI / 180) },
-    ]
+    let centerPoint = { lat: center.lat(), lng: center.lng() }
     
     const generateCircleFromRadius = (center: { lat: number; lng: number }, radius: number) => {
       const numPoints = 36
@@ -217,6 +210,58 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
     
+    const centerMarker = new google.maps.Marker({
+      position: centerPoint,
+      map: mapInstanceRef.current,
+      draggable: true,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 10,
+        fillColor: '#00FF00',
+        fillOpacity: 1,
+        strokeColor: '#ffffff',
+        strokeWeight: 2,
+      },
+      title: 'Centre - Déplacer le cercle'
+    })
+    
+    centerMarker.addListener('drag', () => {
+      const newCenterPos = centerMarker.getPosition()
+      if (newCenterPos) {
+        centerPoint = { lat: newCenterPos.lat(), lng: newCenterPos.lng() }
+        
+        const currentRadius = radiusInDegrees
+        
+        const newCirclePoints = generateCircleFromRadius(centerPoint, currentRadius)
+        
+        const newControlPoints = [
+          { lat: centerPoint.lat + currentRadius, lng: centerPoint.lng },
+          { lat: centerPoint.lat, lng: centerPoint.lng + currentRadius / Math.cos(centerPoint.lat * Math.PI / 180) },
+          { lat: centerPoint.lat - currentRadius, lng: centerPoint.lng },
+          { lat: centerPoint.lat, lng: centerPoint.lng - currentRadius / Math.cos(centerPoint.lat * Math.PI / 180) },
+        ]
+        
+        markersRef.current.slice(1).forEach((m, i) => {
+          m.setPosition(newControlPoints[i])
+        })
+        
+        setDrawingPoints(newCirclePoints)
+        
+        if (drawingPolygonRef.current) {
+          drawingPolygonRef.current.setPath(newCirclePoints)
+        }
+      }
+    })
+    
+    markersRef.current.push(centerMarker)
+    
+    const controlPoints = [
+      { lat: center.lat() + radiusInDegrees, lng: center.lng() },
+      { lat: center.lat(), lng: center.lng() + radiusInDegrees / Math.cos(center.lat() * Math.PI / 180) },
+      { lat: center.lat() - radiusInDegrees, lng: center.lng() },
+      { lat: center.lat(), lng: center.lng() - radiusInDegrees / Math.cos(center.lat() * Math.PI / 180) },
+    ]
+    
     controlPoints.forEach((point, index) => {
       const marker = new google.maps.Marker({
         position: point,
@@ -230,6 +275,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
           strokeColor: '#ffffff',
           strokeWeight: 2,
         },
+        title: 'Ajuster le rayon'
       })
       
       marker.addListener('drag', () => {
@@ -248,7 +294,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
             { lat: centerPoint.lat, lng: centerPoint.lng - newRadius / Math.cos(centerPoint.lat * Math.PI / 180) },
           ]
           
-          markersRef.current.forEach((m, i) => {
+          markersRef.current.slice(1).forEach((m, i) => {
             if (i !== index) {
               m.setPosition(newControlPoints[i])
             }
@@ -281,7 +327,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
       map: mapInstanceRef.current,
     })
     
-    toast.success('Cercle créé - Déplacez les 4 points rouges pour ajuster le rayon')
+    toast.success('Cercle créé - Point vert: déplacer le cercle / Points rouges: ajuster le rayon')
   }
 
   const handleDrawRectangle = (center: google.maps.LatLng) => {
@@ -290,17 +336,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     const widthInDegrees = widthInKm / 111
     const heightInDegrees = heightInKm / 111
     
-    const centerPoint = { lat: center.lat(), lng: center.lng() }
-    
-    const halfWidth = widthInDegrees / 2
-    const halfHeight = heightInDegrees / 2
-    
-    const controlPoints = [
-      { lat: centerPoint.lat + halfHeight, lng: centerPoint.lng },
-      { lat: centerPoint.lat, lng: centerPoint.lng + halfWidth / Math.cos(centerPoint.lat * Math.PI / 180) },
-      { lat: centerPoint.lat - halfHeight, lng: centerPoint.lng },
-      { lat: centerPoint.lat, lng: centerPoint.lng - halfWidth / Math.cos(centerPoint.lat * Math.PI / 180) },
-    ]
+    let centerPoint = { lat: center.lat(), lng: center.lng() }
     
     const generateRectangleFromDimensions = (center: { lat: number; lng: number }, width: number, height: number) => {
       const halfW = width / 2
@@ -319,6 +355,62 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
     
+    const centerMarker = new google.maps.Marker({
+      position: centerPoint,
+      map: mapInstanceRef.current,
+      draggable: true,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 10,
+        fillColor: '#00FF00',
+        fillOpacity: 1,
+        strokeColor: '#ffffff',
+        strokeWeight: 2,
+      },
+      title: 'Centre - Déplacer le rectangle'
+    })
+    
+    centerMarker.addListener('drag', () => {
+      const newCenterPos = centerMarker.getPosition()
+      if (newCenterPos) {
+        centerPoint = { lat: newCenterPos.lat(), lng: newCenterPos.lng() }
+        
+        const currentWidth = widthInDegrees
+        const currentHeight = heightInDegrees
+        
+        const newRectanglePoints = generateRectangleFromDimensions(centerPoint, currentWidth, currentHeight)
+        
+        const newControlPoints = [
+          { lat: centerPoint.lat + currentHeight / 2, lng: centerPoint.lng },
+          { lat: centerPoint.lat, lng: centerPoint.lng + currentWidth / 2 / Math.cos(centerPoint.lat * Math.PI / 180) },
+          { lat: centerPoint.lat - currentHeight / 2, lng: centerPoint.lng },
+          { lat: centerPoint.lat, lng: centerPoint.lng - currentWidth / 2 / Math.cos(centerPoint.lat * Math.PI / 180) },
+        ]
+        
+        markersRef.current.slice(1).forEach((m, i) => {
+          m.setPosition(newControlPoints[i])
+        })
+        
+        setDrawingPoints(newRectanglePoints)
+        
+        if (drawingPolygonRef.current) {
+          drawingPolygonRef.current.setPath(newRectanglePoints)
+        }
+      }
+    })
+    
+    markersRef.current.push(centerMarker)
+    
+    const halfWidth = widthInDegrees / 2
+    const halfHeight = heightInDegrees / 2
+    
+    const controlPoints = [
+      { lat: centerPoint.lat + halfHeight, lng: centerPoint.lng },
+      { lat: centerPoint.lat, lng: centerPoint.lng + halfWidth / Math.cos(centerPoint.lat * Math.PI / 180) },
+      { lat: centerPoint.lat - halfHeight, lng: centerPoint.lng },
+      { lat: centerPoint.lat, lng: centerPoint.lng - halfWidth / Math.cos(centerPoint.lat * Math.PI / 180) },
+    ]
+    
     controlPoints.forEach((point, index) => {
       const marker = new google.maps.Marker({
         position: point,
@@ -332,6 +424,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
           strokeColor: '#ffffff',
           strokeWeight: 2,
         },
+        title: 'Ajuster les dimensions'
       })
       
       marker.addListener('drag', () => {
@@ -355,7 +448,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
             { lat: centerPoint.lat, lng: centerPoint.lng - newWidth / 2 / Math.cos(centerPoint.lat * Math.PI / 180) },
           ]
           
-          markersRef.current.forEach((m, i) => {
+          markersRef.current.slice(1).forEach((m, i) => {
             if (i !== index) {
               m.setPosition(newControlPoints[i])
             }
@@ -388,7 +481,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
       map: mapInstanceRef.current,
     })
     
-    toast.success('Rectangle créé - Déplacez les 4 points rouges pour ajuster les dimensions')
+    toast.success('Rectangle créé - Point vert: déplacer le rectangle / Points rouges: ajuster les dimensions')
   }
 
   const handleStartEditingZone = (zone: PricingZone) => {
