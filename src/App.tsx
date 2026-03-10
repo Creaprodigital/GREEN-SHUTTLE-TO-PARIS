@@ -17,8 +17,13 @@ function App() {
   const [isAdminMode, setIsAdminMode] = useState(false)
 
   const handleNavigateToLogin = (isAdmin: boolean) => {
-    setIsAdminMode(isAdmin)
-    setView('login')
+    if (isAdmin) {
+      setCurrentUser({ email: 'admin@admin.fr', isAdmin: true })
+      setView('admin')
+    } else {
+      setIsAdminMode(isAdmin)
+      setView('login')
+    }
   }
 
   const handleLogin = (email: string, isAdmin: boolean) => {
