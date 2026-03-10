@@ -286,10 +286,12 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
           pricePerMinute: 0,
           pricePerHour: 0,
           tourBasePrice: 0,
+          minimumTransferPrice: 0,
           lowSeasonPricePerKm: 0,
           lowSeasonPricePerMinute: 0,
           lowSeasonPricePerHour: 0,
-          lowSeasonTourBasePrice: 0
+          lowSeasonTourBasePrice: 0,
+          lowSeasonMinimumTransferPrice: 0
         }
         return [...data, {
           ...defaultPricing,
@@ -956,10 +958,12 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                       pricePerMinute: 0,
                       pricePerHour: 0,
                       tourBasePrice: 0,
+                      minimumTransferPrice: 0,
                       lowSeasonPricePerKm: 0,
                       lowSeasonPricePerMinute: 0,
                       lowSeasonPricePerHour: 0,
-                      lowSeasonTourBasePrice: 0
+                      lowSeasonTourBasePrice: 0,
+                      lowSeasonMinimumTransferPrice: 0
                     }
 
                   const isHighDemand = activePricingMode === 'high-demand'
@@ -986,7 +990,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                         </CardHeader>
                         <CardContent className="pt-6">
                           <TooltipProvider>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                               <div className="space-y-2">
                                 <div className="flex items-center gap-2">
                                   <Label htmlFor={`price-km-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
@@ -1041,6 +1045,36 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                   onChange={(e) => handleUpdatePricing(
                                     vehicle.id, 
                                     isHighDemand ? 'pricePerMinute' : 'lowSeasonPricePerMinute', 
+                                    parseFloat(e.target.value) || 0
+                                  )}
+                                  className="h-12 bg-secondary border-border"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <Label htmlFor={`minimum-transfer-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
+                                    Prix Min. Transfert (€)
+                                  </Label>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Info size={16} className="text-muted-foreground cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                      <p className="font-semibold mb-1">Prix Minimum pour Transferts</p>
+                                      <p className="text-sm">Prix minimum facturé pour un transfert. Si le calcul (distance × prix/km) + (durée × prix/minute) donne un montant inférieur à ce minimum, c'est ce prix minimum qui sera appliqué. Indépendant du tarif MAD.</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </div>
+                                <Input
+                                  id={`minimum-transfer-${vehicle.id}`}
+                                  type="number"
+                                  step="1"
+                                  min="0"
+                                  value={isHighDemand ? (pricing.minimumTransferPrice || 0) : (pricing.lowSeasonMinimumTransferPrice || 0)}
+                                  onChange={(e) => handleUpdatePricing(
+                                    vehicle.id, 
+                                    isHighDemand ? 'minimumTransferPrice' : 'lowSeasonMinimumTransferPrice', 
                                     parseFloat(e.target.value) || 0
                                   )}
                                   className="h-12 bg-secondary border-border"

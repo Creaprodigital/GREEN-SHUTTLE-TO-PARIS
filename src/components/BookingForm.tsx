@@ -101,9 +101,9 @@ export default function BookingForm() {
       } else {
         const pricePerKm = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
         const pricePerMinute = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
-        const minimumPrice = vehiclePricing.pricePerHour || 40
+        const minimumPrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonMinimumTransferPrice || vehiclePricing.minimumTransferPrice || 40) : (vehiclePricing.minimumTransferPrice || 40)
         
-        console.log(`💰 Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€, Prix minimum: ${minimumPrice}€`)
+        console.log(`💰 Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€, Prix minimum transfert: ${minimumPrice}€`)
         
         if (distanceKm > 0 && durationMinutes > 0) {
           const kmPrice = pricePerKm * distanceKm
@@ -112,7 +112,7 @@ export default function BookingForm() {
           console.log(`🚗 Transfer: (${distanceKm}km × ${pricePerKm}€) + (${durationMinutes}min × ${pricePerMinute}€) = ${kmPrice.toFixed(2)}€ + ${minutePrice.toFixed(2)}€ = ${basePrice.toFixed(2)}€`)
           
           if (basePrice < minimumPrice) {
-            console.log(`⬆️ Prix inférieur au minimum, ajusté de ${basePrice.toFixed(2)}€ à ${minimumPrice}€`)
+            console.log(`⬆️ Prix inférieur au minimum transfert, ajusté de ${basePrice.toFixed(2)}€ à ${minimumPrice}€`)
             basePrice = minimumPrice
           }
           
@@ -122,7 +122,7 @@ export default function BookingForm() {
           }
         } else if (pickup && destination) {
           basePrice = minimumPrice
-          console.log(`📍 Adresses saisies mais distance non calculée, prix minimum appliqué: ${minimumPrice}€`)
+          console.log(`📍 Adresses saisies mais distance non calculée, prix minimum transfert appliqué: ${minimumPrice}€`)
           
           if (transferType === 'roundtrip') {
             basePrice *= 2
