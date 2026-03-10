@@ -136,8 +136,14 @@ export default function BookingForm() {
       if (serviceType === 'hourly') {
         const hours = parseInt(hourlyDuration)
         const pricePerHour = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerHour || vehiclePricing.pricePerHour) : vehiclePricing.pricePerHour
+        const minimumHourlyPrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonMinimumHourlyPrice || vehiclePricing.minimumHourlyPrice || 0) : (vehiclePricing.minimumHourlyPrice || 0)
         basePrice = pricePerHour * hours
         console.log(`⏱️ Hourly: ${hours}h × ${pricePerHour}€/h = ${basePrice}€`)
+        
+        if (minimumHourlyPrice > 0 && basePrice < minimumHourlyPrice) {
+          console.log(`⬆️ Prix inférieur au minimum MAD, ajusté de ${basePrice.toFixed(2)}€ à ${minimumHourlyPrice}€`)
+          basePrice = minimumHourlyPrice
+        }
       } else if (serviceType === 'tour') {
         const selectedCircuit = circuits?.find(c => c.id === selectedCircuitId)
         if (selectedCircuit && selectedCircuit.price !== undefined) {

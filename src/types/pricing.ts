@@ -5,11 +5,13 @@ export interface VehiclePricing {
   pricePerHour: number
   tourBasePrice: number
   minimumTransferPrice?: number
+  minimumHourlyPrice?: number
   lowSeasonPricePerKm?: number
   lowSeasonPricePerMinute?: number
   lowSeasonPricePerHour?: number
   lowSeasonTourBasePrice?: number
   lowSeasonMinimumTransferPrice?: number
+  lowSeasonMinimumHourlyPrice?: number
 }
 
 export interface PricingSettings {
@@ -49,11 +51,13 @@ export const DEFAULT_PRICING: VehiclePricing[] = [
     pricePerHour: 30,
     tourBasePrice: 150,
     minimumTransferPrice: 40,
+    minimumHourlyPrice: 60,
     lowSeasonPricePerKm: 1.2,
     lowSeasonPricePerMinute: 0.4,
     lowSeasonPricePerHour: 25,
     lowSeasonTourBasePrice: 120,
-    lowSeasonMinimumTransferPrice: 35
+    lowSeasonMinimumTransferPrice: 35,
+    lowSeasonMinimumHourlyPrice: 50
   },
   {
     vehicleId: 'business',
@@ -62,11 +66,13 @@ export const DEFAULT_PRICING: VehiclePricing[] = [
     pricePerHour: 45,
     tourBasePrice: 250,
     minimumTransferPrice: 60,
+    minimumHourlyPrice: 90,
     lowSeasonPricePerKm: 1.6,
     lowSeasonPricePerMinute: 0.65,
     lowSeasonPricePerHour: 38,
     lowSeasonTourBasePrice: 200,
-    lowSeasonMinimumTransferPrice: 50
+    lowSeasonMinimumTransferPrice: 50,
+    lowSeasonMinimumHourlyPrice: 76
   },
   {
     vehicleId: 'van',
@@ -75,11 +81,13 @@ export const DEFAULT_PRICING: VehiclePricing[] = [
     pricePerHour: 55,
     tourBasePrice: 300,
     minimumTransferPrice: 75,
+    minimumHourlyPrice: 110,
     lowSeasonPricePerKm: 2.0,
     lowSeasonPricePerMinute: 0.85,
     lowSeasonPricePerHour: 45,
     lowSeasonTourBasePrice: 240,
-    lowSeasonMinimumTransferPrice: 60
+    lowSeasonMinimumTransferPrice: 60,
+    lowSeasonMinimumHourlyPrice: 90
   },
   {
     vehicleId: 'first',
@@ -88,11 +96,13 @@ export const DEFAULT_PRICING: VehiclePricing[] = [
     pricePerHour: 80,
     tourBasePrice: 500,
     minimumTransferPrice: 100,
+    minimumHourlyPrice: 160,
     lowSeasonPricePerKm: 2.8,
     lowSeasonPricePerMinute: 1.2,
     lowSeasonPricePerHour: 65,
     lowSeasonTourBasePrice: 400,
-    lowSeasonMinimumTransferPrice: 80
+    lowSeasonMinimumTransferPrice: 80,
+    lowSeasonMinimumHourlyPrice: 130
   }
 ]
 
