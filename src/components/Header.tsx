@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 interface HeaderProps {
   onNavigateToLogin?: (isAdmin: boolean) => void
+  onNavigateToChauffeurPrive?: () => void
   onNavigateToAirportTransfer?: () => void
   onNavigateToCorporateEvent?: () => void
   onNavigateToEmbassyDelegation?: () => void
@@ -14,7 +15,7 @@ interface HeaderProps {
   isAdmin?: boolean
 }
 
-export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer, onNavigateToCorporateEvent, onNavigateToEmbassyDelegation, onNavigateToHome, onLogout, userEmail, isAdmin }: HeaderProps) {
+export default function Header({ onNavigateToLogin, onNavigateToChauffeurPrive, onNavigateToAirportTransfer, onNavigateToCorporateEvent, onNavigateToEmbassyDelegation, onNavigateToHome, onLogout, userEmail, isAdmin }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false)
 
@@ -89,6 +90,15 @@ export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer,
                         transition={{ duration: 0.2 }}
                         className="absolute top-full left-0 mt-2 w-64 bg-card border border-border rounded-lg shadow-xl overflow-hidden"
                       >
+                        <button
+                          onClick={() => {
+                            setServicesDropdownOpen(false)
+                            onNavigateToChauffeurPrive?.()
+                          }}
+                          className="w-full text-left px-4 py-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                        >
+                          Chauffeur Privé
+                        </button>
                         <button
                           onClick={() => {
                             setServicesDropdownOpen(false)
@@ -209,6 +219,15 @@ export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer,
                       <CaretDown size={14} />
                     </span>
                     <div className="pl-4 mt-2 space-y-2">
+                      <button
+                        onClick={() => {
+                          setMobileMenuOpen(false)
+                          onNavigateToChauffeurPrive?.()
+                        }}
+                        className="block text-foreground/70 hover:text-accent text-sm transition-colors py-2"
+                      >
+                        Chauffeur Privé
+                      </button>
                       <button
                         onClick={() => {
                           setMobileMenuOpen(false)

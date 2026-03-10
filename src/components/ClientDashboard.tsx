@@ -10,6 +10,7 @@ interface ClientDashboardProps {
   bookings: Booking[]
   onLogout: () => void
   onNavigateToHome: () => void
+  onNavigateToChauffeurPrive?: () => void
   onNavigateToAirportTransfer: () => void
   onNavigateToCorporateEvent?: () => void
 }
@@ -27,14 +28,16 @@ const serviceLabels = {
   suv: 'Premium SUV'
 }
 
-export default function ClientDashboard({ userEmail, bookings, onLogout, onNavigateToHome, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: ClientDashboardProps) {
+export default function ClientDashboard({ userEmail, bookings, onLogout, onNavigateToHome, onNavigateToChauffeurPrive, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: ClientDashboardProps) {
   const userBookings = bookings.filter(b => b.userEmail === userEmail)
 
   return (
     <>
       <Header 
         onNavigateToHome={onNavigateToHome}
+        onNavigateToChauffeurPrive={onNavigateToChauffeurPrive}
         onNavigateToAirportTransfer={onNavigateToAirportTransfer}
+        onNavigateToCorporateEvent={onNavigateToCorporateEvent}
         onLogout={onLogout}
         userEmail={userEmail}
         isAdmin={false}

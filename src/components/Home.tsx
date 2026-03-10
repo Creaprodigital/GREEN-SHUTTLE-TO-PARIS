@@ -7,15 +7,17 @@ import Footer from '@/components/Footer'
 
 interface HomeProps {
   onNavigateToLogin: (isAdmin: boolean) => void
+  onNavigateToChauffeurPrive?: () => void
   onNavigateToAirportTransfer: () => void
   onNavigateToCorporateEvent?: () => void
 }
 
-export default function Home({ onNavigateToLogin, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: HomeProps) {
+export default function Home({ onNavigateToLogin, onNavigateToChauffeurPrive, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: HomeProps) {
   return (
     <>
       <Header 
         onNavigateToLogin={onNavigateToLogin}
+        onNavigateToChauffeurPrive={onNavigateToChauffeurPrive}
         onNavigateToAirportTransfer={onNavigateToAirportTransfer}
         onNavigateToCorporateEvent={onNavigateToCorporateEvent}
       />

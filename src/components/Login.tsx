@@ -11,12 +11,13 @@ import Header from '@/components/Header'
 interface LoginProps {
   onLogin: (email: string, isAdmin: boolean) => void
   onNavigateToHome: () => void
+  onNavigateToChauffeurPrive?: () => void
   onNavigateToAirportTransfer: () => void
   onNavigateToCorporateEvent?: () => void
   isAdminMode?: boolean
 }
 
-export default function Login({ onLogin, onNavigateToHome, onNavigateToAirportTransfer, onNavigateToCorporateEvent, isAdminMode = false }: LoginProps) {
+export default function Login({ onLogin, onNavigateToHome, onNavigateToChauffeurPrive, onNavigateToAirportTransfer, onNavigateToCorporateEvent, isAdminMode = false }: LoginProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 

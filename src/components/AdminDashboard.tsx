@@ -29,6 +29,7 @@ interface AdminDashboardProps {
   onUpdateBooking: (id: string, updates: Partial<Booking>) => void
   onDeleteBooking: (id: string) => void
   onNavigateToHome: () => void
+  onNavigateToChauffeurPrive?: () => void
   onNavigateToAirportTransfer: () => void
   onNavigateToCorporateEvent?: () => void
 }
@@ -46,7 +47,7 @@ const serviceLabels = {
   suv: 'Premium SUV'
 }
 
-export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdateBooking, onDeleteBooking, onNavigateToHome, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: AdminDashboardProps) {
+export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdateBooking, onDeleteBooking, onNavigateToHome, onNavigateToChauffeurPrive, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: AdminDashboardProps) {
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [adminAccounts, setAdminAccounts] = useKV<AdminAccount[]>('admin-accounts', [
