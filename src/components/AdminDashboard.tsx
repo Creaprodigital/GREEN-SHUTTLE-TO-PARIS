@@ -1,12 +1,11 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Label } from '@/components/ui/label'
-import { Car, MapPin, Calendar, Clock, User as UserIcon, CheckCircle, XCircle, Trash, Image as ImageIcon, ShieldCheck, Plus, Key, Upload } from '@phosphor-icons/react'
+import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
@@ -45,25 +44,11 @@ const serviceLabels = {
 export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdateBooking, onDeleteBooking, onNavigateToHome, onNavigateToAirportTransfer }: AdminDashboardProps) {
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
-  const [vehicleImages, setVehicleImages] = useKV<Record<string, string>>('vehicle-images', {
-    business: '',
-    firstclass: '',
-    suv: ''
-  })
   const [adminAccounts, setAdminAccounts] = useKV<AdminAccount[]>('admin-accounts', [
     { email: 'admin@greenshuttle.com', password: 'admin123', createdAt: new Date().toISOString() }
   ])
   const [newAdminEmail, setNewAdminEmail] = useState('')
   const [newAdminPassword, setNewAdminPassword] = useState('')
-  const [selectedFiles, setSelectedFiles] = useState<Record<string, { 
-    file: File; 
-    preview: string; 
-    dimensions?: { width: number; height: number } 
-  } | null>>({
-    business: null,
-    firstclass: null,
-    suv: null
-  })
 
   const filteredBookings = bookings.filter(b => {
     const matchesStatus = filterStatus === 'all' || b.status === filterStatus
@@ -100,88 +85,6 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
       onDeleteBooking(bookingId)
       toast.success('Booking deleted')
     }
-  }
-
-  const handleFileSelect = (vehicleType: string, file: File) => {
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
-    
-    if (!validTypes.includes(file.type)) {
-      toast.error('Please select a valid image file (JPG, PNG, WebP, or GIF)')
-      return
-    }
-
-    const maxSize = 5 * 1024 * 1024
-    if (file.size > maxSize) {
-      const sizeMB = (file.size / 1024 / 1024).toFixed(2)
-      toast.error(`Image size (${sizeMB}MB) exceeds maximum of 5MB`)
-      return
-    }
-
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const preview = e.target?.result as string
-      const img = new Image()
-      img.onload = () => {
-        const maxRecommendedWidth = 1920
-        const maxRecommendedHeight = 1080
-        
-        let dimensionWarning = ''
-        if (img.width > maxRecommendedWidth || img.height > maxRecommendedHeight) {
-          dimensionWarning = `Image dimensions (${img.width}×${img.height}) exceed recommended maximum of ${maxRecommendedWidth}×${maxRecommendedHeight}px. Large images may impact performance.`
-        }
-
-        setSelectedFiles((current) => ({
-          ...current,
-          [vehicleType]: {
-            file,
-            preview,
-            dimensions: {
-              width: img.width,
-              height: img.height
-            }
-          }
-        }))
-        
-        if (dimensionWarning) {
-          toast.warning(dimensionWarning, { duration: 5000 })
-        } else {
-          toast.success('Image loaded - click Valider to confirm upload')
-        }
-      }
-      img.onerror = () => {
-        toast.error('Failed to load image')
-      }
-      img.src = preview
-    }
-    reader.onerror = () => {
-      toast.error('Failed to read file')
-    }
-    reader.readAsDataURL(file)
-  }
-
-  const handleValidateUpload = (vehicleType: string) => {
-    const selectedFile = selectedFiles[vehicleType]
-    if (!selectedFile) {
-      toast.error('No file selected')
-      return
-    }
-
-    setVehicleImages((current) => ({
-      ...current,
-      [vehicleType]: selectedFile.preview
-    }))
-    setSelectedFiles((current) => ({
-      ...current,
-      [vehicleType]: null
-    }))
-    toast.success(`Image uploaded for ${vehicleType}`)
-  }
-
-  const handleCancelUpload = (vehicleType: string) => {
-    setSelectedFiles((current) => ({
-      ...current,
-      [vehicleType]: null
-    }))
   }
 
   const handleAddAdmin = () => {
@@ -232,12 +135,6 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     }
   }
 
-  const vehicleTypes = [
-    { id: 'business', name: 'Business Class', description: 'Sedan vehicles for professional transport' },
-    { id: 'firstclass', name: 'First Class', description: 'Premium luxury sedans' },
-    { id: 'suv', name: 'Business Van', description: 'Premium vans for groups' }
-  ]
-
   return (
     <>
       <Header 
@@ -251,165 +148,10 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Tabs defaultValue="bookings" className="w-full">
-          <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-3 mb-8">
+          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-2 mb-8">
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
-            <TabsTrigger value="vehicles">Vehicle Images</TabsTrigger>
             <TabsTrigger value="admins">Admin Accounts</TabsTrigger>
           </TabsList>
-
-          <TabsContent value="vehicles" className="space-y-6">
-            <div className="mb-6">
-              <h2 className="text-3xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>
-                Vehicle Images
-              </h2>
-              <p className="text-foreground/70">
-                Upload vehicle images directly from your computer
-              </p>
-            </div>
-
-            <div className="grid gap-6">
-              {vehicleTypes.map((vehicle, index) => (
-                <motion.div
-                  key={vehicle.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                >
-                  <Card className="border-2 border-accent/20">
-                    <CardHeader>
-                      <CardTitle className="text-xl font-semibold uppercase tracking-wide flex items-center gap-2">
-                        <ImageIcon size={24} className="text-accent" />
-                        {vehicle.name}
-                      </CardTitle>
-                      <CardDescription>{vehicle.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
-                          <div className="aspect-video w-full bg-primary rounded-lg overflow-hidden border-2 border-border">
-                            <img
-                              src={vehicleImages?.[vehicle.id] || ''}
-                              alt={vehicle.name}
-                              className="w-full h-full object-contain"
-                              onError={(e) => {
-                                e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23222" width="400" height="300"/%3E%3Ctext fill="%23666" font-family="sans-serif" font-size="20" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3ENo Image%3C/text%3E%3C/svg%3E'
-                              }}
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-4">
-                          <div>
-                            <label className="text-sm font-medium uppercase tracking-wide mb-2 block">
-                              Upload Image File
-                            </label>
-                            <div className="space-y-3">
-                              <input
-                                type="file"
-                                id={`file-${vehicle.id}`}
-                                accept="image/*"
-                                className="hidden"
-                                onChange={(e) => {
-                                  const file = e.target.files?.[0]
-                                  if (file) {
-                                    handleFileSelect(vehicle.id, file)
-                                  }
-                                }}
-                              />
-                              <Button
-                                onClick={() => document.getElementById(`file-${vehicle.id}`)?.click()}
-                                className="w-full h-12 bg-secondary text-foreground hover:bg-secondary/80 font-medium uppercase tracking-widest border-2 border-border"
-                                variant="outline"
-                              >
-                                <Upload className="mr-2" size={20} />
-                                Choose Image
-                              </Button>
-                              {selectedFiles[vehicle.id] && (
-                                <div className="space-y-3">
-                                  <div className="border-2 border-accent/30 rounded-lg overflow-hidden bg-primary">
-                                    <div className="aspect-video w-full flex items-center justify-center">
-                                      <img
-                                        src={selectedFiles[vehicle.id]?.preview}
-                                        alt="Preview"
-                                        className="w-full h-full object-contain"
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="p-3 bg-secondary rounded-lg border-2 border-accent/30 space-y-2">
-                                    <div>
-                                      <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Filename</p>
-                                      <p className="text-sm font-medium text-foreground truncate">
-                                        {selectedFiles[vehicle.id]?.file.name}
-                                      </p>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-3">
-                                      <div>
-                                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">File Size</p>
-                                        <p className="text-sm font-medium text-accent">
-                                          {(selectedFiles[vehicle.id]!.file.size / 1024 / 1024).toFixed(2)} MB
-                                        </p>
-                                      </div>
-                                      {selectedFiles[vehicle.id]?.dimensions && (
-                                        <div>
-                                          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Dimensions</p>
-                                          <p className={`text-sm font-medium ${
-                                            selectedFiles[vehicle.id]!.dimensions!.width > 1920 || 
-                                            selectedFiles[vehicle.id]!.dimensions!.height > 1080
-                                              ? 'text-yellow-500'
-                                              : 'text-accent'
-                                          }`}>
-                                            {selectedFiles[vehicle.id]!.dimensions!.width} × {selectedFiles[vehicle.id]!.dimensions!.height}
-                                          </p>
-                                        </div>
-                                      )}
-                                    </div>
-                                    {selectedFiles[vehicle.id]?.dimensions && 
-                                     (selectedFiles[vehicle.id]!.dimensions!.width > 1920 || 
-                                      selectedFiles[vehicle.id]!.dimensions!.height > 1080) && (
-                                      <div className="flex items-start gap-2 p-2 bg-yellow-500/10 border border-yellow-500/30 rounded">
-                                        <p className="text-xs text-yellow-500">
-                                          ⚠️ Exceeds recommended 1920×1080px. May impact performance.
-                                        </p>
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Button
-                                      onClick={() => handleValidateUpload(vehicle.id)}
-                                      className="flex-1 h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
-                                    >
-                                      <CheckCircle className="mr-2" size={20} weight="fill" />
-                                      Valider
-                                    </Button>
-                                    <Button
-                                      onClick={() => handleCancelUpload(vehicle.id)}
-                                      variant="outline"
-                                      className="h-12 px-4 border-2 border-border hover:bg-destructive/10 hover:text-destructive font-medium uppercase tracking-widest"
-                                    >
-                                      <XCircle size={20} />
-                                    </Button>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                            {!selectedFiles[vehicle.id] && (
-                              <div className="mt-2 space-y-1">
-                                <p className="text-xs text-muted-foreground">
-                                  Maximum 5MB • JPG, PNG, WebP, GIF
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  Recommended: 1920×1080px or smaller
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </TabsContent>
 
           <TabsContent value="admins" className="space-y-6">
             <div className="mb-6">
