@@ -4,6 +4,7 @@ import { Car, MapPin, Calendar, Clock, User as UserIcon } from '@phosphor-icons/
 import { Booking } from '@/types/booking'
 import { motion } from 'framer-motion'
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 interface ClientDashboardProps {
   userEmail: string
@@ -144,6 +145,7 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
         )}
       </div>
       </div>
+      <Footer />
     </>
   )
 }

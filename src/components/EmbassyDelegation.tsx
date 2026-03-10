@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { CheckCircle } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 interface EmbassyDelegationProps {
   onBackToHome?: () => void
@@ -299,6 +300,7 @@ export default function EmbassyDelegation({ onBackToHome, onNavigateToAirportTra
         </div>
       </section>
       </div>
+      <Footer />
     </>
   )
 }

@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { CheckCircle } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 interface AirportTransferProps {
   onBackToHome?: () => void
@@ -297,6 +298,7 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
         </div>
       </section>
       </div>
+      <Footer />
     </>
   )
 }

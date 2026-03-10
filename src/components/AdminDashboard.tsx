@@ -14,6 +14,7 @@ import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 import { useKV } from '@github/spark/hooks'
 
 interface AdminAccount {
@@ -1014,6 +1015,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
         </Tabs>
       </div>
       </div>
+      <Footer />
     </>
   )
 }

@@ -1,4 +1,5 @@
 import { Separator } from '@/components/ui/separator'
+import { Phone } from '@phosphor-icons/react'
 
 export default function Footer() {
   return (
@@ -9,9 +10,16 @@ export default function Footer() {
             <h3 className="text-2xl font-bold mb-4 text-accent" style={{ fontFamily: 'var(--font-display)' }}>
               Green Shuttle To Paris
             </h3>
-            <p className="text-muted-foreground text-sm font-light">
+            <p className="text-muted-foreground text-sm font-light mb-4">
               Premier chauffeur service delivering excellence to Paris and beyond.
             </p>
+            <a 
+              href="tel:+33199990000" 
+              className="flex items-center gap-2 text-foreground hover:text-accent transition-colors font-medium"
+            >
+              <Phone size={20} weight="fill" />
+              <span>+33 1 99 99 00 00</span>
+            </a>
           </div>
 
           <div>

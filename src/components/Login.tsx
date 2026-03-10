@@ -7,6 +7,7 @@ import { SignIn, User as UserIcon } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 interface LoginProps {
   onLogin: (email: string, isAdmin: boolean) => void
@@ -131,6 +132,7 @@ export default function Login({ onLogin, onNavigateToHome, onNavigateToChauffeur
           </Card>
         </motion.div>
       </div>
+      <Footer />
     </>
   )
 }
