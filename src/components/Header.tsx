@@ -50,15 +50,15 @@ export default function Header({ onNavigateToLogin, onNavigateToChauffeurPrive, 
             <a href="#accueil" className="flex items-center space-x-3 group">
               <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center transition-transform group-hover:scale-105">
                 <span className="text-2xl font-bold text-accent-foreground" style={{ fontFamily: 'var(--font-display)' }}>
-                  G
+                  H
                 </span>
               </div>
               <div className="hidden sm:block">
                 <div className="text-foreground font-bold text-xl leading-tight" style={{ fontFamily: 'var(--font-display)' }}>
-                  Green Shuttle
+                  Haimouri
                 </div>
                 <div className="text-accent text-xs uppercase tracking-wider font-medium">
-                  To Paris
+                  International
                 </div>
               </div>
             </a>

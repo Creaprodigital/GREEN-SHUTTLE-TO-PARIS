@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <h3 className="text-2xl font-bold mb-4 text-accent" style={{ fontFamily: 'var(--font-display)' }}>
-              Green Shuttle To Paris
+              Haimouri International
             </h3>
             <p className="text-muted-foreground text-sm font-light">
               Premier chauffeur service delivering excellence to Paris and beyond.
@@ -48,7 +48,7 @@ export default function Footer() {
         <Separator className="bg-border mb-8" />
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground font-light">
-          <p>&copy; 2024 Green Shuttle To Paris. All rights reserved.</p>
+          <p>&copy; 2024 Haimouri International. All rights reserved.</p>
           <div className="flex gap-6">
             <span className="hover:text-accent transition-colors cursor-pointer">Privacy Policy</span>
             <span className="hover:text-accent transition-colors cursor-pointer">Cookie Policy</span>
