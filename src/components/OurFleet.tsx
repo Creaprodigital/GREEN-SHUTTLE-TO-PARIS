@@ -47,7 +47,7 @@ export default function OurFleet() {
                   className="h-full"
                 >
                   <Card className="border-2 border-accent/20 overflow-hidden hover:border-accent/40 transition-all duration-300 h-full">
-                    <div className="aspect-[4/3] bg-muted/50 relative overflow-hidden">
+                    <div className="aspect-[16/9] bg-muted/50 relative overflow-hidden">
                       {vehicle.image ? (
                         <div 
                           className="w-full h-full"
@@ -60,7 +60,7 @@ export default function OurFleet() {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Car size={80} className="text-muted-foreground/30" weight="thin" />
+                          <Car size={64} className="text-muted-foreground/30" weight="thin" />
                         </div>
                       )}
                     </div>
