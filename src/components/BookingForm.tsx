@@ -9,6 +9,7 @@ import { MapPin, Calendar, Clock, Users, ArrowRight } from '@phosphor-icons/reac
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
+import PlacesAutocomplete from '@/components/PlacesAutocomplete'
 
 interface BookingData {
   tripType: string
@@ -86,30 +87,26 @@ export default function BookingForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label htmlFor="pickup" className="text-sm font-medium uppercase tracking-wide">Pickup Location</Label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
-                  <Input
-                    id="pickup"
-                    value={pickup}
-                    onChange={(e) => setPickup(e.target.value)}
-                    placeholder="Enter pickup address"
-                    className="pl-11 h-12 bg-secondary border-border"
-                  />
-                </div>
+                <PlacesAutocomplete
+                  id="pickup"
+                  value={pickup}
+                  onChange={setPickup}
+                  placeholder="Enter pickup address"
+                  className="h-12 bg-secondary border-border"
+                  icon={<MapPin size={20} />}
+                />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="destination" className="text-sm font-medium uppercase tracking-wide">Destination</Label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} weight="fill" />
-                  <Input
-                    id="destination"
-                    value={destination}
-                    onChange={(e) => setDestination(e.target.value)}
-                    placeholder="Enter destination"
-                    className="pl-11 h-12 bg-secondary border-border"
-                  />
-                </div>
+                <PlacesAutocomplete
+                  id="destination"
+                  value={destination}
+                  onChange={setDestination}
+                  placeholder="Enter destination"
+                  className="h-12 bg-secondary border-border"
+                  icon={<MapPin size={20} weight="fill" />}
+                />
               </div>
 
               <div className="space-y-2">
