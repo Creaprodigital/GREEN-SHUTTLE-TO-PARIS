@@ -10,7 +10,8 @@ export default function OurFleet() {
   const [fleetData] = useKV<VehicleClass[]>('fleet-data', DEFAULT_FLEET)
   
   const vehicles = useMemo(() => {
-    return (fleetData || DEFAULT_FLEET).sort((a, b) => a.order - b.order)
+    const data = Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET
+    return data.sort((a, b) => a.order - b.order)
   }, [fleetData])
 
   return (

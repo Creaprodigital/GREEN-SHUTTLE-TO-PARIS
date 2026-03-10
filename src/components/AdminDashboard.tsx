@@ -168,13 +168,14 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     const reader = new FileReader()
     reader.onload = (e) => {
       const result = e.target?.result as string
-      setFleetData((current) =>
-        (current || DEFAULT_FLEET).map((vehicle) =>
+      setFleetData((current) => {
+        const data = Array.isArray(current) ? current : DEFAULT_FLEET
+        return data.map((vehicle) =>
           vehicle.id === vehicleId
             ? { ...vehicle, image: result }
             : vehicle
         )
-      )
+      })
       setUploadingImage(null)
       toast.success('Image uploaded successfully')
     }
@@ -182,13 +183,14 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   }
 
   const handleUpdateVehicle = (vehicleId: string, updates: Partial<VehicleClass>) => {
-    setFleetData((current) =>
-      (current || DEFAULT_FLEET).map((vehicle) =>
+    setFleetData((current) => {
+      const data = Array.isArray(current) ? current : DEFAULT_FLEET
+      return data.map((vehicle) =>
         vehicle.id === vehicleId
           ? { ...vehicle, ...updates }
           : vehicle
       )
-    )
+    })
     setEditingVehicle(null)
     toast.success('Vehicle updated successfully')
   }
@@ -199,19 +201,22 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
       return
     }
 
-    const maxOrder = Math.max(...(fleetData || DEFAULT_FLEET).map(v => v.order), 0)
-    const newId = `vehicle-${Date.now()}`
-    
-    setFleetData((current) => [
-      ...(current || DEFAULT_FLEET),
-      {
-        id: newId,
-        title: newVehicleTitle,
-        description: newVehicleDescription,
-        image: '',
-        order: maxOrder + 1
-      }
-    ])
+    setFleetData((current) => {
+      const data = Array.isArray(current) ? current : DEFAULT_FLEET
+      const maxOrder = Math.max(...data.map(v => v.order), 0)
+      const newId = `vehicle-${Date.now()}`
+      
+      return [
+        ...data,
+        {
+          id: newId,
+          title: newVehicleTitle,
+          description: newVehicleDescription,
+          image: '',
+          order: maxOrder + 1
+        }
+      ]
+    })
 
     setNewVehicleTitle('')
     setNewVehicleDescription('')
@@ -220,9 +225,10 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
   const handleDeleteVehicle = (vehicleId: string) => {
     if (confirm('Are you sure you want to delete this vehicle?')) {
-      setFleetData((current) =>
-        (current || DEFAULT_FLEET).filter((vehicle) => vehicle.id !== vehicleId)
-      )
+      setFleetData((current) => {
+        const data = Array.isArray(current) ? current : DEFAULT_FLEET
+        return data.filter((vehicle) => vehicle.id !== vehicleId)
+      })
       toast.success('Vehicle deleted')
     }
   }
@@ -242,12 +248,13 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold uppercase tracking-wide">
-              {viewingImage && (fleetData || DEFAULT_FLEET).find(v => v.id === viewingImage)?.title} - Prévisualisation
+              {viewingImage && (Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET).find(v => v.id === viewingImage)?.title} - Prévisualisation
             </DialogTitle>
           </DialogHeader>
           
           {viewingImage && (() => {
-            const vehicle = (fleetData || DEFAULT_FLEET).find(v => v.id === viewingImage)
+            const data = Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET
+            const vehicle = data.find(v => v.id === viewingImage)
             return vehicle?.image && (
             <div className="space-y-6 pt-4">
               <div 
@@ -371,8 +378,9 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                     <Button
                       onClick={() => {
                         if (viewingImage) {
-                          setFleetData((current) =>
-                            (current || DEFAULT_FLEET).map((vehicle) =>
+                          setFleetData((current) => {
+                            const data = Array.isArray(current) ? current : DEFAULT_FLEET
+                            return data.map((vehicle) =>
                               vehicle.id === viewingImage
                                 ? {
                                     ...vehicle,
@@ -384,7 +392,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                   }
                                 : vehicle
                             )
-                          )
+                          })
                           toast.success('Paramètres d\'affichage enregistrés')
                           setViewingImage(null)
                           setHasImageChanges(false)
@@ -596,7 +604,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
             </Card>
 
             <div className="space-y-4">
-              {(fleetData || DEFAULT_FLEET)
+              {(Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET)
                 .sort((a, b) => a.order - b.order)
                 .map((vehicle, index) => {
                   const isEditing = editingVehicle === vehicle.id
