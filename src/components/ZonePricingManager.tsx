@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { MapPin, Plus, Trash, Pencil, CurrencyCircleDollar, Lightning, Copy, Download, Circle, Square, Polygon as PolygonIcon } from '@phosphor-icons/react'
 import { PricingZone, ZonePricing, PREDEFINED_ZONES, PREDEFINED_ZONE_PRICINGS } from '@/types/pricing'
-import { DEFAULT_FLEET } from '@/types/fleet'
+import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
@@ -27,12 +27,17 @@ interface ZonePricingManagerProps {
 export default function ZonePricingManager({ onClose }: ZonePricingManagerProps) {
   const [zones, setZones] = useKV<PricingZone[]>('pricing-zones', [])
   const [zonePricings, setZonePricings] = useKV<ZonePricing[]>('zone-pricings', [])
+  const [fleetData] = useKV<VehicleClass[]>('fleet-data', DEFAULT_FLEET)
   const [hasCleanedUp, setHasCleanedUp] = useState(false)
+  
+  const fleet = useMemo(() => {
+    return Array.isArray(fleetData) && fleetData.length > 0 ? fleetData : DEFAULT_FLEET
+  }, [fleetData])
   
   useEffect(() => {
     if (hasCleanedUp || !zonePricings || zonePricings.length === 0) return
     
-    const validVehicleIds = DEFAULT_FLEET.map(v => v.id)
+    const validVehicleIds = fleet.map(v => v.id)
     const invalidPricings = zonePricings.filter(p => !validVehicleIds.includes(p.vehicleId))
     
     if (invalidPricings.length > 0) {
@@ -42,7 +47,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     }
     
     setHasCleanedUp(true)
-  }, [zonePricings, setZonePricings, hasCleanedUp])
+  }, [zonePricings, setZonePricings, hasCleanedUp, fleet])
   const [isCreatingZone, setIsCreatingZone] = useState(false)
   const [isCreatingPricing, setIsCreatingPricing] = useState(false)
   const [editingZone, setEditingZone] = useState<PricingZone | null>(null)
@@ -916,7 +921,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     
     const fromZone = zones?.find(z => z.id === newPricingFromZone)
     const toZone = zones?.find(z => z.id === newPricingToZone)
-    const vehicle = DEFAULT_FLEET.find(v => v.id === newPricingVehicle)
+    const vehicle = fleet.find(v => v.id === newPricingVehicle)
     
     toast.success(`Forfait créé: ${fromZone?.name} → ${toZone?.name} (${vehicle?.title}) - ${price}€`)
     
@@ -939,7 +944,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
   }
 
   const getVehicleName = (vehicleId: string) => {
-    return DEFAULT_FLEET.find(v => v.id === vehicleId)?.title || 'Véhicule inconnu'
+    return fleet.find(v => v.id === vehicleId)?.title || 'Véhicule inconnu'
   }
 
   const handleOpenBulkPricing = () => {
@@ -982,7 +987,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     const newPricings: ZonePricing[] = []
 
     bulkToZones.forEach(toZoneId => {
-      DEFAULT_FLEET.forEach(vehicle => {
+      fleet.forEach(vehicle => {
         const price = bulkPrices[toZoneId]?.[vehicle.id]
         if (price && parseFloat(price) > 0) {
           newPricings.push({
@@ -1421,7 +1426,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
                           <SelectValue placeholder="Sélectionner..." />
                         </SelectTrigger>
                         <SelectContent>
-                          {DEFAULT_FLEET.map(vehicle => (
+                          {fleet.map(vehicle => (
                             <SelectItem key={vehicle.id} value={vehicle.id}>
                               {vehicle.title}
                             </SelectItem>
@@ -1671,7 +1676,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
                         Vers {toZone.name}
                       </div>
                       <div className="grid grid-cols-2 gap-3">
-                        {DEFAULT_FLEET.map(vehicle => (
+                        {fleet.map(vehicle => (
                           <div key={vehicle.id} className="space-y-1">
                             <Label className="text-xs">{vehicle.title}</Label>
                             <Input
