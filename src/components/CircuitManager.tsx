@@ -26,7 +26,8 @@ export default function CircuitManager() {
   const mapRef = useRef<HTMLDivElement>(null)
   const googleMapRef = useRef<google.maps.Map | null>(null)
   const markersRef = useRef<google.maps.Marker[]>([])
-  const polylinesRef = useRef<google.maps.Polyline[]>([])
+  const directionsRenderersRef = useRef<google.maps.DirectionsRenderer[]>([])
+  const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null)
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -151,6 +152,7 @@ export default function CircuitManager() {
     })
 
     googleMapRef.current = map
+      directionsServiceRef.current = new google.maps.DirectionsService()
 
     if (inputRef.current) {
       const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
@@ -175,8 +177,8 @@ export default function CircuitManager() {
     markersRef.current.forEach(marker => marker.setMap(null))
     markersRef.current = []
     
-    polylinesRef.current.forEach(polyline => polyline.setMap(null))
-    polylinesRef.current = []
+    directionsRenderersRef.current.forEach(renderer => renderer.setMap(null))
+    directionsRenderersRef.current = []
 
     const bounds = new google.maps.LatLngBounds()
 
@@ -216,23 +218,38 @@ export default function CircuitManager() {
 
       markersRef.current.push(marker)
       bounds.extend({ lat: stop.lat, lng: stop.lng })
-      
-      if (index < editingCircuit.stops.length - 1) {
-        const nextStop = editingCircuit.stops[index + 1]
-        const polyline = new google.maps.Polyline({
-          path: [
-            { lat: stop.lat, lng: stop.lng },
-            { lat: nextStop.lat, lng: nextStop.lng }
-          ],
-          geodesic: true,
-          strokeColor: '#b8d970',
-          strokeOpacity: 0.8,
-          strokeWeight: 4,
-          map: googleMapRef.current
-        })
-        polylinesRef.current.push(polyline)
-      }
     })
+
+    if (editingCircuit.stops.length > 1 && directionsServiceRef.current && googleMapRef.current) {
+      for (let i = 0; i < editingCircuit.stops.length - 1; i++) {
+        const origin = { lat: editingCircuit.stops[i].lat, lng: editingCircuit.stops[i].lng }
+        const destination = { lat: editingCircuit.stops[i + 1].lat, lng: editingCircuit.stops[i + 1].lng }
+
+        directionsServiceRef.current.route(
+          {
+            origin: origin,
+            destination: destination,
+            travelMode: google.maps.TravelMode.DRIVING
+          },
+          (result, status) => {
+            if (status === google.maps.DirectionsStatus.OK && result && googleMapRef.current) {
+              const directionsRenderer = new google.maps.DirectionsRenderer({
+                map: googleMapRef.current,
+                directions: result,
+                suppressMarkers: true,
+                preserveViewport: true,
+                polylineOptions: {
+                  strokeColor: '#b8d970',
+                  strokeOpacity: 0.8,
+                  strokeWeight: 4
+                }
+              })
+              directionsRenderersRef.current.push(directionsRenderer)
+            }
+          }
+        )
+      }
+    }
 
     if (editingCircuit.stops.length > 0) {
       googleMapRef.current.fitBounds(bounds)
@@ -371,8 +388,8 @@ export default function CircuitManager() {
         googleMapRef.current = null
         markersRef.current.forEach(marker => marker.setMap(null))
         markersRef.current = []
-        polylinesRef.current.forEach(polyline => polyline.setMap(null))
-        polylinesRef.current = []
+        directionsRenderersRef.current.forEach(renderer => renderer.setMap(null))
+        directionsRenderersRef.current = []
       }
       toast.success('Circuit supprimé')
     }
@@ -556,8 +573,8 @@ export default function CircuitManager() {
             googleMapRef.current = null
             markersRef.current.forEach(marker => marker.setMap(null))
             markersRef.current = []
-            polylinesRef.current.forEach(polyline => polyline.setMap(null))
-            polylinesRef.current = []
+            directionsRenderersRef.current.forEach(renderer => renderer.setMap(null))
+            directionsRenderersRef.current = []
           }
         }}
       >

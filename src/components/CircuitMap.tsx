@@ -10,7 +10,8 @@ export default function CircuitMap({ circuit, className = '' }: CircuitMapProps)
   const mapRef = useRef<HTMLDivElement>(null)
   const googleMapRef = useRef<google.maps.Map | null>(null)
   const markersRef = useRef<google.maps.Marker[]>([])
-  const polylinesRef = useRef<google.maps.Polyline[]>([])
+  const directionsRenderersRef = useRef<google.maps.DirectionsRenderer[]>([])
+  const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null)
 
   useEffect(() => {
     if (!mapRef.current || !circuit.stops || circuit.stops.length === 0) return
@@ -122,13 +123,14 @@ export default function CircuitMap({ circuit, className = '' }: CircuitMapProps)
       })
 
       googleMapRef.current = map
+      directionsServiceRef.current = new google.maps.DirectionsService()
     }
 
     markersRef.current.forEach(marker => marker.setMap(null))
     markersRef.current = []
     
-    polylinesRef.current.forEach(polyline => polyline.setMap(null))
-    polylinesRef.current = []
+    directionsRenderersRef.current.forEach(renderer => renderer.setMap(null))
+    directionsRenderersRef.current = []
 
     const bounds = new google.maps.LatLngBounds()
 
@@ -168,23 +170,38 @@ export default function CircuitMap({ circuit, className = '' }: CircuitMapProps)
 
       markersRef.current.push(marker)
       bounds.extend({ lat: stop.lat, lng: stop.lng })
-      
-      if (index < circuit.stops.length - 1) {
-        const nextStop = circuit.stops[index + 1]
-        const polyline = new google.maps.Polyline({
-          path: [
-            { lat: stop.lat, lng: stop.lng },
-            { lat: nextStop.lat, lng: nextStop.lng }
-          ],
-          geodesic: true,
-          strokeColor: '#b8d970',
-          strokeOpacity: 0.8,
-          strokeWeight: 4,
-          map: googleMapRef.current
-        })
-        polylinesRef.current.push(polyline)
-      }
     })
+
+    if (circuit.stops.length > 1 && directionsServiceRef.current && googleMapRef.current) {
+      for (let i = 0; i < circuit.stops.length - 1; i++) {
+        const origin = { lat: circuit.stops[i].lat, lng: circuit.stops[i].lng }
+        const destination = { lat: circuit.stops[i + 1].lat, lng: circuit.stops[i + 1].lng }
+
+        directionsServiceRef.current.route(
+          {
+            origin: origin,
+            destination: destination,
+            travelMode: google.maps.TravelMode.DRIVING
+          },
+          (result, status) => {
+            if (status === google.maps.DirectionsStatus.OK && result && googleMapRef.current) {
+              const directionsRenderer = new google.maps.DirectionsRenderer({
+                map: googleMapRef.current,
+                directions: result,
+                suppressMarkers: true,
+                preserveViewport: true,
+                polylineOptions: {
+                  strokeColor: '#b8d970',
+                  strokeOpacity: 0.8,
+                  strokeWeight: 4
+                }
+              })
+              directionsRenderersRef.current.push(directionsRenderer)
+            }
+          }
+        )
+      }
+    }
 
     if (circuit.stops.length > 0 && googleMapRef.current) {
       googleMapRef.current.fitBounds(bounds)
