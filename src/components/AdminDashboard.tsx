@@ -6,7 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check } from '@phosphor-icons/react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Slider } from '@/components/ui/slider'
+import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { VehicleClass, VehicleClassType, DEFAULT_FLEET } from '@/types/fleet'
 import { motion } from 'framer-motion'
@@ -57,6 +59,10 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   const [uploadingImage, setUploadingImage] = useState<VehicleClassType | null>(null)
   const [editedTitle, setEditedTitle] = useState<string>('')
   const [editedDescription, setEditedDescription] = useState<string>('')
+  const [viewingImage, setViewingImage] = useState<VehicleClassType | null>(null)
+  const [imageZoom, setImageZoom] = useState<number>(100)
+  const [imagePosition, setImagePosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 })
+  const [imageFit, setImageFit] = useState<'cover' | 'contain' | 'fill'>('cover')
 
   const filteredBookings = bookings.filter(b => {
     const matchesStatus = filterStatus === 'all' || b.status === filterStatus
@@ -196,6 +202,119 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
         isAdmin={true}
       />
       <div className="min-h-screen bg-background pt-20">
+
+      <Dialog open={viewingImage !== null} onOpenChange={(open) => !open && setViewingImage(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold uppercase tracking-wide">
+              {viewingImage && fleetData?.[viewingImage]?.title} - Prévisualisation
+            </DialogTitle>
+          </DialogHeader>
+          
+          {viewingImage && fleetData?.[viewingImage]?.image && (
+            <div className="space-y-6 pt-4">
+              <div 
+                className="relative aspect-[4/3] bg-muted/50 border-2 border-border overflow-hidden"
+                style={{
+                  backgroundImage: `url(${fleetData[viewingImage].image})`,
+                  backgroundSize: imageFit,
+                  backgroundPosition: `${imagePosition.x}% ${imagePosition.y}%`,
+                  backgroundRepeat: 'no-repeat',
+                  transform: `scale(${imageZoom / 100})`
+                }}
+              />
+
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium uppercase tracking-wide">
+                      Zoom: {imageZoom}%
+                    </Label>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setImageZoom(100)}
+                    >
+                      Réinitialiser
+                    </Button>
+                  </div>
+                  <Slider
+                    value={[imageZoom]}
+                    onValueChange={(value) => setImageZoom(value[0])}
+                    min={50}
+                    max={200}
+                    step={5}
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium uppercase tracking-wide">
+                    Mode d'affichage
+                  </Label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button
+                      variant={imageFit === 'cover' ? 'default' : 'outline'}
+                      onClick={() => setImageFit('cover')}
+                      className="h-12"
+                    >
+                      Couvrir
+                    </Button>
+                    <Button
+                      variant={imageFit === 'contain' ? 'default' : 'outline'}
+                      onClick={() => setImageFit('contain')}
+                      className="h-12"
+                    >
+                      Contenir
+                    </Button>
+                    <Button
+                      variant={imageFit === 'fill' ? 'default' : 'outline'}
+                      onClick={() => setImageFit('fill')}
+                      className="h-12"
+                    >
+                      Remplir
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium uppercase tracking-wide">
+                    Position horizontale: {imagePosition.x}%
+                  </Label>
+                  <Slider
+                    value={[imagePosition.x]}
+                    onValueChange={(value) => setImagePosition(prev => ({ ...prev, x: value[0] }))}
+                    min={0}
+                    max={100}
+                    step={1}
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium uppercase tracking-wide">
+                    Position verticale: {imagePosition.y}%
+                  </Label>
+                  <Slider
+                    value={[imagePosition.y]}
+                    onValueChange={(value) => setImagePosition(prev => ({ ...prev, y: value[0] }))}
+                    min={0}
+                    max={100}
+                    step={1}
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="pt-4 border-t border-border">
+                  <p className="text-sm text-muted-foreground">
+                    Utilisez les contrôles ci-dessus pour ajuster l'affichage de l'image. Les modifications ne sont que pour la prévisualisation.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Tabs defaultValue="bookings" className="w-full">
@@ -353,13 +472,30 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6 space-y-4">
-                          <div className="aspect-[4/3] bg-muted/50 relative overflow-hidden border-2 border-border">
+                          <div className="aspect-[4/3] bg-muted/50 relative overflow-hidden border-2 border-border group">
                             {vehicle.image ? (
-                              <img
-                                src={vehicle.image}
-                                alt={vehicle.title}
-                                className="w-full h-full object-cover"
-                              />
+                              <>
+                                <img
+                                  src={vehicle.image}
+                                  alt={vehicle.title}
+                                  className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
+                                  <Button
+                                    variant="secondary"
+                                    size="icon"
+                                    onClick={() => {
+                                      setViewingImage(vehicleKey)
+                                      setImageZoom(100)
+                                      setImagePosition({ x: 50, y: 50 })
+                                      setImageFit('cover')
+                                    }}
+                                    className="h-12 w-12"
+                                  >
+                                    <MagnifyingGlassPlus size={24} />
+                                  </Button>
+                                </div>
+                              </>
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
                                 <ImageIcon size={80} className="text-muted-foreground/30" weight="thin" />
