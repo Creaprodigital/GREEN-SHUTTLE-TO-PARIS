@@ -4,15 +4,13 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { motion } from 'framer-motion'
 import { Car } from '@phosphor-icons/react'
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 
 export default function OurFleet() {
   const [fleetData] = useKV<Record<VehicleClassType, VehicleClass>>('fleet-data', DEFAULT_FLEET)
-  const [vehicles, setVehicles] = useState<VehicleClass[]>([])
-
-  useEffect(() => {
-    const sortedVehicles = Object.values(fleetData || DEFAULT_FLEET).sort((a, b) => a.order - b.order)
-    setVehicles(sortedVehicles)
+  
+  const vehicles = useMemo(() => {
+    return Object.values(fleetData || DEFAULT_FLEET).sort((a, b) => a.order - b.order)
   }, [fleetData])
 
   return (
