@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { motion } from 'framer-motion'
-import businessSedan from '@/assets/images/business-sedan.svg'
+import businessSedan from '@/assets/images/business-class.png'
 import luxurySedan from '@/assets/images/luxury-sedan.svg'
 import premiumSuv from '@/assets/images/premium-suv.svg'
 
