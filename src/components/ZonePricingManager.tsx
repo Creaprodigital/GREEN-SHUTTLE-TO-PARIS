@@ -908,6 +908,10 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
       return
     }
 
+    const fromZone = zones?.find(z => z.id === newPricingFromZone)
+    const toZone = zones?.find(z => z.id === newPricingToZone)
+    const vehicle = fleet.find(v => v.id === newPricingVehicle)
+
     const newPricing: ZonePricing = {
       id: `pricing-${Date.now()}`,
       fromZoneId: newPricingFromZone,
@@ -917,13 +921,12 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
       createdAt: new Date().toISOString(),
     }
 
-    setZonePricings(current => [...(current || []), newPricing])
+    setZonePricings((current) => {
+      const updated = [...(current || []), newPricing]
+      return updated
+    })
     
-    const fromZone = zones?.find(z => z.id === newPricingFromZone)
-    const toZone = zones?.find(z => z.id === newPricingToZone)
-    const vehicle = fleet.find(v => v.id === newPricingVehicle)
-    
-    toast.success(`Forfait créé: ${fromZone?.name} → ${toZone?.name} (${vehicle?.title}) - ${price}€`)
+    toast.success(`Forfait créé: ${fromZone?.name} → ${toZone?.name} (${vehicle?.title}) - ${price.toFixed(2)}€`)
     
     setNewPricingFromZone('')
     setNewPricingToZone('')
