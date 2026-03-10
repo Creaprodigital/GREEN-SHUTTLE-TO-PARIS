@@ -978,15 +978,63 @@ export default function BookingForm() {
                         <span className="font-medium">{passengers}</span>
                       </div>
                       {serviceType === 'transfer' && (
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Valises:</span>
-                          <span className="font-medium">{luggage}</span>
+                        <>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Valises:</span>
+                            <span className="font-medium">{luggage}</span>
+                          </div>
+                          {distanceKm > 0 && (
+                            <>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-muted-foreground">Distance:</span>
+                                <span className="font-medium">{distanceKm.toFixed(1)} km</span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-muted-foreground">Durée estimée:</span>
+                                <span className="font-medium">{durationMinutes} min</span>
+                              </div>
+                            </>
+                          )}
+                        </>
+                      )}
+                      {serviceType === 'hourly' && (
+                        <div className="flex justify-between text-xs">
+                          <span className="text-muted-foreground">Durée:</span>
+                          <span className="font-medium">{hourlyDuration} heure{parseInt(hourlyDuration) > 1 ? 's' : ''}</span>
                         </div>
                       )}
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Client:</span>
                         <span className="font-medium">{firstName} {lastName}</span>
                       </div>
+                      {selectedOptions.length > 0 && (
+                        <>
+                          <div className="border-t border-accent/20 pt-2 mt-2">
+                            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">Options:</div>
+                            {selectedOptions.map(optionId => {
+                              const option = serviceOptions?.find(o => o.id === optionId)
+                              if (!option) return null
+                              return (
+                                <div key={optionId} className="flex justify-between text-xs">
+                                  <span className="text-muted-foreground">{option.name}:</span>
+                                  <span className="font-medium">{option.price > 0 ? `+${option.price.toFixed(2)}€` : 'Inclus'}</span>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </>
+                      )}
+                      {vehicleType && (
+                        <div className="border-t border-accent/20 pt-2 mt-2">
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold uppercase tracking-wide">Prix Total:</span>
+                            <span className="text-2xl font-bold text-accent flex items-center gap-1">
+                              <CurrencyEur size={20} weight="bold" />
+                              {calculatePrice(vehicleType).toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
