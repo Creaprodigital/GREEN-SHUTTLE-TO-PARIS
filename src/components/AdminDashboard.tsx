@@ -12,9 +12,6 @@ import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import Header from '@/components/Header'
 import { useKV } from '@github/spark/hooks'
-import businessClassImg from '@/assets/images/E.jpg'
-import firstClassImg from '@/assets/images/S.jpg'
-import businessVanImg from '@/assets/images/C.jpg'
 
 interface AdminAccount {
   email: string
@@ -49,9 +46,9 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [vehicleImages, setVehicleImages] = useKV<Record<string, string>>('vehicle-images', {
-    business: businessClassImg,
-    firstclass: firstClassImg,
-    suv: businessVanImg
+    business: '',
+    firstclass: '',
+    suv: ''
   })
   const [adminAccounts, setAdminAccounts] = useKV<AdminAccount[]>('admin-accounts', [
     { email: 'admin@greenshuttle.com', password: 'admin123', createdAt: new Date().toISOString() }
