@@ -152,41 +152,53 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     }
   }
 
-  const handleImageUpload = (vehicleId: string, file: File) => {
+  const handleImageUpload = async (vehicleId: string, file: File) => {
     if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file')
+      toast.error('Veuillez uploader un fichier image')
       return
     }
 
     const maxSize = 5 * 1024 * 1024
     if (file.size > maxSize) {
-      toast.error('Image size should be less than 5MB')
+      toast.error('L\'image doit faire moins de 5MB')
       return
     }
 
     setUploadingImage(vehicleId)
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const result = e.target?.result as string
-      if (result) {
-        setFleetData((current) => {
-          const data = Array.isArray(current) ? current : DEFAULT_FLEET
-          const updated = data.map((vehicle) =>
-            vehicle.id === vehicleId
-              ? { ...vehicle, image: result }
-              : vehicle
-          )
-          return updated
+    
+    try {
+      const result = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const data = e.target?.result as string
+          if (data) {
+            resolve(data)
+          } else {
+            reject(new Error('No data'))
+          }
+        }
+        reader.onerror = () => reject(new Error('FileReader error'))
+        reader.readAsDataURL(file)
+      })
+
+      setFleetData((currentData) => {
+        const data = Array.isArray(currentData) ? currentData : DEFAULT_FLEET
+        const updated = data.map((vehicle) => {
+          if (vehicle.id === vehicleId) {
+            return { ...vehicle, image: result }
+          }
+          return vehicle
         })
-        setUploadingImage(null)
-        toast.success('Image uploaded successfully')
-      }
-    }
-    reader.onerror = () => {
+        return updated
+      })
+      
       setUploadingImage(null)
-      toast.error('Error uploading image')
+      toast.success(`Image téléchargée avec succès pour ${vehicleId}`)
+    } catch (error) {
+      setUploadingImage(null)
+      toast.error('Erreur lors du téléchargement de l\'image')
+      console.error('Upload error:', error)
     }
-    reader.readAsDataURL(file)
   }
 
   const handleUpdateVehicle = (vehicleId: string, updates: Partial<VehicleClass>) => {
