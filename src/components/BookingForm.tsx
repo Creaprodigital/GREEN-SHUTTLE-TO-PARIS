@@ -16,12 +16,14 @@ import PlacesAutocomplete from '@/components/PlacesAutocomplete'
 import { Booking } from '@/types/booking'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { ServiceOption, VehiclePricing, DEFAULT_PRICING, DEFAULT_OPTIONS, PricingSettings } from '@/types/pricing'
+import { Circuit } from '@/types/circuit'
 
 export default function BookingForm() {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
   const [fleet] = useKV<VehicleClass[]>('fleet', DEFAULT_FLEET)
   const [serviceOptions] = useKV<ServiceOption[]>('service-options', DEFAULT_OPTIONS)
   const [pricing] = useKV<VehiclePricing[]>('pricing', DEFAULT_PRICING)
+  const [circuits] = useKV<Circuit[]>('circuits', [])
   const [activePricingMode] = useKV<'high-demand' | 'low-season'>('active-pricing-mode', 'high-demand')
   const [pricingSettings] = useKV<PricingSettings>('pricing-settings', { roundToWholeEuro: false })
   const [currentStep, setCurrentStep] = useState(1)
@@ -29,6 +31,7 @@ export default function BookingForm() {
   const [serviceType, setServiceType] = useState<'transfer' | 'hourly' | 'tour'>('transfer')
   const [transferType, setTransferType] = useState<'oneway' | 'roundtrip'>('oneway')
   const [hourlyDuration, setHourlyDuration] = useState('2')
+  const [selectedCircuitId, setSelectedCircuitId] = useState('')
   const [pickup, setPickup] = useState('')
   const [destination, setDestination] = useState('')
   const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null)
@@ -218,8 +221,12 @@ export default function BookingForm() {
   }, [pickupCoords, destinationCoords, serviceType])
 
   const validateStep1 = () => {
-    if (!pickup || !date || !time) {
+    if (!pickup || !date) {
       toast.error('Veuillez remplir tous les champs obligatoires')
+      return false
+    }
+    if (serviceType === 'tour' && !selectedCircuitId) {
+      toast.error('Veuillez sélectionner un circuit touristique')
       return false
     }
     if (serviceType === 'transfer' && !destination) {
@@ -276,10 +283,11 @@ export default function BookingForm() {
       serviceType,
       transferType: serviceType === 'transfer' ? transferType : undefined,
       hourlyDuration: serviceType === 'hourly' ? hourlyDuration : undefined,
+      circuitId: serviceType === 'tour' ? selectedCircuitId : undefined,
       pickup,
-      destination: serviceType === 'transfer' || serviceType === 'tour' ? destination : undefined,
+      destination: serviceType === 'transfer' ? destination : undefined,
       date,
-      time,
+      time: serviceType !== 'tour' ? time : undefined,
       returnDate: serviceType === 'transfer' && transferType === 'roundtrip' ? returnDate : undefined,
       returnTime: serviceType === 'transfer' && transferType === 'roundtrip' ? returnTime : undefined,
       passengers,
@@ -307,6 +315,7 @@ export default function BookingForm() {
     setServiceType('transfer')
     setTransferType('oneway')
     setHourlyDuration('2')
+    setSelectedCircuitId('')
     setPickup('')
     setDestination('')
     setPickupCoords(null)
@@ -447,6 +456,56 @@ export default function BookingForm() {
                     </div>
                   )}
 
+                  {serviceType === 'tour' && (
+                    <div className="mb-4">
+                      <Label htmlFor="circuit-select" className="text-sm font-medium uppercase tracking-wide">Choisissez votre Circuit</Label>
+                      <div className="relative mt-2">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} weight="fill" />
+                        <Select value={selectedCircuitId} onValueChange={setSelectedCircuitId}>
+                          <SelectTrigger id="circuit-select" className="pl-11 h-12 bg-secondary border-border">
+                            <SelectValue placeholder="Sélectionnez un circuit..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {circuits && circuits.length > 0 ? (
+                              circuits.map((circuit) => (
+                                <SelectItem key={circuit.id} value={circuit.id}>
+                                  {circuit.name}
+                                </SelectItem>
+                              ))
+                            ) : (
+                              <SelectItem value="none" disabled>Aucun circuit disponible</SelectItem>
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {selectedCircuitId && circuits && (
+                        <div className="mt-4 p-4 bg-accent/10 border-2 border-accent/30 rounded-lg">
+                          <h4 className="text-sm font-semibold uppercase tracking-wide mb-2 text-accent">Description du Circuit</h4>
+                          <p className="text-sm text-foreground/80 leading-relaxed">
+                            {circuits.find(c => c.id === selectedCircuitId)?.description || 'Aucune description disponible'}
+                          </p>
+                          {circuits.find(c => c.id === selectedCircuitId)?.stops && circuits.find(c => c.id === selectedCircuitId)!.stops.length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-accent/20">
+                              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
+                                Étapes du circuit ({circuits.find(c => c.id === selectedCircuitId)!.stops.length})
+                              </p>
+                              <div className="space-y-1">
+                                {circuits.find(c => c.id === selectedCircuitId)!.stops.map((stop, idx) => (
+                                  <div key={stop.id} className="flex items-start gap-2 text-xs">
+                                    <span className="flex-shrink-0 w-5 h-5 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-[10px]">
+                                      {idx + 1}
+                                    </span>
+                                    <span className="text-foreground/70 flex-1">{stop.address}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-2">
                       <Label htmlFor="pickup" className="text-sm font-medium uppercase tracking-wide">Lieu de Départ</Label>
@@ -463,7 +522,7 @@ export default function BookingForm() {
                       />
                     </div>
 
-                    {(serviceType === 'transfer' || serviceType === 'tour') && (
+                    {serviceType === 'transfer' && (
                       <div className="space-y-2">
                         <Label htmlFor="destination" className="text-sm font-medium uppercase tracking-wide">Destination</Label>
                         <PlacesAutocomplete
@@ -490,20 +549,6 @@ export default function BookingForm() {
                           value={date}
                           onChange={(e) => setDate(e.target.value)}
                           min={new Date().toISOString().split('T')[0]}
-                          className="pl-11 h-12 bg-secondary border-border"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="time" className="text-sm font-medium uppercase tracking-wide">Heure</Label>
-                      <div className="relative">
-                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
-                        <Input
-                          id="time"
-                          type="time"
-                          value={time}
-                          onChange={(e) => setTime(e.target.value)}
                           className="pl-11 h-12 bg-secondary border-border"
                         />
                       </div>
@@ -986,11 +1031,17 @@ export default function BookingForm() {
                           {serviceType === 'hourly' && ` (${hourlyDuration}h)`}
                         </span>
                       </div>
+                      {serviceType === 'tour' && selectedCircuitId && circuits && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Circuit:</span>
+                          <span className="font-medium text-right">{circuits.find(c => c.id === selectedCircuitId)?.name || '-'}</span>
+                        </div>
+                      )}
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Départ:</span>
                         <span className="font-medium text-right">{pickup || '-'}</span>
                       </div>
-                      {(serviceType === 'transfer' || serviceType === 'tour') && (
+                      {serviceType === 'transfer' && (
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Destination:</span>
                           <span className="font-medium text-right">{destination || '-'}</span>
@@ -998,7 +1049,7 @@ export default function BookingForm() {
                       )}
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Date départ:</span>
-                        <span className="font-medium">{date || '-'} à {time || '-'}</span>
+                        <span className="font-medium">{date || '-'}{time && ` à ${time}`}</span>
                       </div>
                       {serviceType === 'transfer' && transferType === 'roundtrip' && returnDate && returnTime && (
                         <div className="flex justify-between">

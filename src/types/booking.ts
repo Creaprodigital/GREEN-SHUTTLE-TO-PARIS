@@ -5,10 +5,11 @@ export interface Booking {
   serviceType: 'transfer' | 'hourly' | 'tour'
   transferType?: 'oneway' | 'roundtrip'
   hourlyDuration?: string
+  circuitId?: string
   pickup: string
   destination?: string
   date: string
-  time: string
+  time?: string
   returnDate?: string
   returnTime?: string
   passengers: string
