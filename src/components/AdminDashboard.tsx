@@ -611,13 +611,13 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Tabs defaultValue="bookings" className="w-full">
           <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-7 mb-8">
-            <TabsTrigger value="bookings">Bookings</TabsTrigger>
-            <TabsTrigger value="fleet">Our Fleet</TabsTrigger>
-            <TabsTrigger value="pricing">Tarifs</TabsTrigger>
-            <TabsTrigger value="zones">Zones</TabsTrigger>
+            <TabsTrigger value="bookings">Réservations</TabsTrigger>
+            <TabsTrigger value="fleet">Véhicules</TabsTrigger>
+            <TabsTrigger value="pricing">Tarifs KM/Min/H</TabsTrigger>
+            <TabsTrigger value="zones">Forfaits Zones</TabsTrigger>
             <TabsTrigger value="options">Options</TabsTrigger>
             <TabsTrigger value="circuits">Circuits</TabsTrigger>
-            <TabsTrigger value="admins">Admin Accounts</TabsTrigger>
+            <TabsTrigger value="admins">Comptes Admin</TabsTrigger>
           </TabsList>
 
           <TabsContent value="admins" className="space-y-6">
@@ -976,10 +976,34 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
           <TabsContent value="pricing" className="space-y-6">
             <div className="mb-6">
               <h2 className="text-3xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>
-                Gestion des Tarifs
+                Gestion des Tarifs KM / Minute / Heure
               </h2>
+              <div className="bg-blue-500/10 border-l-4 border-blue-500 p-4 rounded mb-4">
+                <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                  <Info size={20} className="text-blue-500" />
+                  Quand ces tarifs sont-ils utilisés ?
+                </h3>
+                <ul className="space-y-2 text-sm text-foreground/80">
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-500 mt-0.5">•</span>
+                    <span><strong>Transfert (Aller simple / Aller-retour)</strong> : Prix calculé = (Distance × Prix/KM) + (Durée × Prix/Minute)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-500 mt-0.5">•</span>
+                    <span><strong>Mise à Disposition</strong> : Prix calculé = Nombre d'heures × Prix/Heure MAD</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-500 mt-0.5">•</span>
+                    <span><strong>Circuit Touristique</strong> : Prix de base configuré dans l'onglet "Circuits"</span>
+                  </li>
+                  <li className="flex items-start gap-2 mt-3 pt-3 border-t border-border/50">
+                    <span className="text-accent mt-0.5">⚠️</span>
+                    <span className="text-accent italic"><strong>Important</strong> : Si un forfait zone à zone est configuré (onglet "Forfaits Zones"), il sera prioritaire et ces tarifs ne seront PAS utilisés pour ce trajet.</span>
+                  </li>
+                </ul>
+              </div>
               <p className="text-foreground/70">
-                Définissez les tarifs par véhicule pour le kilométrage, le temps et les circuits touristiques
+                Ces tarifs s'appliquent automatiquement quand aucun forfait zone à zone n'est défini.
               </p>
             </div>
 
@@ -1388,10 +1412,34 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
           <TabsContent value="zones" className="space-y-6">
             <div className="mb-6">
               <h2 className="text-3xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>
-                Gestion des Zones Tarifaires
+                Gestion des Forfaits Zone à Zone
               </h2>
+              <div className="bg-accent/10 border-l-4 border-accent p-4 rounded mb-4">
+                <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                  <Info size={20} className="text-accent" />
+                  Comment fonctionnent les forfaits ?
+                </h3>
+                <ul className="space-y-2 text-sm text-foreground/80">
+                  <li className="flex items-start gap-2">
+                    <span className="text-accent mt-0.5">1.</span>
+                    <span><strong>Créez des zones géographiques</strong> sur la carte (aéroports, gares, quartiers, etc.)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-accent mt-0.5">2.</span>
+                    <span><strong>Définissez des forfaits fixes</strong> pour chaque trajet entre deux zones et par type de véhicule</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-accent mt-0.5">3.</span>
+                    <span><strong>Le forfait est appliqué automatiquement</strong> lors de la réservation si le départ ET l'arrivée sont dans des zones configurées</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-accent mt-0.5">•</span>
+                    <span className="text-muted-foreground italic">Si aucun forfait ne correspond, le calcul se fait selon les tarifs KM/Min configurés dans l'onglet "Tarifs KM/Min/H"</span>
+                  </li>
+                </ul>
+              </div>
               <p className="text-foreground/70">
-                Créez des zones géographiques et définissez des forfaits fixes pour chaque trajet zone à zone
+                Les forfaits sont prioritaires sur les calculs au kilomètre et permettent de fixer des prix précis pour vos trajets les plus fréquents.
               </p>
             </div>
             <ZonePricingManager />
