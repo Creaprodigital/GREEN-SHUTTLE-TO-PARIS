@@ -8,9 +8,10 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Slider } from '@/components/ui/slider'
-import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple, X } from '@phosphor-icons/react'
+import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple, X, CurrencyCircleDollar, Sparkle } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
+import { VehiclePricing, DEFAULT_PRICING, ServiceOption, DEFAULT_OPTIONS } from '@/types/pricing'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import Header from '@/components/Header'
@@ -65,6 +66,12 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   const [hasImageChanges, setHasImageChanges] = useState(false)
   const [newVehicleTitle, setNewVehicleTitle] = useState('')
   const [newVehicleDescription, setNewVehicleDescription] = useState('')
+
+  const [pricingData, setPricingData] = useKV<VehiclePricing[]>('pricing', DEFAULT_PRICING)
+  const [optionsData, setOptionsData] = useKV<ServiceOption[]>('service-options', DEFAULT_OPTIONS)
+  const [newOptionName, setNewOptionName] = useState('')
+  const [newOptionDescription, setNewOptionDescription] = useState('')
+  const [newOptionPrice, setNewOptionPrice] = useState('')
 
   const filteredBookings = bookings.filter(b => {
     const matchesStatus = filterStatus === 'all' || b.status === filterStatus
@@ -261,6 +268,73 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     }
   }
 
+  const handleUpdatePricing = (vehicleId: string, field: keyof VehiclePricing, value: number) => {
+    setPricingData((current) => {
+      const data = Array.isArray(current) ? current : DEFAULT_PRICING
+      const existingIndex = data.findIndex(p => p.vehicleId === vehicleId)
+      
+      if (existingIndex >= 0) {
+        return data.map((pricing, idx) =>
+          idx === existingIndex ? { ...pricing, [field]: value } : pricing
+        )
+      } else {
+        return [...data, {
+          vehicleId,
+          pricePerKm: field === 'pricePerKm' ? value : 0,
+          pricePerMinute: field === 'pricePerMinute' ? value : 0,
+          pricePerHour: field === 'pricePerHour' ? value : 0,
+          tourBasePrice: field === 'tourBasePrice' ? value : 0
+        }]
+      }
+    })
+    toast.success('Tarif mis à jour')
+  }
+
+  const handleAddOption = () => {
+    if (!newOptionName || !newOptionDescription) {
+      toast.error('Veuillez remplir le nom et la description')
+      return
+    }
+
+    const price = parseFloat(newOptionPrice) || 0
+
+    setOptionsData((current) => [
+      ...(current || []),
+      {
+        id: `option-${Date.now()}`,
+        name: newOptionName,
+        description: newOptionDescription,
+        price
+      }
+    ])
+
+    setNewOptionName('')
+    setNewOptionDescription('')
+    setNewOptionPrice('')
+    toast.success('Option ajoutée avec succès')
+  }
+
+  const handleUpdateOption = (id: string, updates: Partial<ServiceOption>) => {
+    setOptionsData((current) => {
+      const data = Array.isArray(current) ? current : DEFAULT_OPTIONS
+      return data.map((option) =>
+        option.id === id ? { ...option, ...updates } : option
+      )
+    })
+    toast.success('Option mise à jour')
+  }
+
+  const handleDeleteOption = (id: string) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette option?')) {
+      setOptionsData((current) => {
+        const data = Array.isArray(current) ? current : DEFAULT_OPTIONS
+        return data.filter((option) => option.id !== id)
+      })
+      toast.success('Option supprimée')
+    }
+  }
+
+
   return (
     <>
       <Header 
@@ -453,9 +527,11 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Tabs defaultValue="bookings" className="w-full">
-          <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-3 mb-8">
+          <TabsList className="grid w-full max-w-5xl mx-auto grid-cols-5 mb-8">
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
             <TabsTrigger value="fleet">Our Fleet</TabsTrigger>
+            <TabsTrigger value="pricing">Tarifs</TabsTrigger>
+            <TabsTrigger value="options">Options</TabsTrigger>
             <TabsTrigger value="admins">Admin Accounts</TabsTrigger>
           </TabsList>
 
@@ -809,6 +885,246 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                     </motion.div>
                   )
                 })}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="pricing" className="space-y-6">
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+                Gestion des Tarifs
+              </h2>
+              <p className="text-foreground/70">
+                Définissez les tarifs par véhicule pour le kilométrage, le temps et les circuits touristiques
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {(Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET)
+                .sort((a, b) => a.order - b.order)
+                .map((vehicle, index) => {
+                  const pricing = (Array.isArray(pricingData) ? pricingData : DEFAULT_PRICING)
+                    .find(p => p.vehicleId === vehicle.id) || {
+                      vehicleId: vehicle.id,
+                      pricePerKm: 0,
+                      pricePerMinute: 0,
+                      pricePerHour: 0,
+                      tourBasePrice: 0
+                    }
+
+                  return (
+                    <motion.div
+                      key={vehicle.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                    >
+                      <Card className="border-2 border-accent/20">
+                        <CardHeader className="border-b border-border">
+                          <CardTitle className="text-xl font-semibold uppercase tracking-wide flex items-center gap-2">
+                            <CurrencyCircleDollar size={24} className="text-accent" />
+                            {vehicle.title}
+                          </CardTitle>
+                          <CardDescription>Définissez les tarifs pour ce véhicule</CardDescription>
+                        </CardHeader>
+                        <CardContent className="pt-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div className="space-y-2">
+                              <Label htmlFor={`price-km-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
+                                Prix par KM (€)
+                              </Label>
+                              <Input
+                                id={`price-km-${vehicle.id}`}
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                value={pricing.pricePerKm}
+                                onChange={(e) => handleUpdatePricing(vehicle.id, 'pricePerKm', parseFloat(e.target.value) || 0)}
+                                className="h-12 bg-secondary border-border"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor={`price-minute-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
+                                Prix par Minute (€)
+                              </Label>
+                              <Input
+                                id={`price-minute-${vehicle.id}`}
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                value={pricing.pricePerMinute}
+                                onChange={(e) => handleUpdatePricing(vehicle.id, 'pricePerMinute', parseFloat(e.target.value) || 0)}
+                                className="h-12 bg-secondary border-border"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor={`price-hour-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
+                                Prix par Heure (€)
+                              </Label>
+                              <Input
+                                id={`price-hour-${vehicle.id}`}
+                                type="number"
+                                step="1"
+                                min="0"
+                                value={pricing.pricePerHour}
+                                onChange={(e) => handleUpdatePricing(vehicle.id, 'pricePerHour', parseFloat(e.target.value) || 0)}
+                                className="h-12 bg-secondary border-border"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor={`price-tour-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
+                                Prix Base Circuit (€)
+                              </Label>
+                              <Input
+                                id={`price-tour-${vehicle.id}`}
+                                type="number"
+                                step="1"
+                                min="0"
+                                value={pricing.tourBasePrice}
+                                onChange={(e) => handleUpdatePricing(vehicle.id, 'tourBasePrice', parseFloat(e.target.value) || 0)}
+                                className="h-12 bg-secondary border-border"
+                              />
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )
+                })}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="options" className="space-y-6">
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+                Gestion des Options
+              </h2>
+              <p className="text-foreground/70">
+                Gérez les options supplémentaires disponibles lors de la réservation
+              </p>
+            </div>
+
+            <Card className="border-2 border-accent/20 mb-6">
+              <CardHeader className="border-b border-border">
+                <CardTitle className="text-xl font-semibold uppercase tracking-wide flex items-center gap-2">
+                  <Plus size={24} className="text-accent" />
+                  Ajouter une Nouvelle Option
+                </CardTitle>
+                <CardDescription>Créez une nouvelle option pour les clients</CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="grid md:grid-cols-3 gap-4 mb-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="new-option-name" className="text-sm font-medium uppercase tracking-wide">
+                      Nom de l'option
+                    </Label>
+                    <Input
+                      id="new-option-name"
+                      value={newOptionName}
+                      onChange={(e) => setNewOptionName(e.target.value)}
+                      placeholder="ex: Siège Enfant"
+                      className="h-12 bg-secondary border-border"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="new-option-description" className="text-sm font-medium uppercase tracking-wide">
+                      Description
+                    </Label>
+                    <Input
+                      id="new-option-description"
+                      value={newOptionDescription}
+                      onChange={(e) => setNewOptionDescription(e.target.value)}
+                      placeholder="Description de l'option"
+                      className="h-12 bg-secondary border-border"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="new-option-price" className="text-sm font-medium uppercase tracking-wide">
+                      Prix (€)
+                    </Label>
+                    <Input
+                      id="new-option-price"
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      value={newOptionPrice}
+                      onChange={(e) => setNewOptionPrice(e.target.value)}
+                      placeholder="0.00"
+                      className="h-12 bg-secondary border-border"
+                    />
+                  </div>
+                </div>
+                <Button
+                  onClick={handleAddOption}
+                  className="w-full md:w-auto h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+                >
+                  <Plus className="mr-2" size={20} />
+                  Ajouter l'Option
+                </Button>
+              </CardContent>
+            </Card>
+
+            <div className="space-y-4">
+              {(Array.isArray(optionsData) ? optionsData : DEFAULT_OPTIONS).map((option, index) => (
+                <motion.div
+                  key={option.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                >
+                  <Card className="border-2 border-accent/20">
+                    <CardContent className="py-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                              Nom
+                            </Label>
+                            <Input
+                              value={option.name}
+                              onChange={(e) => handleUpdateOption(option.id, { name: e.target.value })}
+                              className="h-10 bg-secondary border-border"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                              Description
+                            </Label>
+                            <Input
+                              value={option.description}
+                              onChange={(e) => handleUpdateOption(option.id, { description: e.target.value })}
+                              className="h-10 bg-secondary border-border"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                              Prix (€)
+                            </Label>
+                            <Input
+                              type="number"
+                              step="0.5"
+                              min="0"
+                              value={option.price}
+                              onChange={(e) => handleUpdateOption(option.id, { price: parseFloat(e.target.value) || 0 })}
+                              className="h-10 bg-secondary border-border"
+                            />
+                          </div>
+                        </div>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => handleDeleteOption(option.id)}
+                          className="ml-4 text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                        >
+                          <Trash size={20} />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
             </div>
           </TabsContent>
 

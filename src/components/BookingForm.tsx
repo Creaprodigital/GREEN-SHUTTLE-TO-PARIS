@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Checkbox } from '@/components/ui/checkbox'
 import { MapPin, Calendar, Clock, Users, ArrowRight, ArrowLeft, User, Phone, EnvelopeSimple, CreditCard, Money, Bank, Check, Suitcase } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -14,10 +15,12 @@ import { useKV } from '@github/spark/hooks'
 import PlacesAutocomplete from '@/components/PlacesAutocomplete'
 import { Booking } from '@/types/booking'
 import { VehicleClass } from '@/types/fleet'
+import { ServiceOption } from '@/types/pricing'
 
 export default function BookingForm() {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
   const [fleet] = useKV<VehicleClass[]>('fleet', [])
+  const [serviceOptions] = useKV<ServiceOption[]>('service-options', [])
   const [currentStep, setCurrentStep] = useState(1)
   
   const [serviceType, setServiceType] = useState<'transfer' | 'hourly' | 'tour'>('transfer')
@@ -33,6 +36,7 @@ export default function BookingForm() {
   const [luggage, setLuggage] = useState('0')
   
   const [vehicleType, setVehicleType] = useState('')
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
   
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -108,6 +112,7 @@ export default function BookingForm() {
       passengers,
       luggage: serviceType === 'transfer' ? luggage : undefined,
       vehicleType,
+      selectedOptions: selectedOptions.length > 0 ? selectedOptions : undefined,
       firstName,
       lastName,
       phone,
@@ -137,6 +142,7 @@ export default function BookingForm() {
     setPassengers('1')
     setLuggage('0')
     setVehicleType('')
+    setSelectedOptions([])
     setFirstName('')
     setLastName('')
     setPhone('')
@@ -458,6 +464,40 @@ export default function BookingForm() {
                       </div>
                     </RadioGroup>
                   </div>
+
+                  {serviceOptions && serviceOptions.length > 0 && (
+                    <div className="space-y-4 pt-6 border-t border-border">
+                      <Label className="text-sm font-medium uppercase tracking-wide">Options Supplémentaires</Label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {serviceOptions.map((option) => (
+                          <div key={option.id} className="flex items-start space-x-3 p-4 border-2 border-border rounded-lg hover:border-accent/50 transition-colors">
+                            <Checkbox
+                              id={option.id}
+                              checked={selectedOptions.includes(option.id)}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  setSelectedOptions([...selectedOptions, option.id])
+                                } else {
+                                  setSelectedOptions(selectedOptions.filter(id => id !== option.id))
+                                }
+                              }}
+                              className="mt-1"
+                            />
+                            <div className="flex-1 cursor-pointer" onClick={() => {
+                              const checkbox = document.getElementById(option.id) as HTMLButtonElement
+                              if (checkbox) checkbox.click()
+                            }}>
+                              <Label htmlFor={option.id} className="font-semibold text-sm cursor-pointer">
+                                {option.name}
+                                {option.price > 0 && <span className="text-accent ml-2">+{option.price}€</span>}
+                              </Label>
+                              <p className="text-xs text-muted-foreground mt-1">{option.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="flex justify-between pt-4">
                     <Button type="button" onClick={handleBack} variant="outline" className="h-12 px-8 text-base font-medium uppercase tracking-widest">

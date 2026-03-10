@@ -14,6 +14,7 @@ export interface Booking {
   passengers: string
   luggage?: string
   vehicleType: string
+  selectedOptions?: string[]
   firstName: string
   lastName: string
   phone: string
