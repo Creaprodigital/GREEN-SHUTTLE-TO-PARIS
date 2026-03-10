@@ -6,10 +6,11 @@ import ClientDashboard from '@/components/ClientDashboard'
 import AdminDashboard from '@/components/AdminDashboard'
 import AirportTransfer from '@/components/AirportTransfer'
 import CorporateEvent from '@/components/CorporateEvent'
+import EmbassyDelegation from '@/components/EmbassyDelegation'
 import { useKV } from '@github/spark/hooks'
 import { Booking } from '@/types/booking'
 
-type View = 'home' | 'login' | 'client' | 'admin' | 'airport-transfer' | 'corporate-event'
+type View = 'home' | 'login' | 'client' | 'admin' | 'airport-transfer' | 'corporate-event' | 'embassy-delegation'
 
 function App() {
   const [view, setView] = useState<View>('home')
@@ -60,8 +61,9 @@ function App() {
         />
       )}
       {view === 'login' && <Login onLogin={handleLogin} onNavigateToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} onNavigateToCorporateEvent={() => setView('corporate-event')} isAdminMode={isAdminMode} />}
-      {view === 'airport-transfer' && <AirportTransfer onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} onNavigateToCorporateEvent={() => setView('corporate-event')} />}
-      {view === 'corporate-event' && <CorporateEvent onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} onNavigateToCorporateEvent={() => setView('corporate-event')} />}
+      {view === 'airport-transfer' && <AirportTransfer onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} onNavigateToCorporateEvent={() => setView('corporate-event')} onNavigateToEmbassyDelegation={() => setView('embassy-delegation')} />}
+      {view === 'corporate-event' && <CorporateEvent onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} onNavigateToCorporateEvent={() => setView('corporate-event')} onNavigateToEmbassyDelegation={() => setView('embassy-delegation')} />}
+      {view === 'embassy-delegation' && <EmbassyDelegation onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} onNavigateToCorporateEvent={() => setView('corporate-event')} onNavigateToEmbassyDelegation={() => setView('embassy-delegation')} />}
       {view === 'client' && currentUser && (
         <ClientDashboard
           userEmail={currentUser.email}

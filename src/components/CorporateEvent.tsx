@@ -7,9 +7,10 @@ interface CorporateEventProps {
   onBackToHome?: () => void
   onNavigateToAirportTransfer?: () => void
   onNavigateToCorporateEvent?: () => void
+  onNavigateToEmbassyDelegation?: () => void
 }
 
-export default function CorporateEvent({ onBackToHome, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: CorporateEventProps) {
+export default function CorporateEvent({ onBackToHome, onNavigateToAirportTransfer, onNavigateToCorporateEvent, onNavigateToEmbassyDelegation }: CorporateEventProps) {
   const benefits = [
     "Organisation complète de vos déplacements professionnels",
     "Véhicules haut de gamme pour vos événements d'entreprise",
@@ -24,6 +25,8 @@ export default function CorporateEvent({ onBackToHome, onNavigateToAirportTransf
       <Header 
         onNavigateToHome={onBackToHome}
         onNavigateToAirportTransfer={onNavigateToAirportTransfer}
+        onNavigateToCorporateEvent={onNavigateToCorporateEvent}
+        onNavigateToEmbassyDelegation={onNavigateToEmbassyDelegation}
       />
       <div className="min-h-screen bg-background">
         <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden mt-20">
