@@ -70,7 +70,7 @@ export default function EmbassyDelegation({ onBackToHome, onNavigateToAirportTra
             
             <div className="space-y-6 text-foreground/80 leading-relaxed">
               <p>
-                Haimouri International vous propose un service de transport premium spécialement conçu pour les ambassades, 
+                Green Shuttle To Paris vous propose un service de transport premium spécialement conçu pour les ambassades, 
                 consulats et délégations officielles. Nous comprenons les exigences uniques du monde diplomatique et nous 
                 nous engageons à offrir un service irréprochable qui respecte le protocole international et garantit la 
                 sécurité de vos délégations.

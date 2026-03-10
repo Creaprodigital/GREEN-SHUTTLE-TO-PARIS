@@ -70,7 +70,7 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
             
             <div className="space-y-6 text-foreground/80 leading-relaxed">
               <p>
-                Haimouri International vous propose un service de transfert en toute tranquillité vers les aéroports/gares et vers destination. 
+                Green Shuttle To Paris vous propose un service de transfert en toute tranquillité vers les aéroports/gares et vers destination. 
                 Nous réglons et ne rendre votre expérience de voyage aussi agréable et facile que possible. En tant que spécialiste du transfert haut de gamme, 
                 Nous répondons à tous vos besoins personnalisés. 7J sur 7, 24h/24, et nous sommes en mesure de vous offrir un service premium 
                 avec rapidité et efficacité personnalisées.
@@ -274,7 +274,7 @@ export default function AirportTransfer({ onBackToHome, onNavigateToAirportTrans
               
               <p className="text-foreground/80 leading-relaxed">
                 Nos chauffeurs possèdent plusieurs dizaines de véhicules soient votre transport selon les spécificités de votre besoin. 
-                Luxueuses, Berlines ou configurations tout pouvais des véhicules royales pour ainsi votre trajet haut niveau d'élégance International.
+                Luxueuses, Berlines ou configurations tout pouvais des véhicules royales pour ainsi votre trajet haut niveau d'élégance.
               </p>
             </motion.div>
 

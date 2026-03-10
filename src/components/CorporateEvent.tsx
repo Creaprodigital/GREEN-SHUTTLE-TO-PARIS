@@ -70,7 +70,7 @@ export default function CorporateEvent({ onBackToHome, onNavigateToAirportTransf
             
             <div className="space-y-6 text-foreground/80 leading-relaxed">
               <p>
-                Haimouri International vous propose un service de transport corporate et événementiel haut de gamme adapté 
+                Green Shuttle To Paris vous propose un service de transport corporate et événementiel haut de gamme adapté 
                 à tous vos besoins professionnels. Que ce soit pour des réunions d'affaires, des séminaires, des conférences 
                 ou des événements d'entreprise, nous mettons à votre disposition notre expertise et notre flotte de véhicules 
                 premium pour garantir le succès de vos déplacements.
