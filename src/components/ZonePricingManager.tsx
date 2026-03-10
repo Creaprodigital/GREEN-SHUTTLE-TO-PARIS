@@ -66,15 +66,26 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
 
     mapInstanceRef.current = map
 
-    map.addListener('click', (e: google.maps.MapMouseEvent) => {
+    return () => {
+      polygonsRef.current.forEach(p => p.setMap(null))
+      markersRef.current.forEach(m => m.setMap(null))
+      if (drawingPolygonRef.current) {
+        drawingPolygonRef.current.setMap(null)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!mapInstanceRef.current) return
+
+    const clickListener = mapInstanceRef.current.addListener('click', (e: google.maps.MapMouseEvent) => {
       if (!isCreatingZone || !e.latLng) return
       
       const newPoint = { lat: e.latLng.lat(), lng: e.latLng.lng() }
-      setDrawingPoints(prev => [...prev, newPoint])
       
       const marker = new google.maps.Marker({
         position: newPoint,
-        map: map,
+        map: mapInstanceRef.current,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: 6,
@@ -86,32 +97,33 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
       })
       markersRef.current.push(marker)
 
-      if (drawingPolygonRef.current) {
-        drawingPolygonRef.current.setMap(null)
-      }
+      setDrawingPoints(prev => {
+        const updatedPoints = [...prev, newPoint]
+        
+        if (drawingPolygonRef.current) {
+          drawingPolygonRef.current.setMap(null)
+        }
 
-      const updatedPoints = [...drawingPoints, newPoint]
-      if (updatedPoints.length >= 3) {
-        drawingPolygonRef.current = new google.maps.Polygon({
-          paths: updatedPoints,
-          strokeColor: newZoneColor,
-          strokeOpacity: 0.8,
-          strokeWeight: 2,
-          fillColor: newZoneColor,
-          fillOpacity: 0.35,
-          map: map,
-        })
-      }
+        if (updatedPoints.length >= 3) {
+          drawingPolygonRef.current = new google.maps.Polygon({
+            paths: updatedPoints,
+            strokeColor: newZoneColor,
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: newZoneColor,
+            fillOpacity: 0.35,
+            map: mapInstanceRef.current,
+          })
+        }
+
+        return updatedPoints
+      })
     })
 
     return () => {
-      polygonsRef.current.forEach(p => p.setMap(null))
-      markersRef.current.forEach(m => m.setMap(null))
-      if (drawingPolygonRef.current) {
-        drawingPolygonRef.current.setMap(null)
-      }
+      google.maps.event.removeListener(clickListener)
     }
-  }, [isCreatingZone, newZoneColor, drawingPoints])
+  }, [isCreatingZone, newZoneColor])
 
   useEffect(() => {
     if (!mapInstanceRef.current) return
