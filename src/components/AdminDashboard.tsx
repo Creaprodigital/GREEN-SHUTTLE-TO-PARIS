@@ -1028,15 +1028,15 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                         </CardHeader>
                         <CardContent className="pt-6">
                           <TooltipProvider>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <Label htmlFor={`price-km-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
+                            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                              <div className="space-y-2 flex flex-col">
+                                <div className="flex items-center gap-2 min-h-[48px]">
+                                  <Label htmlFor={`price-km-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide leading-tight">
                                     Prix par KM (€)
                                   </Label>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
-                                      <Info size={16} className="text-muted-foreground cursor-help" />
+                                      <Info size={16} className="text-muted-foreground cursor-help flex-shrink-0" />
                                     </TooltipTrigger>
                                     <TooltipContent className="max-w-xs">
                                       <p className="font-semibold mb-1">Prix par Kilomètre</p>
@@ -1059,14 +1059,14 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                 />
                               </div>
 
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <Label htmlFor={`price-minute-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
+                              <div className="space-y-2 flex flex-col">
+                                <div className="flex items-center gap-2 min-h-[48px]">
+                                  <Label htmlFor={`price-minute-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide leading-tight">
                                     Prix par Minute (€)
                                   </Label>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
-                                      <Info size={16} className="text-muted-foreground cursor-help" />
+                                      <Info size={16} className="text-muted-foreground cursor-help flex-shrink-0" />
                                     </TooltipTrigger>
                                     <TooltipContent className="max-w-xs">
                                       <p className="font-semibold mb-1">Prix par Minute</p>
@@ -1089,14 +1089,14 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                 />
                               </div>
 
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <Label htmlFor={`minimum-transfer-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
+                              <div className="space-y-2 flex flex-col">
+                                <div className="flex items-center gap-2 min-h-[48px]">
+                                  <Label htmlFor={`minimum-transfer-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide leading-tight">
                                     Prix Min. Transfert (€)
                                   </Label>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
-                                      <Info size={16} className="text-muted-foreground cursor-help" />
+                                      <Info size={16} className="text-muted-foreground cursor-help flex-shrink-0" />
                                     </TooltipTrigger>
                                     <TooltipContent className="max-w-xs">
                                       <p className="font-semibold mb-1">Prix Minimum pour Transferts</p>
@@ -1119,14 +1119,14 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                 />
                               </div>
 
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <Label htmlFor={`price-hour-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
+                              <div className="space-y-2 flex flex-col">
+                                <div className="flex items-center gap-2 min-h-[48px]">
+                                  <Label htmlFor={`price-hour-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide leading-tight">
                                     Prix/Heure - MAD (€)
                                   </Label>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
-                                      <Info size={16} className="text-muted-foreground cursor-help" />
+                                      <Info size={16} className="text-muted-foreground cursor-help flex-shrink-0" />
                                     </TooltipTrigger>
                                     <TooltipContent className="max-w-xs">
                                       <p className="font-semibold mb-1">Prix par Heure - Mise à Disposition</p>
@@ -1149,14 +1149,14 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                 />
                               </div>
 
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <Label htmlFor={`price-tour-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
+                              <div className="space-y-2 flex flex-col">
+                                <div className="flex items-center gap-2 min-h-[48px]">
+                                  <Label htmlFor={`price-tour-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide leading-tight">
                                     Prix Base Circuit (€)
                                   </Label>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
-                                      <Info size={16} className="text-muted-foreground cursor-help" />
+                                      <Info size={16} className="text-muted-foreground cursor-help flex-shrink-0" />
                                     </TooltipTrigger>
                                     <TooltipContent className="max-w-xs">
                                       <p className="font-semibold mb-1">Prix Circuit Touristique</p>
