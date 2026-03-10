@@ -4,11 +4,14 @@ import { Button } from '@/components/ui/button'
 import { SignOut, Car, MapPin, Calendar, Clock, User as UserIcon } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { motion } from 'framer-motion'
+import Header from '@/components/Header'
 
 interface ClientDashboardProps {
   userEmail: string
   bookings: Booking[]
   onLogout: () => void
+  onNavigateToHome: () => void
+  onNavigateToAirportTransfer: () => void
 }
 
 const statusColors = {
@@ -24,11 +27,16 @@ const serviceLabels = {
   suv: 'Premium SUV'
 }
 
-export default function ClientDashboard({ userEmail, bookings, onLogout }: ClientDashboardProps) {
+export default function ClientDashboard({ userEmail, bookings, onLogout, onNavigateToHome, onNavigateToAirportTransfer }: ClientDashboardProps) {
   const userBookings = bookings.filter(b => b.userEmail === userEmail)
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <Header 
+        onNavigateToHome={onNavigateToHome}
+        onNavigateToAirportTransfer={onNavigateToAirportTransfer}
+      />
+      <div className="min-h-screen bg-background pt-20">
       <header className="border-b-2 border-accent bg-primary sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -149,6 +157,7 @@ export default function ClientDashboard({ userEmail, bookings, onLogout }: Clien
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   )
 }

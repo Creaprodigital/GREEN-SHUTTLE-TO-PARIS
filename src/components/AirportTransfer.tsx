@@ -1,12 +1,14 @@
 import { Button } from '@/components/ui/button'
-import { CheckCircle, ArrowLeft } from '@phosphor-icons/react'
+import { CheckCircle } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
+import Header from '@/components/Header'
 
 interface AirportTransferProps {
   onBackToHome?: () => void
+  onNavigateToAirportTransfer?: () => void
 }
 
-export default function AirportTransfer({ onBackToHome }: AirportTransferProps) {
+export default function AirportTransfer({ onBackToHome, onNavigateToAirportTransfer }: AirportTransferProps) {
   const benefits = [
     "Votre accueil dès votre arrivée à l'aéroport",
     "Votre relève à n'importe quel bagage",
@@ -17,40 +19,13 @@ export default function AirportTransfer({ onBackToHome }: AirportTransferProps) 
   ]
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-primary/95 backdrop-blur-sm border-b border-accent/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center gap-4">
-              <Button
-                onClick={onBackToHome}
-                variant="ghost"
-                size="icon"
-                className="text-foreground hover:text-accent"
-              >
-                <ArrowLeft size={24} />
-              </Button>
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center">
-                  <span className="text-2xl font-bold text-accent-foreground" style={{ fontFamily: 'var(--font-display)' }}>
-                    G
-                  </span>
-                </div>
-                <div className="hidden sm:block">
-                  <div className="text-foreground font-bold text-xl leading-tight" style={{ fontFamily: 'var(--font-display)' }}>
-                    Green Shuttle
-                  </div>
-                  <div className="text-accent text-xs uppercase tracking-wider font-medium">
-                    To Paris
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden mt-20">
+    <>
+      <Header 
+        onNavigateToHome={onBackToHome}
+        onNavigateToAirportTransfer={onNavigateToAirportTransfer}
+      />
+      <div className="min-h-screen bg-background">
+        <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden mt-20">
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80">
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?q=80&w=2070')] bg-cover bg-center opacity-40 mix-blend-overlay" />
         </div>
@@ -317,6 +292,7 @@ export default function AirportTransfer({ onBackToHome }: AirportTransferProps) 
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   )
 }

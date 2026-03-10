@@ -4,11 +4,12 @@ import { User, List, X, CaretDown } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface HeaderProps {
-  onNavigateToLogin: () => void
+  onNavigateToLogin?: () => void
   onNavigateToAirportTransfer?: () => void
+  onNavigateToHome?: () => void
 }
 
-export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer }: HeaderProps) {
+export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer, onNavigateToHome }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false)
 
@@ -22,10 +23,17 @@ export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer 
   const scrollToSection = (href: string) => {
     setMobileMenuOpen(false)
     setServicesDropdownOpen(false)
-    const element = document.querySelector(href)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
+    
+    if (onNavigateToHome) {
+      onNavigateToHome()
     }
+    
+    setTimeout(() => {
+      const element = document.querySelector(href)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
+      }
+    }, 100)
   }
 
   return (
@@ -183,7 +191,9 @@ export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer 
               <Button
                 onClick={() => {
                   setMobileMenuOpen(false)
-                  onNavigateToLogin()
+                  if (onNavigateToLogin) {
+                    onNavigateToLogin()
+                  }
                 }}
                 variant="outline"
                 className="w-full border-accent text-foreground hover:bg-accent hover:text-accent-foreground sm:hidden"

@@ -9,6 +9,7 @@ import { SignOut, Car, MapPin, Calendar, Clock, User as UserIcon, CheckCircle, X
 import { Booking } from '@/types/booking'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
+import Header from '@/components/Header'
 
 interface AdminDashboardProps {
   userEmail: string
@@ -16,6 +17,8 @@ interface AdminDashboardProps {
   onLogout: () => void
   onUpdateBooking: (id: string, updates: Partial<Booking>) => void
   onDeleteBooking: (id: string) => void
+  onNavigateToHome: () => void
+  onNavigateToAirportTransfer: () => void
 }
 
 const statusColors = {
@@ -31,7 +34,7 @@ const serviceLabels = {
   suv: 'Premium SUV'
 }
 
-export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdateBooking, onDeleteBooking }: AdminDashboardProps) {
+export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdateBooking, onDeleteBooking, onNavigateToHome, onNavigateToAirportTransfer }: AdminDashboardProps) {
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -73,7 +76,12 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <Header 
+        onNavigateToHome={onNavigateToHome}
+        onNavigateToAirportTransfer={onNavigateToAirportTransfer}
+      />
+      <div className="min-h-screen bg-background pt-20">
       <header className="border-b-2 border-accent bg-primary sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -291,6 +299,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   )
 }

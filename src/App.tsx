@@ -46,13 +46,15 @@ function App() {
           onNavigateToAirportTransfer={() => setView('airport-transfer')}
         />
       )}
-      {view === 'login' && <Login onLogin={handleLogin} />}
-      {view === 'airport-transfer' && <AirportTransfer onBackToHome={() => setView('home')} />}
+      {view === 'login' && <Login onLogin={handleLogin} onNavigateToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} />}
+      {view === 'airport-transfer' && <AirportTransfer onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} />}
       {view === 'client' && currentUser && (
         <ClientDashboard
           userEmail={currentUser.email}
           bookings={bookings || []}
           onLogout={handleLogout}
+          onNavigateToHome={() => setView('home')}
+          onNavigateToAirportTransfer={() => setView('airport-transfer')}
         />
       )}
       {view === 'admin' && currentUser && (
@@ -62,6 +64,8 @@ function App() {
           onLogout={handleLogout}
           onUpdateBooking={handleUpdateBooking}
           onDeleteBooking={handleDeleteBooking}
+          onNavigateToHome={() => setView('home')}
+          onNavigateToAirportTransfer={() => setView('airport-transfer')}
         />
       )}
     </div>
