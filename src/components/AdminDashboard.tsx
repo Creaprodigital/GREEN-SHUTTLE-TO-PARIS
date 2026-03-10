@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Label } from '@/components/ui/label'
-import { Car, MapPin, Calendar, Clock, User as UserIcon, CheckCircle, XCircle, Trash, Image as ImageIcon, ShieldCheck, Plus, Key } from '@phosphor-icons/react'
+import { Car, MapPin, Calendar, Clock, User as UserIcon, CheckCircle, XCircle, Trash, Image as ImageIcon, ShieldCheck, Plus, Key, Upload } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
@@ -102,6 +102,32 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
       [vehicleType]: imageUrl
     }))
     toast.success(`Image updated for ${vehicleType}`)
+  }
+
+  const handleImageUpload = (vehicleType: string, file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select a valid image file')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size must be less than 5MB')
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const base64String = e.target?.result as string
+      setVehicleImages((current) => ({
+        ...current,
+        [vehicleType]: base64String
+      }))
+      toast.success(`Image uploaded for ${vehicleType}`)
+    }
+    reader.onerror = () => {
+      toast.error('Failed to upload image')
+    }
+    reader.readAsDataURL(file)
   }
 
   const handleAddAdmin = () => {
@@ -220,25 +246,62 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                         <div className="space-y-4">
                           <div>
                             <label className="text-sm font-medium uppercase tracking-wide mb-2 block">
+                              Upload Image File
+                            </label>
+                            <div className="flex gap-2">
+                              <input
+                                type="file"
+                                id={`file-${vehicle.id}`}
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0]
+                                  if (file) {
+                                    handleImageUpload(vehicle.id, file)
+                                  }
+                                }}
+                              />
+                              <Button
+                                onClick={() => document.getElementById(`file-${vehicle.id}`)?.click()}
+                                className="flex-1 h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+                              >
+                                <Upload className="mr-2" size={20} />
+                                Choose Image
+                              </Button>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-2">
+                              Maximum 5MB • JPG, PNG, WebP, GIF
+                            </p>
+                          </div>
+                          
+                          <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                              <div className="w-full border-t border-border"></div>
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                              <span className="bg-card px-2 text-muted-foreground">Or</span>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="text-sm font-medium uppercase tracking-wide mb-2 block">
                               Image URL
                             </label>
                             <Input
-                              id={`vehicle-${vehicle.id}`}
+                              id={`vehicle-url-${vehicle.id}`}
                               type="url"
                               defaultValue={vehicleImages?.[vehicle.id] || ''}
                               onBlur={(e) => {
-                                if (e.target.value.trim()) {
+                                if (e.target.value.trim() && !e.target.value.startsWith('data:')) {
                                   handleImageUpdate(vehicle.id, e.target.value.trim())
                                 }
                               }}
                               placeholder="https://example.com/image.jpg"
                               className="h-12 bg-secondary border-border"
                             />
-                          </div>
-                          <div className="text-sm text-muted-foreground space-y-1">
-                            <p>• Use a direct image URL (jpg, png, webp)</p>
-                            <p>• Recommended: transparent background</p>
-                            <p>• Optimal size: 800x600px or similar</p>
+                            <p className="text-xs text-muted-foreground mt-2">
+                              Enter a direct image URL
+                            </p>
                           </div>
                         </div>
                       </div>
