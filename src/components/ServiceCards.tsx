@@ -32,14 +32,15 @@ const services = [
 
 export default function ServiceCards() {
   return (
-    <section className="py-16 lg:py-24 bg-secondary/30">
+    <section className="py-16 lg:py-24 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-            Choose Your Experience
+          <h2 className="text-3xl lg:text-5xl font-bold mb-4 text-foreground" style={{ fontFamily: 'var(--font-display)' }}>
+            Our Fleet
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            From business essentials to first-class luxury, we offer the perfect ride for every occasion
+          <div className="w-24 h-0.5 bg-accent mx-auto mb-6" />
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-light">
+            Select from our premium collection of luxury vehicles tailored to your requirements
           </p>
         </div>
 
@@ -54,25 +55,27 @@ export default function ServiceCards() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group">
+                <Card className="h-full hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group border-2 border-border bg-card">
                   {service.popular && (
-                    <div className="absolute top-4 right-4">
-                      <Badge className="bg-accent text-accent-foreground">Most Popular</Badge>
+                    <div className="absolute top-0 right-0 bg-accent text-accent-foreground px-6 py-2">
+                      <span className="text-xs uppercase tracking-widest font-medium">Premium Choice</span>
                     </div>
                   )}
-                  <CardHeader className="pb-4">
-                    <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
-                      <Icon size={28} className="text-primary group-hover:text-accent transition-colors" weight="duotone" />
+                  <CardHeader className="pb-4 pt-8">
+                    <div className="w-16 h-16 border-2 border-accent flex items-center justify-center mb-4 group-hover:bg-accent/10 transition-colors">
+                      <Icon size={32} className="text-accent" weight="duotone" />
                     </div>
-                    <CardTitle className="text-2xl">{service.name}</CardTitle>
-                    <CardDescription className="text-base">{service.description}</CardDescription>
+                    <CardTitle className="text-2xl uppercase tracking-wide" style={{ fontFamily: 'var(--font-body)' }}>
+                      {service.name}
+                    </CardTitle>
+                    <CardDescription className="text-base font-light">{service.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-3">
                       {service.features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm">
-                          <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0" />
-                          <span>{feature}</span>
+                        <li key={i} className="flex items-start gap-3 text-sm">
+                          <div className="w-1 h-1 bg-accent mt-2 flex-shrink-0" />
+                          <span className="font-light">{feature}</span>
                         </li>
                       ))}
                     </ul>

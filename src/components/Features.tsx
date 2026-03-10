@@ -26,14 +26,15 @@ const features = [
 
 export default function Features() {
   return (
-    <section className="py-16 lg:py-24">
+    <section className="py-16 lg:py-24 bg-secondary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-            Why Choose LuxeRide
+          <h2 className="text-3xl lg:text-5xl font-bold mb-4 text-foreground" style={{ fontFamily: 'var(--font-display)' }}>
+            Excellence in Every Detail
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Experience the difference of a truly premium chauffeur service
+          <div className="w-24 h-0.5 bg-accent mx-auto mb-6" />
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-light">
+            Uncompromising standards that define our service
           </p>
         </div>
 
@@ -47,13 +48,15 @@ export default function Features() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="text-center"
+                className="text-center group"
               >
-                <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mb-4 mx-auto">
+                <div className="w-16 h-16 border-2 border-accent flex items-center justify-center mb-4 mx-auto group-hover:bg-accent/10 transition-colors">
                   <Icon size={32} className="text-accent" weight="duotone" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
+                <h3 className="text-xl font-medium mb-2 uppercase tracking-wide" style={{ fontFamily: 'var(--font-body)' }}>
+                  {feature.title}
+                </h3>
+                <p className="text-muted-foreground font-light text-sm">{feature.description}</p>
               </motion.div>
             )
           })}

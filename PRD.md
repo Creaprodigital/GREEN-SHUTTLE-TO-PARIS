@@ -50,32 +50,32 @@ This is a booking-focused application with a multi-step form, service showcase, 
 
 ## Design Direction
 
-The design should evoke sophistication, reliability, and modern luxury - the feeling of a first-class travel experience. Clean, spacious layouts with premium photography, elegant typography, and a color palette that conveys trust and exclusivity.
+The design should evoke sophisticated luxury, exclusivity, and timeless elegance - inspired by high-end hospitality and premium lifestyle brands. The aesthetic uses a dramatic black background with crisp white typography and rich gold accents, creating a refined and prestigious atmosphere reminiscent of luxury hotels and exclusive chauffeur services.
 
 ## Color Selection
 
-A sophisticated palette balancing deep navy professionalism with warm gold accents for luxury touches.
+A sophisticated monochromatic palette with rich black backgrounds, crisp whites, and luxurious gold accents.
 
-- **Primary Color**: Deep Navy (oklch(0.25 0.05 250)) - Conveys trust, professionalism, and premium quality
-- **Secondary Colors**: Soft Slate (oklch(0.45 0.02 250)) for supporting elements and backgrounds
-- **Accent Color**: Warm Gold (oklch(0.75 0.15 85)) - Luxury highlights for CTAs and important elements
+- **Primary Color**: Deep Black (oklch(0.15 0 0)) - Conveys sophistication, exclusivity, and premium luxury
+- **Secondary Colors**: Charcoal (oklch(0.22 0 0)) for subtle backgrounds and layering depth
+- **Accent Color**: Rich Gold (oklch(0.75 0.14 75)) - Luxury highlights for CTAs, borders, and emphasis
 - **Foreground/Background Pairings**: 
-  - Primary Navy (oklch(0.25 0.05 250)): White text (oklch(0.98 0 0)) - Ratio 12.8:1 ✓
-  - Accent Gold (oklch(0.75 0.15 85)): Deep Navy text (oklch(0.25 0.05 250)) - Ratio 5.2:1 ✓
-  - Background Light (oklch(0.98 0 0)): Foreground Navy (oklch(0.25 0.05 250)) - Ratio 12.8:1 ✓
-  - Muted Slate (oklch(0.92 0.01 250)): Muted Navy text (oklch(0.45 0.02 250)) - Ratio 6.1:1 ✓
+  - Primary Black (oklch(0.15 0 0)): White text (oklch(0.98 0 0)) - Ratio 14.2:1 ✓
+  - Accent Gold (oklch(0.75 0.14 75)): Black text (oklch(0.15 0 0)) - Ratio 7.8:1 ✓
+  - Card Dark (oklch(0.18 0 0)): White text (oklch(0.98 0 0)) - Ratio 13.1:1 ✓
+  - Muted Dark (oklch(0.25 0 0)): Muted White text (oklch(0.65 0 0)) - Ratio 4.9:1 ✓
 
 ## Font Selection
 
-Typography should balance modern elegance with excellent readability - professional serif for headlines to convey prestige, clean sans-serif for body content.
+Typography should convey timeless elegance and sophistication - refined serif for headlines creating luxury appeal, clean sans-serif for modern readability.
 
 - **Typographic Hierarchy**: 
-  - H1 (Hero Title): Playfair Display Bold/56px/tight letter spacing/leading-none - Creates dramatic impact
-  - H2 (Section Headers): Playfair Display SemiBold/36px/tight/leading-tight - Elegant section divisions
-  - H3 (Card Titles): Inter SemiBold/24px/normal/leading-snug - Clean, readable
-  - Body (Main Content): Inter Regular/16px/normal/leading-relaxed - Maximum readability
-  - Small (Supporting): Inter Regular/14px/normal/leading-normal - Subtle details
-  - Button Text: Inter Medium/16px/slight letter spacing - Clear CTAs
+  - H1 (Hero Title): Cormorant Garamond Bold/56px/tight letter spacing/leading-none - Elegant, sophisticated impact
+  - H2 (Section Headers): Cormorant Garamond SemiBold/40px/tight/leading-tight - Refined section divisions
+  - H3 (Card Titles): Montserrat SemiBold/24px/normal/leading-snug - Modern, clean
+  - Body (Main Content): Montserrat Regular/16px/normal/leading-relaxed - Professional readability
+  - Small (Supporting): Montserrat Light/14px/normal/leading-normal - Subtle, refined details
+  - Button Text: Montserrat Medium/16px/wider letter spacing - Prestigious CTAs
 
 ## Animations
 

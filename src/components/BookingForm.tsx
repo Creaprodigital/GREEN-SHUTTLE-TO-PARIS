@@ -67,13 +67,15 @@ export default function BookingForm() {
       transition={{ duration: 0.5, delay: 0.2 }}
       className="relative -mt-24 z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
     >
-      <Card className="shadow-2xl border-0">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-2xl font-semibold">Book Your Ride</CardTitle>
+      <Card className="shadow-2xl border-2 border-accent/20 bg-card">
+        <CardHeader className="pb-4 border-b border-border">
+          <CardTitle className="text-2xl font-semibold text-center uppercase tracking-widest" style={{ fontFamily: 'var(--font-body)' }}>
+            Reserve Your Journey
+          </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <Tabs value={tripType} onValueChange={setTripType} className="mb-6">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-3 bg-secondary">
               <TabsTrigger value="oneway">One Way</TabsTrigger>
               <TabsTrigger value="roundtrip">Round Trip</TabsTrigger>
               <TabsTrigger value="hourly">Hourly</TabsTrigger>
@@ -83,7 +85,7 @@ export default function BookingForm() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <Label htmlFor="pickup" className="text-sm font-medium">Pickup Location</Label>
+                <Label htmlFor="pickup" className="text-sm font-medium uppercase tracking-wide">Pickup Location</Label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                   <Input
@@ -91,13 +93,13 @@ export default function BookingForm() {
                     value={pickup}
                     onChange={(e) => setPickup(e.target.value)}
                     placeholder="Enter pickup address"
-                    className="pl-11 h-12"
+                    className="pl-11 h-12 bg-secondary border-border"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="destination" className="text-sm font-medium">Destination</Label>
+                <Label htmlFor="destination" className="text-sm font-medium uppercase tracking-wide">Destination</Label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} weight="fill" />
                   <Input
@@ -105,13 +107,13 @@ export default function BookingForm() {
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
                     placeholder="Enter destination"
-                    className="pl-11 h-12"
+                    className="pl-11 h-12 bg-secondary border-border"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="date" className="text-sm font-medium">Date</Label>
+                <Label htmlFor="date" className="text-sm font-medium uppercase tracking-wide">Date</Label>
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                   <Input
@@ -120,13 +122,13 @@ export default function BookingForm() {
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                     min={new Date().toISOString().split('T')[0]}
-                    className="pl-11 h-12"
+                    className="pl-11 h-12 bg-secondary border-border"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="time" className="text-sm font-medium">Time</Label>
+                <Label htmlFor="time" className="text-sm font-medium uppercase tracking-wide">Time</Label>
                 <div className="relative">
                   <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                   <Input
@@ -134,17 +136,17 @@ export default function BookingForm() {
                     type="time"
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
-                    className="pl-11 h-12"
+                    className="pl-11 h-12 bg-secondary border-border"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="passengers" className="text-sm font-medium">Passengers</Label>
+                <Label htmlFor="passengers" className="text-sm font-medium uppercase tracking-wide">Passengers</Label>
                 <div className="relative">
                   <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                   <Select value={passengers} onValueChange={setPassengers}>
-                    <SelectTrigger id="passengers" className="pl-11 h-12">
+                    <SelectTrigger id="passengers" className="pl-11 h-12 bg-secondary border-border">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -159,9 +161,9 @@ export default function BookingForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="service" className="text-sm font-medium">Service Type</Label>
+                <Label htmlFor="service" className="text-sm font-medium uppercase tracking-wide">Service Type</Label>
                 <Select value={serviceType} onValueChange={setServiceType}>
-                  <SelectTrigger id="service" className="h-12">
+                  <SelectTrigger id="service" className="h-12 bg-secondary border-border">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -173,7 +175,7 @@ export default function BookingForm() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full h-12 text-base bg-accent text-accent-foreground hover:bg-accent/90 group">
+            <Button type="submit" className="w-full h-12 text-base bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-widest">
               Continue
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
             </Button>
