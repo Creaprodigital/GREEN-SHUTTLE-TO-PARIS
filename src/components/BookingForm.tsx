@@ -524,6 +524,32 @@ export default function BookingForm() {
                   transition={{ duration: 0.3 }}
                   className="space-y-5"
                 >
+                  {serviceType === 'transfer' && (
+                    <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4">
+                      {isCalculatingDistance ? (
+                        <div className="flex justify-center items-center text-sm text-muted-foreground py-3">
+                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-accent border-t-transparent mr-3"></div>
+                          Calcul de la distance en cours...
+                        </div>
+                      ) : distanceKm > 0 ? (
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="flex flex-col items-center justify-center p-3 bg-background rounded-md">
+                            <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Distance</div>
+                            <div className="text-2xl font-bold text-accent">{distanceKm.toFixed(1)} km</div>
+                          </div>
+                          <div className="flex flex-col items-center justify-center p-3 bg-background rounded-md">
+                            <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Durée estimée</div>
+                            <div className="text-2xl font-bold text-accent">{durationMinutes} min</div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-center text-sm text-muted-foreground py-3">
+                          Distance non disponible
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <div className="space-y-4">
                     <Label className="text-sm font-medium uppercase tracking-wide">Sélectionnez votre véhicule</Label>
                     <RadioGroup value={vehicleType} onValueChange={setVehicleType}>
