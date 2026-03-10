@@ -52,6 +52,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
   const polygonsRef = useRef<google.maps.Polygon[]>([])
   const drawingPolygonRef = useRef<google.maps.Polygon | null>(null)
   const markersRef = useRef<google.maps.Marker[]>([])
+  const draggingMarkerIndex = useRef<number | null>(null)
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return
@@ -186,19 +187,49 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     markersRef.current = []
     
     if (mapInstanceRef.current) {
-      zone.polygon.forEach(point => {
+      zone.polygon.forEach((point, index) => {
         const marker = new google.maps.Marker({
           position: point,
           map: mapInstanceRef.current,
+          draggable: true,
           icon: {
             path: google.maps.SymbolPath.CIRCLE,
-            scale: 6,
+            scale: 8,
             fillColor: zone.color,
             fillOpacity: 1,
             strokeColor: '#ffffff',
             strokeWeight: 2,
           },
         })
+        
+        marker.addListener('drag', () => {
+          const newPos = marker.getPosition()
+          if (newPos) {
+            setDrawingPoints(prev => {
+              const updated = [...prev]
+              updated[index] = { lat: newPos.lat(), lng: newPos.lng() }
+              
+              if (drawingPolygonRef.current) {
+                drawingPolygonRef.current.setPath(updated)
+              }
+              
+              return updated
+            })
+          }
+        })
+        
+        marker.addListener('dragend', () => {
+          const newPos = marker.getPosition()
+          if (newPos) {
+            setDrawingPoints(prev => {
+              const updated = [...prev]
+              updated[index] = { lat: newPos.lat(), lng: newPos.lng() }
+              return updated
+            })
+            toast.success('Point déplacé')
+          }
+        })
+        
         markersRef.current.push(marker)
       })
       
@@ -214,10 +245,11 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
         fillColor: zone.color,
         fillOpacity: 0.35,
         map: mapInstanceRef.current,
+        editable: false,
       })
     }
     
-    toast.info(`Modification de la zone "${zone.name}"`)
+    toast.info(`Modification de la zone "${zone.name}" - Déplacez les points pour modifier la zone`)
   }
 
   const handleCancelDrawing = () => {
@@ -478,7 +510,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
             <CardDescription>
               {isCreatingZone 
                 ? (isEditingZone 
-                    ? 'Modifiez les informations de la zone et cliquez sur la carte pour ajouter/modifier les points'
+                    ? 'Déplacez les points existants en les faisant glisser ou cliquez sur la carte pour ajouter de nouveaux points'
                     : 'Cliquez sur la carte pour dessiner les points de la zone')
                 : 'Cliquez sur "Nouvelle Zone" pour commencer à dessiner'
               }
