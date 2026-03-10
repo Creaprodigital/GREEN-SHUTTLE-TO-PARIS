@@ -260,6 +260,8 @@ export default function BookingForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
+    const calculatedPrice = calculatePrice(vehicleType)
+
     const newBooking: Booking = {
       id: `booking-${Date.now()}-${Math.random().toString(36).substring(7)}`,
       userId: email,
@@ -284,7 +286,8 @@ export default function BookingForm() {
       notes,
       paymentMethod,
       status: 'pending',
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      price: calculatedPrice
     }
 
     setBookings((current) => [...(current || []), newBooking])
