@@ -585,9 +585,17 @@ export default function BookingForm() {
                             <div className="text-2xl font-bold text-accent">{durationMinutes} min</div>
                           </div>
                         </div>
+                      ) : (pickup && destination && !pickupCoords && !destinationCoords) ? (
+                        <div className="text-center text-xs text-muted-foreground py-3">
+                          ⚠️ Veuillez sélectionner une adresse dans la liste de suggestions pour calculer la distance
+                        </div>
+                      ) : (pickup && destination && (!pickupCoords || !destinationCoords)) ? (
+                        <div className="text-center text-xs text-muted-foreground py-3">
+                          ⚠️ Veuillez sélectionner {!pickupCoords ? 'le lieu de départ' : 'la destination'} dans la liste de suggestions
+                        </div>
                       ) : (
-                        <div className="text-center text-sm text-muted-foreground py-3">
-                          Distance non disponible
+                        <div className="text-center text-xs text-muted-foreground py-3">
+                          Saisissez le départ et la destination pour calculer la distance
                         </div>
                       )}
                     </div>
