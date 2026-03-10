@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Slider } from '@/components/ui/slider'
-import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple, X, CurrencyCircleDollar, Sparkle } from '@phosphor-icons/react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple, X, CurrencyCircleDollar, Sparkle, Info } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { VehiclePricing, DEFAULT_PRICING, ServiceOption, DEFAULT_OPTIONS } from '@/types/pricing'
@@ -984,86 +985,129 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="pt-6">
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div className="space-y-2">
-                              <Label htmlFor={`price-km-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
-                                Prix par KM (€)
-                              </Label>
-                              <Input
-                                id={`price-km-${vehicle.id}`}
-                                type="number"
-                                step="0.1"
-                                min="0"
-                                value={isHighDemand ? pricing.pricePerKm : (pricing.lowSeasonPricePerKm || 0)}
-                                onChange={(e) => handleUpdatePricing(
-                                  vehicle.id, 
-                                  isHighDemand ? 'pricePerKm' : 'lowSeasonPricePerKm', 
-                                  parseFloat(e.target.value) || 0
-                                )}
-                                className="h-12 bg-secondary border-border"
-                              />
-                            </div>
+                          <TooltipProvider>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <Label htmlFor={`price-km-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
+                                    Prix par KM (€)
+                                  </Label>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Info size={16} className="text-muted-foreground cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                      <p className="font-semibold mb-1">Prix par Kilomètre</p>
+                                      <p className="text-sm">Utilisé pour calculer le prix des transferts aéroport et des trajets Chauffeur Privé. Le prix final est calculé selon la formule : (distance × prix/km) + (durée × prix/minute).</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </div>
+                                <Input
+                                  id={`price-km-${vehicle.id}`}
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={isHighDemand ? pricing.pricePerKm : (pricing.lowSeasonPricePerKm || 0)}
+                                  onChange={(e) => handleUpdatePricing(
+                                    vehicle.id, 
+                                    isHighDemand ? 'pricePerKm' : 'lowSeasonPricePerKm', 
+                                    parseFloat(e.target.value) || 0
+                                  )}
+                                  className="h-12 bg-secondary border-border"
+                                />
+                              </div>
 
-                            <div className="space-y-2">
-                              <Label htmlFor={`price-minute-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
-                                Prix par Minute (€)
-                              </Label>
-                              <Input
-                                id={`price-minute-${vehicle.id}`}
-                                type="number"
-                                step="0.1"
-                                min="0"
-                                value={isHighDemand ? pricing.pricePerMinute : (pricing.lowSeasonPricePerMinute || 0)}
-                                onChange={(e) => handleUpdatePricing(
-                                  vehicle.id, 
-                                  isHighDemand ? 'pricePerMinute' : 'lowSeasonPricePerMinute', 
-                                  parseFloat(e.target.value) || 0
-                                )}
-                                className="h-12 bg-secondary border-border"
-                              />
-                            </div>
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <Label htmlFor={`price-minute-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
+                                    Prix par Minute (€)
+                                  </Label>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Info size={16} className="text-muted-foreground cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                      <p className="font-semibold mb-1">Prix par Minute</p>
+                                      <p className="text-sm">Utilisé pour calculer le prix des transferts aéroport et des trajets Chauffeur Privé. Le prix final est calculé selon la formule : (distance × prix/km) + (durée × prix/minute).</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </div>
+                                <Input
+                                  id={`price-minute-${vehicle.id}`}
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={isHighDemand ? pricing.pricePerMinute : (pricing.lowSeasonPricePerMinute || 0)}
+                                  onChange={(e) => handleUpdatePricing(
+                                    vehicle.id, 
+                                    isHighDemand ? 'pricePerMinute' : 'lowSeasonPricePerMinute', 
+                                    parseFloat(e.target.value) || 0
+                                  )}
+                                  className="h-12 bg-secondary border-border"
+                                />
+                              </div>
 
-                            <div className="space-y-2">
-                              <Label htmlFor={`price-hour-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
-                                Prix/Heure - MAD (€)
-                              </Label>
-                              <p className="text-xs text-muted-foreground">
-                                Pour service "Mise à Disposition"
-                              </p>
-                              <Input
-                                id={`price-hour-${vehicle.id}`}
-                                type="number"
-                                step="1"
-                                min="0"
-                                value={isHighDemand ? pricing.pricePerHour : (pricing.lowSeasonPricePerHour || 0)}
-                                onChange={(e) => handleUpdatePricing(
-                                  vehicle.id, 
-                                  isHighDemand ? 'pricePerHour' : 'lowSeasonPricePerHour', 
-                                  parseFloat(e.target.value) || 0
-                                )}
-                                className="h-12 bg-secondary border-border"
-                              />
-                            </div>
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <Label htmlFor={`price-hour-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
+                                    Prix/Heure - MAD (€)
+                                  </Label>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Info size={16} className="text-muted-foreground cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                      <p className="font-semibold mb-1">Prix par Heure - Mise à Disposition</p>
+                                      <p className="text-sm">Utilisé UNIQUEMENT pour le service "Mise à Disposition". Le client choisit le nombre d'heures et le prix est calculé : nombre d'heures × prix/heure. Ce tarif ne s'applique pas aux autres services.</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </div>
+                                <Input
+                                  id={`price-hour-${vehicle.id}`}
+                                  type="number"
+                                  step="1"
+                                  min="0"
+                                  value={isHighDemand ? pricing.pricePerHour : (pricing.lowSeasonPricePerHour || 0)}
+                                  onChange={(e) => handleUpdatePricing(
+                                    vehicle.id, 
+                                    isHighDemand ? 'pricePerHour' : 'lowSeasonPricePerHour', 
+                                    parseFloat(e.target.value) || 0
+                                  )}
+                                  className="h-12 bg-secondary border-border"
+                                />
+                              </div>
 
-                            <div className="space-y-2">
-                              <Label htmlFor={`price-tour-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
-                                Prix Base Circuit (€)
-                              </Label>
-                              <Input
-                                id={`price-tour-${vehicle.id}`}
-                                type="number"
-                                step="1"
-                                min="0"
-                                value={isHighDemand ? pricing.tourBasePrice : (pricing.lowSeasonTourBasePrice || 0)}
-                                onChange={(e) => handleUpdatePricing(
-                                  vehicle.id, 
-                                  isHighDemand ? 'tourBasePrice' : 'lowSeasonTourBasePrice', 
-                                  parseFloat(e.target.value) || 0
-                                )}
-                                className="h-12 bg-secondary border-border"
-                              />
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <Label htmlFor={`price-tour-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
+                                    Prix Base Circuit (€)
+                                  </Label>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Info size={16} className="text-muted-foreground cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                      <p className="font-semibold mb-1">Prix Circuit Touristique</p>
+                                      <p className="text-sm">Prix fixe pour les circuits touristiques. Ce prix est défini ici dans l'admin et est appliqué directement sans calcul additionnel. Parfait pour les forfaits tout compris.</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </div>
+                                <Input
+                                  id={`price-tour-${vehicle.id}`}
+                                  type="number"
+                                  step="1"
+                                  min="0"
+                                  value={isHighDemand ? pricing.tourBasePrice : (pricing.lowSeasonTourBasePrice || 0)}
+                                  onChange={(e) => handleUpdatePricing(
+                                    vehicle.id, 
+                                    isHighDemand ? 'tourBasePrice' : 'lowSeasonTourBasePrice', 
+                                    parseFloat(e.target.value) || 0
+                                  )}
+                                  className="h-12 bg-secondary border-border"
+                                />
+                              </div>
                             </div>
-                          </div>
+                          </TooltipProvider>
                         </CardContent>
                       </Card>
                     </motion.div>
