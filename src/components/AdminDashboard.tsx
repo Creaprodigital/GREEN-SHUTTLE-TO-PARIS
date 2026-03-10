@@ -63,6 +63,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   const [imageZoom, setImageZoom] = useState<number>(100)
   const [imagePosition, setImagePosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 })
   const [imageFit, setImageFit] = useState<'cover' | 'contain' | 'fill'>('cover')
+  const [hasImageChanges, setHasImageChanges] = useState(false)
 
   const filteredBookings = bookings.filter(b => {
     const matchesStatus = filterStatus === 'all' || b.status === filterStatus
@@ -233,14 +234,20 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setImageZoom(100)}
+                      onClick={() => {
+                        setImageZoom(100)
+                        setHasImageChanges(true)
+                      }}
                     >
                       Réinitialiser
                     </Button>
                   </div>
                   <Slider
                     value={[imageZoom]}
-                    onValueChange={(value) => setImageZoom(value[0])}
+                    onValueChange={(value) => {
+                      setImageZoom(value[0])
+                      setHasImageChanges(true)
+                    }}
                     min={50}
                     max={200}
                     step={5}
@@ -255,21 +262,30 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                   <div className="grid grid-cols-3 gap-2">
                     <Button
                       variant={imageFit === 'cover' ? 'default' : 'outline'}
-                      onClick={() => setImageFit('cover')}
+                      onClick={() => {
+                        setImageFit('cover')
+                        setHasImageChanges(true)
+                      }}
                       className="h-12"
                     >
                       Couvrir
                     </Button>
                     <Button
                       variant={imageFit === 'contain' ? 'default' : 'outline'}
-                      onClick={() => setImageFit('contain')}
+                      onClick={() => {
+                        setImageFit('contain')
+                        setHasImageChanges(true)
+                      }}
                       className="h-12"
                     >
                       Contenir
                     </Button>
                     <Button
                       variant={imageFit === 'fill' ? 'default' : 'outline'}
-                      onClick={() => setImageFit('fill')}
+                      onClick={() => {
+                        setImageFit('fill')
+                        setHasImageChanges(true)
+                      }}
                       className="h-12"
                     >
                       Remplir
@@ -283,7 +299,10 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                   </Label>
                   <Slider
                     value={[imagePosition.x]}
-                    onValueChange={(value) => setImagePosition(prev => ({ ...prev, x: value[0] }))}
+                    onValueChange={(value) => {
+                      setImagePosition(prev => ({ ...prev, x: value[0] }))
+                      setHasImageChanges(true)
+                    }}
                     min={0}
                     max={100}
                     step={1}
@@ -297,7 +316,10 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                   </Label>
                   <Slider
                     value={[imagePosition.y]}
-                    onValueChange={(value) => setImagePosition(prev => ({ ...prev, y: value[0] }))}
+                    onValueChange={(value) => {
+                      setImagePosition(prev => ({ ...prev, y: value[0] }))
+                      setHasImageChanges(true)
+                    }}
                     min={0}
                     max={100}
                     step={1}
@@ -305,10 +327,48 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                   />
                 </div>
 
-                <div className="pt-4 border-t border-border">
+                <div className="pt-4 border-t border-border space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Utilisez les contrôles ci-dessus pour ajuster l'affichage de l'image. Les modifications ne sont que pour la prévisualisation.
+                    Ajustez l'affichage de l'image et cliquez sur "Enregistrer" pour appliquer les modifications.
                   </p>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => {
+                        if (viewingImage) {
+                          setFleetData((current) => {
+                            const updated = { ...(current || DEFAULT_FLEET) }
+                            updated[viewingImage] = {
+                              ...updated[viewingImage],
+                              imageSettings: {
+                                fit: imageFit,
+                                positionX: imagePosition.x,
+                                positionY: imagePosition.y
+                              }
+                            }
+                            return updated
+                          })
+                          toast.success('Paramètres d\'affichage enregistrés')
+                          setViewingImage(null)
+                          setHasImageChanges(false)
+                        }
+                      }}
+                      className="flex-1 h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+                      disabled={!hasImageChanges}
+                    >
+                      <Check className="mr-2" size={20} />
+                      Enregistrer
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setViewingImage(null)
+                        setHasImageChanges(false)
+                      }}
+                      className="h-12 px-6"
+                    >
+                      Fermer
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -486,9 +546,14 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                     size="icon"
                                     onClick={() => {
                                       setViewingImage(vehicleKey)
+                                      const settings = vehicle.imageSettings
                                       setImageZoom(100)
-                                      setImagePosition({ x: 50, y: 50 })
-                                      setImageFit('cover')
+                                      setImagePosition({ 
+                                        x: settings?.positionX || 50, 
+                                        y: settings?.positionY || 50 
+                                      })
+                                      setImageFit(settings?.fit || 'cover')
+                                      setHasImageChanges(false)
                                     }}
                                     className="h-12 w-12"
                                   >

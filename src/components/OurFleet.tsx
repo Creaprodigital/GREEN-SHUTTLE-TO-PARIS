@@ -48,10 +48,14 @@ export default function OurFleet() {
                   <Card className="border-2 border-accent/20 overflow-hidden hover:border-accent/40 transition-all duration-300 h-full">
                     <div className="aspect-[4/3] bg-muted/50 relative overflow-hidden">
                       {vehicle.image ? (
-                        <img
-                          src={vehicle.image}
-                          alt={vehicle.title}
-                          className="w-full h-full object-cover"
+                        <div 
+                          className="w-full h-full"
+                          style={{
+                            backgroundImage: `url(${vehicle.image})`,
+                            backgroundSize: vehicle.imageSettings?.fit || 'cover',
+                            backgroundPosition: `${vehicle.imageSettings?.positionX || 50}% ${vehicle.imageSettings?.positionY || 50}%`,
+                            backgroundRepeat: 'no-repeat'
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">

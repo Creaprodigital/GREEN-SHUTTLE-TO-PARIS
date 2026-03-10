@@ -1,8 +1,15 @@
+export interface ImageSettings {
+  fit: 'cover' | 'contain' | 'fill'
+  positionX: number
+  positionY: number
+}
+
 export interface VehicleClass {
   id: string
   title: string
   description: string
   image: string
+  imageSettings?: ImageSettings
   order: number
 }
 
