@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 
 export default function Hero() {
   return (
-    <div className="relative h-[600px] lg:h-[700px] flex items-center justify-center overflow-hidden bg-primary">
+    <div className="relative h-[600px] lg:h-[700px] flex items-center justify-center overflow-hidden bg-primary pt-20">
       <div 
         className="absolute inset-0"
         style={{
