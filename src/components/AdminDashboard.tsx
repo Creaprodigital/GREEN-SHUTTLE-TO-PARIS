@@ -511,10 +511,10 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
               {Object.entries(fleetData || DEFAULT_FLEET)
                 .sort(([, a], [, b]) => a.order - b.order)
-                .map(([key, vehicle]) => {
+                .map(([key, vehicle], index) => {
                   const vehicleKey = key as VehicleClassType
                   const isEditing = editingVehicle === vehicleKey
                   
@@ -523,149 +523,157 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                       key={vehicleKey}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
                     >
                       <Card className="border-2 border-accent/20">
-                        <CardHeader className="border-b border-border">
-                          <CardTitle className="text-xl font-semibold uppercase tracking-wide">
-                            {vehicle.title}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-6 space-y-4">
-                          <div className="aspect-[4/3] bg-muted/50 relative overflow-hidden border-2 border-border group">
-                            {vehicle.image ? (
-                              <>
-                                <img
-                                  src={vehicle.image}
-                                  alt={vehicle.title}
-                                  className="w-full h-full object-cover"
-                                />
-                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
-                                  <Button
-                                    variant="secondary"
-                                    size="icon"
-                                    onClick={() => {
-                                      setViewingImage(vehicleKey)
-                                      const settings = vehicle.imageSettings
-                                      setImageZoom(100)
-                                      setImagePosition({ 
-                                        x: settings?.positionX || 50, 
-                                        y: settings?.positionY || 50 
-                                      })
-                                      setImageFit(settings?.fit || 'cover')
-                                      setHasImageChanges(false)
+                        <CardContent className="py-6">
+                          <div className="flex flex-col md:flex-row gap-6">
+                            <div className="w-full md:w-64 flex-shrink-0">
+                              <div className="aspect-[4/3] bg-muted/50 relative overflow-hidden border-2 border-border group">
+                                {vehicle.image ? (
+                                  <>
+                                    <img
+                                      src={vehicle.image}
+                                      alt={vehicle.title}
+                                      className="w-full h-full object-cover"
+                                    />
+                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
+                                      <Button
+                                        variant="secondary"
+                                        size="icon"
+                                        onClick={() => {
+                                          setViewingImage(vehicleKey)
+                                          const settings = vehicle.imageSettings
+                                          setImageZoom(100)
+                                          setImagePosition({ 
+                                            x: settings?.positionX || 50, 
+                                            y: settings?.positionY || 50 
+                                          })
+                                          setImageFit(settings?.fit || 'cover')
+                                          setHasImageChanges(false)
+                                        }}
+                                        className="h-10 w-10"
+                                      >
+                                        <MagnifyingGlassPlus size={20} />
+                                      </Button>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center">
+                                    <ImageIcon size={60} className="text-muted-foreground/30" weight="thin" />
+                                  </div>
+                                )}
+                              </div>
+                              
+                              <div className="mt-3 space-y-2">
+                                <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                                  Upload Image
+                                </Label>
+                                <div className="flex gap-2">
+                                  <Input
+                                    type="file"
+                                    accept="image/*"
+                                    id={`file-${vehicleKey}`}
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0]
+                                      if (file) handleImageUpload(vehicleKey, file)
                                     }}
-                                    className="h-12 w-12"
+                                    className="h-10 text-xs bg-secondary border-border"
+                                    disabled={uploadingImage === vehicleKey}
+                                  />
+                                  {uploadingImage === vehicleKey && (
+                                    <Button disabled size="icon" className="h-10 w-10 flex-shrink-0">
+                                      <Upload className="animate-pulse" size={16} />
+                                    </Button>
+                                  )}
+                                  {vehicle.image && uploadingImage !== vehicleKey && (
+                                    <Button
+                                      variant="outline"
+                                      size="icon"
+                                      className="h-10 w-10 flex-shrink-0 border-green-500/30 text-green-500"
+                                      disabled
+                                    >
+                                      <Check size={16} />
+                                    </Button>
+                                  )}
+                                </div>
+                                <p className="text-[10px] text-muted-foreground">
+                                  Max 5MB. Recommended: 800x600px
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <div className="mb-4">
+                                <h3 className="text-2xl font-semibold uppercase tracking-wide text-foreground">
+                                  {vehicle.title}
+                                </h3>
+                              </div>
+
+                              {isEditing ? (
+                                <div className="space-y-4">
+                                  <div className="space-y-2">
+                                    <Label htmlFor={`title-${vehicleKey}`} className="text-sm font-medium uppercase tracking-wide">
+                                      Title
+                                    </Label>
+                                    <Input
+                                      id={`title-${vehicleKey}`}
+                                      value={editedTitle}
+                                      onChange={(e) => setEditedTitle(e.target.value)}
+                                      className="h-11 bg-secondary border-border"
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor={`desc-${vehicleKey}`} className="text-sm font-medium uppercase tracking-wide">
+                                      Description
+                                    </Label>
+                                    <Textarea
+                                      id={`desc-${vehicleKey}`}
+                                      value={editedDescription}
+                                      onChange={(e) => setEditedDescription(e.target.value)}
+                                      className="min-h-[100px] bg-secondary border-border resize-none"
+                                    />
+                                  </div>
+                                  <div className="flex gap-2 pt-2">
+                                    <Button
+                                      onClick={() => handleUpdateVehicle(vehicleKey, { 
+                                        title: editedTitle, 
+                                        description: editedDescription 
+                                      })}
+                                      className="h-11 px-6 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+                                    >
+                                      <Check className="mr-2" size={18} />
+                                      Valider
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      onClick={() => setEditingVehicle(null)}
+                                      className="h-11 px-6"
+                                    >
+                                      Annuler
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="space-y-4">
+                                  <div>
+                                    <p className="text-sm text-muted-foreground uppercase tracking-wide mb-2">Description</p>
+                                    <p className="text-foreground/90 leading-relaxed">{vehicle.description}</p>
+                                  </div>
+                                  <Button
+                                    onClick={() => {
+                                      setEditingVehicle(vehicleKey)
+                                      setEditedTitle(vehicle.title)
+                                      setEditedDescription(vehicle.description)
+                                    }}
+                                    className="h-11 px-6 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
                                   >
-                                    <MagnifyingGlassPlus size={24} />
+                                    Edit Details
                                   </Button>
                                 </div>
-                              </>
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <ImageIcon size={80} className="text-muted-foreground/30" weight="thin" />
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label className="text-sm font-medium uppercase tracking-wide">
-                              Upload Image
-                            </Label>
-                            <div className="flex gap-2">
-                              <Input
-                                type="file"
-                                accept="image/*"
-                                id={`file-${vehicleKey}`}
-                                onChange={(e) => {
-                                  const file = e.target.files?.[0]
-                                  if (file) handleImageUpload(vehicleKey, file)
-                                }}
-                                className="h-12 bg-secondary border-border"
-                                disabled={uploadingImage === vehicleKey}
-                              />
-                              {uploadingImage === vehicleKey && (
-                                <Button disabled className="h-12">
-                                  <Upload className="animate-pulse" />
-                                </Button>
-                              )}
-                              {vehicle.image && uploadingImage !== vehicleKey && (
-                                <Button
-                                  variant="outline"
-                                  className="h-12 border-green-500/30 text-green-500"
-                                  disabled
-                                >
-                                  <Check />
-                                </Button>
                               )}
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                              Max 5MB. Recommended: 800x600px
-                            </p>
                           </div>
-
-                          {isEditing ? (
-                            <div className="space-y-4">
-                              <div className="space-y-2">
-                                <Label htmlFor={`title-${vehicleKey}`} className="text-sm font-medium uppercase tracking-wide">
-                                  Title
-                                </Label>
-                                <Input
-                                  id={`title-${vehicleKey}`}
-                                  value={editedTitle}
-                                  onChange={(e) => setEditedTitle(e.target.value)}
-                                  className="h-12 bg-secondary border-border"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label htmlFor={`desc-${vehicleKey}`} className="text-sm font-medium uppercase tracking-wide">
-                                  Description
-                                </Label>
-                                <Textarea
-                                  id={`desc-${vehicleKey}`}
-                                  value={editedDescription}
-                                  onChange={(e) => setEditedDescription(e.target.value)}
-                                  className="min-h-[100px] bg-secondary border-border"
-                                />
-                              </div>
-                              <div className="flex gap-2">
-                                <Button
-                                  onClick={() => handleUpdateVehicle(vehicleKey, { 
-                                    title: editedTitle, 
-                                    description: editedDescription 
-                                  })}
-                                  className="flex-1 h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
-                                >
-                                  <Check className="mr-2" size={20} />
-                                  Valider
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  onClick={() => setEditingVehicle(null)}
-                                  className="h-12 px-6"
-                                >
-                                  Annuler
-                                </Button>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="space-y-4">
-                              <div>
-                                <p className="text-sm text-muted-foreground uppercase tracking-wide mb-1">Description</p>
-                                <p className="text-foreground">{vehicle.description}</p>
-                              </div>
-                              <Button
-                                onClick={() => {
-                                  setEditingVehicle(vehicleKey)
-                                  setEditedTitle(vehicle.title)
-                                  setEditedDescription(vehicle.description)
-                                }}
-                                className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
-                              >
-                                Edit Details
-                              </Button>
-                            </div>
-                          )}
                         </CardContent>
                       </Card>
                     </motion.div>
