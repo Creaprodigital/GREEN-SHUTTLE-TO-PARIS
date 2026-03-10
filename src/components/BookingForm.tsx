@@ -14,14 +14,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import PlacesAutocomplete from '@/components/PlacesAutocomplete'
 import { Booking } from '@/types/booking'
-import { VehicleClass } from '@/types/fleet'
-import { ServiceOption, VehiclePricing } from '@/types/pricing'
+import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
+import { ServiceOption, VehiclePricing, DEFAULT_PRICING, DEFAULT_OPTIONS } from '@/types/pricing'
 
 export default function BookingForm() {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
-  const [fleet] = useKV<VehicleClass[]>('fleet', [])
-  const [serviceOptions] = useKV<ServiceOption[]>('service-options', [])
-  const [pricing] = useKV<VehiclePricing[]>('vehicle-pricing', [])
+  const [fleet] = useKV<VehicleClass[]>('fleet-data', DEFAULT_FLEET)
+  const [serviceOptions] = useKV<ServiceOption[]>('service-options', DEFAULT_OPTIONS)
+  const [pricing] = useKV<VehiclePricing[]>('vehicle-pricing', DEFAULT_PRICING)
   const [useLowSeason] = useKV<boolean>('use-low-season', false)
   const [currentStep, setCurrentStep] = useState(1)
   
