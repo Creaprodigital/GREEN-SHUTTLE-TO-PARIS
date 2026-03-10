@@ -30,6 +30,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
   const [isCreatingZone, setIsCreatingZone] = useState(false)
   const [isCreatingPricing, setIsCreatingPricing] = useState(false)
   const [editingZone, setEditingZone] = useState<PricingZone | null>(null)
+  const [isEditingZone, setIsEditingZone] = useState(false)
   
   const [newZoneName, setNewZoneName] = useState('')
   const [newZoneDescription, setNewZoneDescription] = useState('')
@@ -146,6 +147,8 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
 
   const handleStartCreatingZone = () => {
     setIsCreatingZone(true)
+    setIsEditingZone(false)
+    setEditingZone(null)
     setDrawingPoints([])
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
@@ -158,8 +161,57 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     setNewZoneColor(ZONE_COLORS[zones.length % ZONE_COLORS.length])
   }
 
+  const handleStartEditingZone = (zone: PricingZone) => {
+    setIsEditingZone(true)
+    setIsCreatingZone(true)
+    setEditingZone(zone)
+    setNewZoneName(zone.name)
+    setNewZoneDescription(zone.description || '')
+    setNewZoneColor(zone.color)
+    setDrawingPoints(zone.polygon)
+    
+    markersRef.current.forEach(m => m.setMap(null))
+    markersRef.current = []
+    
+    if (mapInstanceRef.current) {
+      zone.polygon.forEach(point => {
+        const marker = new google.maps.Marker({
+          position: point,
+          map: mapInstanceRef.current,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 6,
+            fillColor: zone.color,
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 2,
+          },
+        })
+        markersRef.current.push(marker)
+      })
+      
+      if (drawingPolygonRef.current) {
+        drawingPolygonRef.current.setMap(null)
+      }
+      
+      drawingPolygonRef.current = new google.maps.Polygon({
+        paths: zone.polygon,
+        strokeColor: zone.color,
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: zone.color,
+        fillOpacity: 0.35,
+        map: mapInstanceRef.current,
+      })
+    }
+    
+    toast.info(`Modification de la zone "${zone.name}"`)
+  }
+
   const handleCancelDrawing = () => {
     setIsCreatingZone(false)
+    setIsEditingZone(false)
+    setEditingZone(null)
     setDrawingPoints([])
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
@@ -180,16 +232,30 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
       return
     }
 
-    const newZone: PricingZone = {
-      id: `zone-${Date.now()}`,
-      name: newZoneName,
-      description: newZoneDescription,
-      color: newZoneColor,
-      polygon: drawingPoints,
-    }
+    if (isEditingZone && editingZone) {
+      const updatedZone: PricingZone = {
+        ...editingZone,
+        name: newZoneName,
+        description: newZoneDescription,
+        color: newZoneColor,
+        polygon: drawingPoints,
+      }
 
-    setZones(current => [...(current || []), newZone])
-    toast.success(`Zone "${newZoneName}" créée avec succès`)
+      setZones(current => (current || []).map(z => z.id === editingZone.id ? updatedZone : z))
+      toast.success(`Zone "${newZoneName}" modifiée avec succès`)
+    } else {
+      const newZone: PricingZone = {
+        id: `zone-${Date.now()}`,
+        name: newZoneName,
+        description: newZoneDescription,
+        color: newZoneColor,
+        polygon: drawingPoints,
+      }
+
+      setZones(current => [...(current || []), newZone])
+      toast.success(`Zone "${newZoneName}" créée avec succès`)
+    }
+    
     handleCancelDrawing()
   }
 
@@ -399,7 +465,9 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
             </CardTitle>
             <CardDescription>
               {isCreatingZone 
-                ? 'Cliquez sur la carte pour dessiner les points de la zone'
+                ? (isEditingZone 
+                    ? 'Modifiez les informations de la zone et cliquez sur la carte pour ajouter/modifier les points'
+                    : 'Cliquez sur la carte pour dessiner les points de la zone')
                 : 'Cliquez sur "Nouvelle Zone" pour commencer à dessiner'
               }
             </CardDescription>
@@ -467,7 +535,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
                     disabled={drawingPoints.length < 3 || !newZoneName.trim()}
                     className="flex-1"
                   >
-                    Enregistrer la Zone
+                    {isEditingZone ? 'Enregistrer les Modifications' : 'Enregistrer la Zone'}
                   </Button>
                   <Button
                     onClick={handleCancelDrawing}
@@ -525,13 +593,25 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
                           </div>
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteZone(zone.id)}
-                      >
-                        <Trash className="text-destructive" />
-                      </Button>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleStartEditingZone(zone)}
+                          disabled={isCreatingZone}
+                          title="Modifier cette zone"
+                        >
+                          <Pencil className="text-accent" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteZone(zone.id)}
+                          disabled={isCreatingZone}
+                        >
+                          <Trash className="text-destructive" />
+                        </Button>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
