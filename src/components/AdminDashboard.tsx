@@ -168,16 +168,23 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     const reader = new FileReader()
     reader.onload = (e) => {
       const result = e.target?.result as string
-      setFleetData((current) => {
-        const data = Array.isArray(current) ? current : DEFAULT_FLEET
-        return data.map((vehicle) =>
-          vehicle.id === vehicleId
-            ? { ...vehicle, image: result }
-            : vehicle
-        )
-      })
+      if (result) {
+        setFleetData((current) => {
+          const data = Array.isArray(current) ? current : DEFAULT_FLEET
+          const updated = data.map((vehicle) =>
+            vehicle.id === vehicleId
+              ? { ...vehicle, image: result }
+              : vehicle
+          )
+          return updated
+        })
+        setUploadingImage(null)
+        toast.success('Image uploaded successfully')
+      }
+    }
+    reader.onerror = () => {
       setUploadingImage(null)
-      toast.success('Image uploaded successfully')
+      toast.error('Error uploading image')
     }
     reader.readAsDataURL(file)
   }
@@ -667,7 +674,10 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                     id={`file-${vehicle.id}`}
                                     onChange={(e) => {
                                       const file = e.target.files?.[0]
-                                      if (file) handleImageUpload(vehicle.id, file)
+                                      if (file) {
+                                        handleImageUpload(vehicle.id, file)
+                                        e.target.value = ''
+                                      }
                                     }}
                                     className="h-10 text-xs bg-secondary border-border"
                                     disabled={uploadingImage === vehicle.id}
