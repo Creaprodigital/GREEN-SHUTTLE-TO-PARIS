@@ -39,7 +39,7 @@ export default function CircuitMap({ circuit, className = '' }: CircuitMapProps)
           {
             featureType: 'landscape',
             elementType: 'geometry',
-            stylers: [{ color: '#f5f5f5' }, { visibility: 'simplified' }]
+            stylers: [{ color: '#1a1a1a' }, { visibility: 'simplified' }]
           },
           {
             featureType: 'poi',
@@ -48,7 +48,7 @@ export default function CircuitMap({ circuit, className = '' }: CircuitMapProps)
           {
             featureType: 'poi.attraction',
             elementType: 'geometry',
-            stylers: [{ visibility: 'on' }, { color: '#e8d5b7' }]
+            stylers: [{ visibility: 'on' }, { color: '#2a2a2a' }]
           },
           {
             featureType: 'poi.attraction',
@@ -58,37 +58,37 @@ export default function CircuitMap({ circuit, className = '' }: CircuitMapProps)
           {
             featureType: 'poi.attraction',
             elementType: 'labels.text.fill',
-            stylers: [{ color: '#8b7355' }]
+            stylers: [{ color: '#b8d970' }]
           },
           {
             featureType: 'poi.park',
             elementType: 'geometry',
-            stylers: [{ visibility: 'on' }, { color: '#d4e5c1' }]
+            stylers: [{ visibility: 'on' }, { color: '#252525' }]
           },
           {
             featureType: 'road',
             elementType: 'geometry',
-            stylers: [{ visibility: 'on' }, { color: '#ffffff' }]
+            stylers: [{ visibility: 'on' }, { color: '#333333' }]
           },
           {
             featureType: 'road',
             elementType: 'geometry.stroke',
-            stylers: [{ color: '#d9d9d9' }]
+            stylers: [{ color: '#2a2a2a' }]
           },
           {
             featureType: 'road.highway',
             elementType: 'geometry',
-            stylers: [{ color: '#ffeaa7' }]
+            stylers: [{ color: '#404040' }]
           },
           {
             featureType: 'road.highway',
             elementType: 'geometry.stroke',
-            stylers: [{ color: '#fdcb6e' }]
+            stylers: [{ color: '#353535' }]
           },
           {
             featureType: 'road.arterial',
             elementType: 'geometry',
-            stylers: [{ color: '#ffffff' }]
+            stylers: [{ color: '#333333' }]
           },
           {
             featureType: 'road',
@@ -98,7 +98,7 @@ export default function CircuitMap({ circuit, className = '' }: CircuitMapProps)
           {
             featureType: 'road',
             elementType: 'labels.text.fill',
-            stylers: [{ color: '#6b6b6b' }]
+            stylers: [{ color: '#9a9a9a' }]
           },
           {
             featureType: 'transit',
@@ -107,7 +107,7 @@ export default function CircuitMap({ circuit, className = '' }: CircuitMapProps)
           {
             featureType: 'water',
             elementType: 'geometry',
-            stylers: [{ color: '#a8d8ea' }]
+            stylers: [{ color: '#0a0a0a' }]
           },
           {
             featureType: 'water',
@@ -117,7 +117,7 @@ export default function CircuitMap({ circuit, className = '' }: CircuitMapProps)
           {
             featureType: 'water',
             elementType: 'labels.text.fill',
-            stylers: [{ color: '#5a8aa0' }]
+            stylers: [{ color: '#6a6a6a' }]
           }
         ]
       })
