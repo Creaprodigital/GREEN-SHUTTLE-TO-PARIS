@@ -1,7 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { SignOut, Car, MapPin, Calendar, Clock, User as UserIcon } from '@phosphor-icons/react'
+import { Car, MapPin, Calendar, Clock, User as UserIcon } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { motion } from 'framer-motion'
 import Header from '@/components/Header'
@@ -35,28 +34,11 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
       <Header 
         onNavigateToHome={onNavigateToHome}
         onNavigateToAirportTransfer={onNavigateToAirportTransfer}
+        onLogout={onLogout}
+        userEmail={userEmail}
+        isAdmin={false}
       />
       <div className="min-h-screen bg-background pt-20">
-      <header className="border-b-2 border-accent bg-primary sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: 'var(--font-display)' }}>
-                Client Dashboard
-              </h1>
-              <p className="text-sm text-foreground/70 mt-1">{userEmail}</p>
-            </div>
-            <Button
-              onClick={onLogout}
-              variant="outline"
-              className="border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
-            >
-              <SignOut className="mr-2" size={18} />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">

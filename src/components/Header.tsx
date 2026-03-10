@@ -1,15 +1,18 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { User, List, X, CaretDown } from '@phosphor-icons/react'
+import { User, List, X, CaretDown, SignOut } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface HeaderProps {
   onNavigateToLogin?: () => void
   onNavigateToAirportTransfer?: () => void
   onNavigateToHome?: () => void
+  onLogout?: () => void
+  userEmail?: string
+  isAdmin?: boolean
 }
 
-export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer, onNavigateToHome }: HeaderProps) {
+export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer, onNavigateToHome, onLogout, userEmail, isAdmin }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false)
 
@@ -119,14 +122,35 @@ export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer,
           </nav>
 
           <div className="flex items-center space-x-4">
-            <Button
-              onClick={onNavigateToLogin}
-              variant="outline"
-              className="hidden sm:flex border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
-            >
-              <User className="mr-2" size={18} />
-              Client / Admin
-            </Button>
+            {userEmail && onLogout ? (
+              <>
+                <div className="hidden sm:flex items-center gap-3">
+                  <div className="text-right">
+                    <p className="text-xs text-foreground/70 uppercase tracking-wide">
+                      {isAdmin ? 'Admin' : 'Client'}
+                    </p>
+                    <p className="text-sm text-foreground font-medium">{userEmail}</p>
+                  </div>
+                  <Button
+                    onClick={onLogout}
+                    variant="outline"
+                    className="border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
+                  >
+                    <SignOut className="mr-2" size={18} />
+                    Déconnexion
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <Button
+                onClick={onNavigateToLogin}
+                variant="outline"
+                className="hidden sm:flex border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
+              >
+                <User className="mr-2" size={18} />
+                Client / Admin
+              </Button>
+            )}
 
             <Button
               variant="ghost"
@@ -188,19 +212,43 @@ export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer,
                   </a>
                 )
               ))}
-              <Button
-                onClick={() => {
-                  setMobileMenuOpen(false)
-                  if (onNavigateToLogin) {
-                    onNavigateToLogin()
-                  }
-                }}
-                variant="outline"
-                className="w-full border-accent text-foreground hover:bg-accent hover:text-accent-foreground sm:hidden"
-              >
-                <User className="mr-2" size={18} />
-                Client / Admin
-              </Button>
+              {userEmail && onLogout ? (
+                <div className="sm:hidden">
+                  <div className="mb-4 p-4 bg-secondary rounded-lg">
+                    <p className="text-xs text-foreground/70 uppercase tracking-wide mb-1">
+                      {isAdmin ? 'Admin' : 'Client'}
+                    </p>
+                    <p className="text-sm text-foreground font-medium">{userEmail}</p>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      if (onLogout) {
+                        onLogout()
+                      }
+                    }}
+                    variant="outline"
+                    className="w-full border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
+                  >
+                    <SignOut className="mr-2" size={18} />
+                    Déconnexion
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    if (onNavigateToLogin) {
+                      onNavigateToLogin()
+                    }
+                  }}
+                  variant="outline"
+                  className="w-full border-accent text-foreground hover:bg-accent hover:text-accent-foreground sm:hidden"
+                >
+                  <User className="mr-2" size={18} />
+                  Client / Admin
+                </Button>
+              )}
             </nav>
           </motion.div>
         )}

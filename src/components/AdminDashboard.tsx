@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { SignOut, Car, MapPin, Calendar, Clock, User as UserIcon, CheckCircle, XCircle, Trash } from '@phosphor-icons/react'
+import { Car, MapPin, Calendar, Clock, User as UserIcon, CheckCircle, XCircle, Trash } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
@@ -80,28 +80,11 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
       <Header 
         onNavigateToHome={onNavigateToHome}
         onNavigateToAirportTransfer={onNavigateToAirportTransfer}
+        onLogout={onLogout}
+        userEmail={userEmail}
+        isAdmin={true}
       />
       <div className="min-h-screen bg-background pt-20">
-      <header className="border-b-2 border-accent bg-primary sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: 'var(--font-display)' }}>
-                Admin Dashboard
-              </h1>
-              <p className="text-sm text-foreground/70 mt-1">{userEmail}</p>
-            </div>
-            <Button
-              onClick={onLogout}
-              variant="outline"
-              className="border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
-            >
-              <SignOut className="mr-2" size={18} />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
