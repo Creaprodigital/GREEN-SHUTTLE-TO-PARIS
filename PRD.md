@@ -1,23 +1,51 @@
 # Planning Guide
 
-Green Shuttle To Paris - A premium chauffeur service booking platform that enables users to reserve professional transportation to Paris and beyond with an elegant, trustworthy interface.
+Green Shuttle To Paris - A premium chauffeur service booking platform that enables users to reserve professional transportation to Paris and beyond with an elegant, trustworthy interface. Now includes comprehensive client and admin portals for booking management.
 
 **Experience Qualities**: 
 1. **Luxurious** - The interface should feel refined and premium, reflecting the high-end nature of the service
 2. **Trustworthy** - Clean, professional design that builds confidence in the booking process
 3. **Effortless** - Streamlined booking flow that makes reserving a ride feel simple and intuitive
 
-**Complexity Level**: Light Application (multiple features with basic state)
-This is a booking-focused application with a multi-step form, service showcase, and informational sections. It requires state management for the booking flow but doesn't need complex backend integration or multiple views.
+**Complexity Level**: Complex Application (advanced functionality with multiple views)
+This is a comprehensive booking platform with multi-step forms, client/admin authentication, dashboard views for booking management, and persistent data storage. It requires state management, role-based access control, and CRUD operations on bookings.
 
 ## Essential Features
 
 **Booking Form**
-- Functionality: Multi-step form collecting pickup location, destination, date/time, and service type
+- Functionality: Multi-step form collecting pickup location, destination, date/time, service type, and user email
 - Purpose: Core conversion point - enables users to request a chauffeur service
 - Trigger: User interaction with prominent booking widget on homepage
-- Progression: Select service type → Enter pickup location → Enter destination → Choose date/time → Review details → Submit request
-- Success criteria: Form validates inputs, stores booking data, displays confirmation message
+- Progression: Select service type → Enter pickup location → Enter destination → Choose date/time → Enter email → Submit request
+- Success criteria: Form validates inputs, stores booking data with pending status, displays confirmation message
+
+**Client Authentication & Dashboard**
+- Functionality: Email-based login system allowing clients to access their personal booking dashboard
+- Purpose: Enable users to view and track all their reservations in one place
+- Trigger: User clicks "Client / Admin" button and logs in as client
+- Progression: Enter email → Access dashboard → View all personal bookings with status, details, and pricing
+- Success criteria: Users can see only their own bookings filtered by email, with clear status indicators
+
+**Admin Dashboard**
+- Functionality: Administrative panel with full booking management capabilities
+- Purpose: Allow administrators to view all bookings, update statuses, set prices, and manage reservations
+- Trigger: User logs in with admin checkbox selected
+- Progression: Enter email + check admin → Access admin panel → View/search/filter all bookings → Update status/price → Delete bookings
+- Success criteria: Admin can manage all bookings, filter by status, search by details, modify booking information in real-time
+
+**Booking Management System**
+- Functionality: Persistent storage and CRUD operations for all bookings
+- Purpose: Maintain booking history and allow modifications from admin side
+- Trigger: Booking creation from homepage form or updates from admin dashboard
+- Progression: Create booking → Store with unique ID → Allow admin updates → Reflect changes in client/admin views
+- Success criteria: All bookings persist between sessions, updates are immediate, data integrity maintained
+
+**Status Tracking**
+- Functionality: Visual status indicators for bookings (pending, confirmed, completed, cancelled)
+- Purpose: Provide clear visibility into booking lifecycle for both clients and admins
+- Trigger: Booking creation or admin status update
+- Progression: Initial "pending" status → Admin confirms → Changes to "confirmed" → Eventually "completed" or "cancelled"
+- Success criteria: Color-coded badges, status changes reflected in real-time, intuitive status workflow
 
 **Service Type Selection**
 - Functionality: Display available service tiers (Business, First Class, SUV) with descriptions and features
@@ -42,10 +70,16 @@ This is a booking-focused application with a multi-step form, service showcase, 
 
 ## Edge Case Handling
 
-- **Empty Form Submission**: Validate all required fields before submission, highlight missing inputs with clear error messages
-- **Invalid Locations**: Show helpful hints for location format, suggest valid inputs
-- **Past Date/Time Selection**: Prevent selection of past dates, default to current date/time + 1 hour minimum
-- **No Service Selected**: Require service type selection before proceeding, default to most popular option
+- **Empty Form Submission**: Validate all required fields (including email) before submission, highlight missing inputs with clear error messages
+- **Invalid Email Format**: Check for valid email format, show helpful error if @ symbol missing or format incorrect
+- **Unauthorized Access**: Login required to access client/admin dashboards, redirect to login if attempting direct access
+- **No Bookings Found**: Display empty state with helpful message and icon when user has no bookings
+- **Admin vs Client Access**: Clearly differentiate admin capabilities (full CRUD) from client view (read-only)
+- **Concurrent Updates**: Handle potential conflicts when admin updates booking while client is viewing
+- **Invalid Price Input**: Validate numeric price input, only accept positive numbers
+- **Search/Filter No Results**: Show appropriate message when filters return no bookings
+- **Past Date/Time Selection**: Prevent selection of past dates in booking form, default to current date/time + 1 hour minimum
+- **Logout Confirmation**: Clear user session and redirect to home when logging out
 - **Incomplete Booking**: Persist partial form data so users can return to complete booking
 
 ## Design Direction
@@ -84,13 +118,15 @@ Animations should feel refined and purposeful - subtle entrance effects as conte
 ## Component Selection
 
 - **Components**: 
-  - Card (service showcases with custom shadows and subtle hover lifts)
-  - Button (primary with gold accent, secondary with navy outline, large touch targets)
-  - Input (clean fields with floating labels, custom focus states)
-  - Select (custom dropdown for service type, date/time pickers)
+  - Card (service showcases, booking cards in dashboards with custom shadows and subtle hover lifts)
+  - Button (primary with gold accent for CTAs, secondary with outline, logout/login actions)
+  - Input (clean fields with floating labels, custom focus states, email/text/date/time types)
+  - Select (custom dropdown for service type, status updates, filters, passengers)
   - Tabs (for switching between one-way/round-trip/hourly booking types)
-  - Badge (to highlight service features like "Most Popular")
+  - Badge (status indicators with color coding: yellow=pending, green=confirmed, blue=completed, red=cancelled)
   - Separator (subtle dividers between content sections)
+  - Table-like Card Grid (for displaying booking information in structured format)
+  - Search & Filter Controls (admin dashboard filtering by status and search term)
 
 - **Customizations**: 
   - Custom booking form card with elevated shadow and rounded corners
@@ -99,19 +135,26 @@ Animations should feel refined and purposeful - subtle entrance effects as conte
   - Hero section with full-width background treatment
 
 - **States**: 
-  - Buttons: Subtle scale on hover (1.02x), deeper shadow on hover, smooth color transitions
-  - Inputs: Border color shift and subtle glow on focus, smooth label animation
-  - Cards: Gentle lift effect (translateY -4px) with enhanced shadow on hover
+  - Buttons: Subtle scale on hover (1.02x), deeper shadow on hover, smooth color transitions, fixed position "Client/Admin" button in top-right
+  - Inputs: Border color shift and subtle glow on focus, smooth label animation, icon integration on left side
+  - Cards: Gentle lift effect (translateY -4px) with enhanced shadow on hover, status-based border coloring
+  - Badges: Color-coded by status with semi-transparent backgrounds and matching borders
   - Form steps: Progress indicator showing current step with gold accent
+  - Login: Checkbox for admin mode selection
+  - Dashboard Navigation: Header with user info and logout button
 
 - **Icon Selection**: 
-  - Car (vehicle service type indicator)
-  - MapPin (location inputs)
+  - Car (vehicle service type indicator, empty states)
+  - MapPin (location inputs - filled and outline variants)
   - Calendar/Clock (date/time selection)
-  - CheckCircle (service features, confirmation)
-  - ArrowRight (navigation, CTAs)
-  - Users (passenger count)
+  - CheckCircle (service features, confirmation, status updates)
+  - XCircle (cancellation, errors)
+  - ArrowRight (navigation, CTAs, form progression)
+  - Users/User (passenger count, user profile, authentication)
   - Shield (safety/insurance highlights)
+  - SignIn/SignOut (authentication actions)
+  - EnvelopeSimple (email input field)
+  - Trash (delete booking action in admin)
 
 - **Spacing**: 
   - Container max-width: max-w-7xl
@@ -121,8 +164,11 @@ Animations should feel refined and purposeful - subtle entrance effects as conte
   - Form field spacing: space-y-4
 
 - **Mobile**: 
-  - Single column layout for service cards on mobile, 2-3 columns on desktop
-  - Sticky booking CTA button on mobile at bottom of viewport
+  - Single column layout for service cards and booking details on mobile, 2 columns on desktop
+  - Fixed "Client/Admin" button remains accessible in top-right corner
   - Collapsible form sections to reduce vertical scroll
   - Touch-optimized input sizes (min-h-12)
   - Simplified hero with smaller typography scale
+  - Dashboard tables stack vertically on mobile
+  - Statistics cards in admin dashboard: 2 columns on mobile, 5 columns on desktop
+  - Filter controls stack vertically on mobile devices

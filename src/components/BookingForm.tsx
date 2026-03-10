@@ -5,60 +5,63 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { MapPin, Calendar, Clock, Users, ArrowRight } from '@phosphor-icons/react'
+import { MapPin, Calendar, Clock, Users, ArrowRight, EnvelopeSimple } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import PlacesAutocomplete from '@/components/PlacesAutocomplete'
-
-interface BookingData {
-  tripType: string
-  pickup: string
-  destination: string
-  date: string
-  time: string
-  passengers: string
-  serviceType: string
-}
+import { Booking } from '@/types/booking'
 
 export default function BookingForm() {
-  const [bookings, setBookings] = useKV<BookingData[]>('bookings', [] as BookingData[])
-  const [tripType, setTripType] = useState('oneway')
+  const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
+  const [tripType, setTripType] = useState<'oneway' | 'roundtrip' | 'hourly'>('oneway')
   const [pickup, setPickup] = useState('')
   const [destination, setDestination] = useState('')
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
   const [passengers, setPassengers] = useState('1')
-  const [serviceType, setServiceType] = useState('business')
+  const [serviceType, setServiceType] = useState<'business' | 'firstclass' | 'suv'>('business')
+  const [userEmail, setUserEmail] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!pickup || !destination || !date || !time) {
+    if (!pickup || !destination || !date || !time || !userEmail) {
       toast.error('Please fill in all required fields')
       return
     }
 
-    const newBooking: BookingData = {
+    if (!userEmail.includes('@')) {
+      toast.error('Please enter a valid email address')
+      return
+    }
+
+    const newBooking: Booking = {
+      id: `booking-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+      userId: userEmail,
+      userEmail,
       tripType,
       pickup,
       destination,
       date,
       time,
       passengers,
-      serviceType
+      serviceType,
+      status: 'pending',
+      createdAt: Date.now()
     }
 
     setBookings((current) => [...(current || []), newBooking])
     
     toast.success('Booking request submitted successfully!', {
-      description: `${pickup} → ${destination} on ${date}`
+      description: `We'll send confirmation to ${userEmail}`
     })
 
     setPickup('')
     setDestination('')
     setDate('')
     setTime('')
+    setUserEmail('')
   }
 
   return (
@@ -75,7 +78,7 @@ export default function BookingForm() {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
-          <Tabs value={tripType} onValueChange={setTripType} className="mb-6">
+          <Tabs value={tripType} onValueChange={(v) => setTripType(v as 'oneway' | 'roundtrip' | 'hourly')} className="mb-6">
             <TabsList className="grid w-full grid-cols-3 bg-secondary">
               <TabsTrigger value="oneway">One Way</TabsTrigger>
               <TabsTrigger value="roundtrip">Round Trip</TabsTrigger>
@@ -159,7 +162,7 @@ export default function BookingForm() {
 
               <div className="space-y-2">
                 <Label htmlFor="service" className="text-sm font-medium uppercase tracking-wide">Service Type</Label>
-                <Select value={serviceType} onValueChange={setServiceType}>
+                <Select value={serviceType} onValueChange={(v) => setServiceType(v as 'business' | 'firstclass' | 'suv')}>
                   <SelectTrigger id="service" className="h-12 bg-secondary border-border">
                     <SelectValue />
                   </SelectTrigger>
@@ -169,6 +172,21 @@ export default function BookingForm() {
                     <SelectItem value="suv">Premium SUV</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium uppercase tracking-wide">Email Address</Label>
+                <div className="relative">
+                  <EnvelopeSimple className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={userEmail}
+                    onChange={(e) => setUserEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="pl-11 h-12 bg-secondary border-border"
+                  />
+                </div>
               </div>
             </div>
 
