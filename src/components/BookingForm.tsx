@@ -13,6 +13,7 @@ import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import PlacesAutocomplete from '@/components/PlacesAutocomplete'
+import CircuitMap from '@/components/CircuitMap'
 import { Booking } from '@/types/booking'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { ServiceOption, VehiclePricing, DEFAULT_PRICING, DEFAULT_OPTIONS, PricingSettings } from '@/types/pricing'
@@ -594,6 +595,19 @@ export default function BookingForm() {
                       </div>
                     )}
                   </div>
+
+                  {serviceType === 'tour' && selectedCircuitId && circuits && circuits.find(c => c.id === selectedCircuitId) && (
+                    <div className="mt-5 border-t border-border pt-5">
+                      <h4 className="text-sm font-medium uppercase tracking-wide mb-3 text-accent flex items-center gap-2">
+                        <MapPin size={18} weight="fill" />
+                        Itinéraire du Circuit
+                      </h4>
+                      <CircuitMap 
+                        circuit={circuits.find(c => c.id === selectedCircuitId)!} 
+                        className="h-80 w-full border-2 border-accent/30 rounded-lg overflow-hidden"
+                      />
+                    </div>
+                  )}
 
                   {serviceType === 'transfer' && transferType === 'roundtrip' && (
                     <div className="border-t border-border pt-5 mt-2">
