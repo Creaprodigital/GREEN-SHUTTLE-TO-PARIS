@@ -167,6 +167,16 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     setUploadingImage(vehicleId)
     
     try {
+      const generateUniqueFileName = (originalName: string): string => {
+        const timestamp = Date.now()
+        const randomStr = Math.random().toString(36).substring(2, 8)
+        const extension = originalName.substring(originalName.lastIndexOf('.'))
+        const nameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.'))
+        return `${nameWithoutExt}_${timestamp}_${randomStr}${extension}`
+      }
+
+      const uniqueFileName = generateUniqueFileName(file.name)
+      
       const result = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader()
         reader.onload = (e) => {
@@ -185,7 +195,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
         const data = Array.isArray(currentData) ? currentData : DEFAULT_FLEET
         const updated = data.map((vehicle) => {
           if (vehicle.id === vehicleId) {
-            return { ...vehicle, image: result }
+            return { ...vehicle, image: result, imageName: uniqueFileName }
           }
           return vehicle
         })
@@ -193,7 +203,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
       })
       
       setUploadingImage(null)
-      toast.success(`Image téléchargée avec succès pour ${vehicleId}`)
+      toast.success(`Image "${uniqueFileName}" téléchargée avec succès`)
     } catch (error) {
       setUploadingImage(null)
       toast.error('Erreur lors du téléchargement de l\'image')
