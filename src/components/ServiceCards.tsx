@@ -1,15 +1,15 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { motion } from 'framer-motion'
-import businessSedan from '@/assets/images/business-class.png'
-import luxurySedan from '@/assets/images/luxury-sedan.svg'
-import premiumSuv from '@/assets/images/premium-suv.svg'
+import businessClassImg from '@/assets/images/business-class.png'
+import firstClassImg from '@/assets/images/luxury-sedan.svg'
+import businessVanImg from '@/assets/images/premium-suv.svg'
 
 const services = [
   {
     id: 'business',
     name: 'Business Class',
     description: 'Professional transportation for everyday business needs',
-    image: businessSedan,
+    image: businessClassImg,
     features: ['Sedan vehicles', 'Professional drivers', 'Real-time tracking', 'Wi-Fi available'],
     popular: false
   },
@@ -17,16 +17,16 @@ const services = [
     id: 'firstclass',
     name: 'First Class',
     description: 'Premium comfort for those who demand excellence',
-    image: luxurySedan,
+    image: firstClassImg,
     features: ['Luxury sedans', 'Top-rated drivers', 'Complimentary refreshments', 'Priority support'],
     popular: true
   },
   {
-    id: 'suv',
-    name: 'Premium SUV',
+    id: 'businessvan',
+    name: 'Business Van',
     description: 'Spacious luxury for groups or extra luggage',
-    image: premiumSuv,
-    features: ['High-end SUVs', 'Extra space', 'Perfect for groups', 'Premium amenities'],
+    image: businessVanImg,
+    features: ['Premium vans', 'Extra space', 'Perfect for groups', 'Premium amenities'],
     popular: false
   }
 ]
