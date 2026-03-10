@@ -131,6 +131,7 @@ export default function BookingForm() {
       console.log('Tarif trouvé:', vehiclePricing)
 
       let basePrice = 0
+      let isForfaitApplied = false
       
       if (serviceType === 'hourly') {
         const hours = parseInt(hourlyDuration)
@@ -153,12 +154,15 @@ export default function BookingForm() {
         
         if (zonePricing) {
           basePrice = zonePricing.fixedPrice
-          console.log(`🎯 FORFAIT ZONE TROUVÉ: ${fromZone?.name} → ${toZone?.name} = ${basePrice}€`)
+          isForfaitApplied = true
+          console.log(`🎯 FORFAIT ZONE TROUVÉ: ${fromZone?.name} → ${toZone?.name} = ${basePrice}€ FIXE`)
           
           if (transferType === 'roundtrip') {
             basePrice *= 2
             console.log(`↔️ Aller-retour: × 2 = ${basePrice.toFixed(2)}€`)
           }
+          
+          console.log(`✅ FORFAIT APPLIQUÉ - Prix fixe final: ${basePrice.toFixed(2)}€ (options et arrondis ignorés)`)
         } else {
           if (fromZone || toZone) {
             console.log(`ℹ️ Point(s) dans zone(s): ${fromZone?.name || 'hors zone'} → ${toZone?.name || 'hors zone'}, mais pas de forfait défini`)
@@ -200,23 +204,28 @@ export default function BookingForm() {
         }
       }
 
-      const optionsPrice = selectedOptions.reduce((sum, optionId) => {
-        const option = serviceOptions?.find(o => o.id === optionId)
-        const price = option?.price || 0
-        if (price > 0) {
-          console.log(`   ➕ Option ${option?.name}: +${price}€`)
-        }
-        return sum + price
-      }, 0)
+      let totalPrice = basePrice
 
-      let totalPrice = basePrice + optionsPrice
-      
-      if (pricingSettings?.roundToWholeEuro) {
-        totalPrice = Math.ceil(totalPrice)
-        console.log(`🔄 Prix arrondi à .00€: ${totalPrice.toFixed(2)}€`)
+      if (!isForfaitApplied) {
+        const optionsPrice = selectedOptions.reduce((sum, optionId) => {
+          const option = serviceOptions?.find(o => o.id === optionId)
+          const price = option?.price || 0
+          if (price > 0) {
+            console.log(`   ➕ Option ${option?.name}: +${price}€`)
+          }
+          return sum + price
+        }, 0)
+
+        totalPrice = basePrice + optionsPrice
+        
+        if (pricingSettings?.roundToWholeEuro) {
+          totalPrice = Math.ceil(totalPrice)
+          console.log(`🔄 Prix arrondi à .00€: ${totalPrice.toFixed(2)}€`)
+        }
+        
+        console.log(`✅ Total ${vehicle.title}: ${basePrice.toFixed(2)}€ + ${optionsPrice.toFixed(2)}€ options = ${totalPrice.toFixed(2)}€`)
       }
       
-      console.log(`✅ Total ${vehicle.title}: ${basePrice.toFixed(2)}€ + ${optionsPrice.toFixed(2)}€ options = ${totalPrice.toFixed(2)}€`)
       prices[vehicle.id] = totalPrice
     })
 
