@@ -8,19 +8,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
-import { MapPin, Calendar, Clock, Users, ArrowRight, ArrowLeft, User, Phone, EnvelopeSimple, CreditCard, Money, Bank, Check, Suitcase } from '@phosphor-icons/react'
+import { MapPin, Calendar, Clock, Users, ArrowRight, ArrowLeft, User, Phone, EnvelopeSimple, CreditCard, Money, Bank, Check, Suitcase, CurrencyEur } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import PlacesAutocomplete from '@/components/PlacesAutocomplete'
 import { Booking } from '@/types/booking'
 import { VehicleClass } from '@/types/fleet'
-import { ServiceOption } from '@/types/pricing'
+import { ServiceOption, VehiclePricing } from '@/types/pricing'
 
 export default function BookingForm() {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
   const [fleet] = useKV<VehicleClass[]>('fleet', [])
   const [serviceOptions] = useKV<ServiceOption[]>('service-options', [])
+  const [pricing] = useKV<VehiclePricing[]>('vehicle-pricing', [])
+  const [useLowSeason] = useKV<boolean>('use-low-season', false)
   const [currentStep, setCurrentStep] = useState(1)
   
   const [serviceType, setServiceType] = useState<'transfer' | 'hourly' | 'tour'>('transfer')
@@ -45,6 +47,35 @@ export default function BookingForm() {
   const [notes, setNotes] = useState('')
   
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'cash' | 'transfer'>('card')
+
+  const calculatePrice = (vehicleId: string): number => {
+    const vehiclePricing = pricing?.find(p => p.vehicleId === vehicleId)
+    if (!vehiclePricing) return 0
+
+    let basePrice = 0
+    
+    if (serviceType === 'hourly') {
+      const hours = parseInt(hourlyDuration)
+      const pricePerHour = useLowSeason ? (vehiclePricing.lowSeasonPricePerHour || vehiclePricing.pricePerHour) : vehiclePricing.pricePerHour
+      basePrice = pricePerHour * hours
+    } else if (serviceType === 'tour') {
+      basePrice = useLowSeason ? (vehiclePricing.lowSeasonTourBasePrice || vehiclePricing.tourBasePrice) : vehiclePricing.tourBasePrice
+    } else {
+      const pricePerKm = useLowSeason ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
+      basePrice = pricePerKm * 50
+      
+      if (transferType === 'roundtrip') {
+        basePrice *= 2
+      }
+    }
+
+    const optionsPrice = selectedOptions.reduce((sum, optionId) => {
+      const option = serviceOptions?.find(o => o.id === optionId)
+      return sum + (option?.price || 0)
+    }, 0)
+
+    return basePrice + optionsPrice
+  }
 
   const validateStep1 = () => {
     if (!pickup || !date || !time) {
@@ -425,37 +456,49 @@ export default function BookingForm() {
                     <RadioGroup value={vehicleType} onValueChange={setVehicleType}>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {fleet && fleet.length > 0 ? (
-                          fleet.sort((a, b) => a.order - b.order).map((vehicle) => (
-                            <div key={vehicle.id}>
-                              <RadioGroupItem
-                                value={vehicle.id}
-                                id={vehicle.id}
-                                className="peer sr-only"
-                              />
-                              <Label
-                                htmlFor={vehicle.id}
-                                className="flex flex-col items-center gap-3 rounded-lg border-2 border-border bg-secondary p-4 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all"
-                              >
-                                {vehicle.image && (
-                                  <div className="w-full h-32 rounded-md overflow-hidden bg-background">
-                                    <img 
-                                      src={vehicle.image} 
-                                      alt={vehicle.title}
-                                      className="w-full h-full"
-                                      style={{
-                                        objectFit: vehicle.imageSettings?.fit || 'cover',
-                                        objectPosition: `${vehicle.imageSettings?.positionX || 50}% ${vehicle.imageSettings?.positionY || 50}%`
-                                      }}
-                                    />
+                          fleet.sort((a, b) => a.order - b.order).map((vehicle) => {
+                            const vehiclePrice = calculatePrice(vehicle.id)
+                            return (
+                              <div key={vehicle.id}>
+                                <RadioGroupItem
+                                  value={vehicle.id}
+                                  id={vehicle.id}
+                                  className="peer sr-only"
+                                />
+                                <Label
+                                  htmlFor={vehicle.id}
+                                  className="flex flex-col items-center gap-3 rounded-lg border-2 border-border bg-secondary p-4 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all"
+                                >
+                                  {vehicle.image && (
+                                    <div className="w-full h-32 rounded-md overflow-hidden bg-background">
+                                      <img 
+                                        src={vehicle.image} 
+                                        alt={vehicle.title}
+                                        className="w-full h-full"
+                                        style={{
+                                          objectFit: vehicle.imageSettings?.fit || 'cover',
+                                          objectPosition: `${vehicle.imageSettings?.positionX || 50}% ${vehicle.imageSettings?.positionY || 50}%`
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                  <div className="text-center w-full">
+                                    <div className="font-semibold uppercase tracking-wide">{vehicle.title}</div>
+                                    <div className="text-xs text-muted-foreground mt-1">{vehicle.description}</div>
+                                    {vehiclePrice > 0 && (
+                                      <div className="mt-3 pt-3 border-t border-border">
+                                        <div className="flex items-center justify-center gap-1 text-accent font-bold text-lg">
+                                          <CurrencyEur size={20} weight="bold" />
+                                          <span>{vehiclePrice.toFixed(2)}</span>
+                                        </div>
+                                        <div className="text-[10px] text-muted-foreground mt-1">Prix estimé</div>
+                                      </div>
+                                    )}
                                   </div>
-                                )}
-                                <div className="text-center">
-                                  <div className="font-semibold uppercase tracking-wide">{vehicle.title}</div>
-                                  <div className="text-xs text-muted-foreground mt-1">{vehicle.description}</div>
-                                </div>
-                              </Label>
-                            </div>
-                          ))
+                                </Label>
+                              </div>
+                            )
+                          })
                         ) : (
                           <div className="col-span-2 text-center text-muted-foreground py-8">
                             Aucun véhicule disponible
@@ -495,6 +538,44 @@ export default function BookingForm() {
                             </div>
                           </div>
                         ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {vehicleType && (
+                    <div className="bg-accent/10 border-2 border-accent/30 rounded-lg p-5 space-y-3">
+                      <h4 className="font-semibold uppercase tracking-wide text-sm flex items-center gap-2">
+                        <CurrencyEur size={18} weight="bold" />
+                        Estimation du Prix
+                      </h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Véhicule:</span>
+                          <span className="font-medium">{fleet?.find(v => v.id === vehicleType)?.title}</span>
+                        </div>
+                        {selectedOptions.length > 0 && (
+                          <>
+                            {selectedOptions.map(optionId => {
+                              const option = serviceOptions?.find(o => o.id === optionId)
+                              if (!option || option.price === 0) return null
+                              return (
+                                <div key={optionId} className="flex justify-between items-center text-xs">
+                                  <span className="text-muted-foreground">{option.name}:</span>
+                                  <span className="font-medium">+{option.price.toFixed(2)}€</span>
+                                </div>
+                              )
+                            })}
+                          </>
+                        )}
+                        <div className="border-t border-accent/20 pt-2 mt-2">
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold uppercase tracking-wide">Total Estimé:</span>
+                            <span className="text-2xl font-bold text-accent">{calculatePrice(vehicleType).toFixed(2)}€</span>
+                          </div>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground text-center mt-2">
+                          * Prix estimatif, le tarif final sera calculé en fonction de la distance réelle et de la durée du trajet
+                        </p>
                       </div>
                     </div>
                   )}
