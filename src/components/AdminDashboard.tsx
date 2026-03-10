@@ -59,7 +59,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   const [uploadingImage, setUploadingImage] = useState<string | null>(null)
   const [editedTitle, setEditedTitle] = useState<string>('')
   const [editedDescription, setEditedDescription] = useState<string>('')
-  const [viewingImage, setViewingImage] = useState<string | null>(null)
+  const [editingImage, setEditingImage] = useState<string | null>(null)
   const [imageZoom, setImageZoom] = useState<number>(100)
   const [imagePosition, setImagePosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 })
   const [imageFit, setImageFit] = useState<'cover' | 'contain' | 'fill'>('cover')
@@ -273,17 +273,17 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
       />
       <div className="min-h-screen bg-background pt-20">
 
-      <Dialog open={viewingImage !== null} onOpenChange={(open) => !open && setViewingImage(null)}>
+      <Dialog open={editingImage !== null} onOpenChange={(open) => !open && setEditingImage(null)}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold uppercase tracking-wide">
-              {viewingImage && (Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET).find(v => v.id === viewingImage)?.title} - Prévisualisation
+              {editingImage && (Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET).find(v => v.id === editingImage)?.title} - Modifier l'image
             </DialogTitle>
           </DialogHeader>
           
-          {viewingImage && (() => {
+          {editingImage && (() => {
             const data = Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET
-            const vehicle = data.find(v => v.id === viewingImage)
+            const vehicle = data.find(v => v.id === editingImage)
             return vehicle?.image && (
             <div className="space-y-6 pt-4">
               <div 
@@ -406,11 +406,11 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                   <div className="flex gap-2">
                     <Button
                       onClick={() => {
-                        if (viewingImage) {
+                        if (editingImage) {
                           setFleetData((current) => {
                             const data = Array.isArray(current) ? current : DEFAULT_FLEET
                             return data.map((vehicle) =>
-                              vehicle.id === viewingImage
+                              vehicle.id === editingImage
                                 ? {
                                     ...vehicle,
                                     imageSettings: {
@@ -423,7 +423,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                             )
                           })
                           toast.success('Paramètres d\'affichage enregistrés')
-                          setViewingImage(null)
+                          setEditingImage(null)
                           setHasImageChanges(false)
                         }
                       }}
@@ -436,7 +436,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                     <Button
                       variant="outline"
                       onClick={() => {
-                        setViewingImage(null)
+                        setEditingImage(null)
                         setHasImageChanges(false)
                       }}
                       className="h-12 px-6"
@@ -662,7 +662,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                         variant="secondary"
                                         size="icon"
                                         onClick={() => {
-                                          setViewingImage(vehicle.id)
+                                          setEditingImage(vehicle.id)
                                           const settings = vehicle.imageSettings
                                           setImageZoom(100)
                                           setImagePosition({ 
