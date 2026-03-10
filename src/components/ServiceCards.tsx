@@ -3,16 +3,11 @@ import { motion } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import { Car, Crown, Van } from '@phosphor-icons/react'
 
-const businessClassImg = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzFhMWExYSIvPjwvc3ZnPg=='
-const firstClassImg = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzFhMWExYSIvPjwvc3ZnPg=='
-const businessVanImg = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzFhMWExYSIvPjwvc3ZnPg=='
-
 const services = [
   {
     id: 'business',
     name: 'Business Class',
     description: 'Professional transportation for everyday business needs',
-    defaultImage: businessClassImg,
     icon: Car,
     features: ['Sedan vehicles', 'Professional drivers', 'Real-time tracking', 'Wi-Fi available'],
     popular: false
@@ -21,7 +16,6 @@ const services = [
     id: 'firstclass',
     name: 'First Class',
     description: 'Premium comfort for those who demand excellence',
-    defaultImage: firstClassImg,
     icon: Crown,
     features: ['Luxury sedans', 'Top-rated drivers', 'Complimentary refreshments', 'Priority support'],
     popular: true
@@ -30,7 +24,6 @@ const services = [
     id: 'businessvan',
     name: 'Business Van',
     description: 'Spacious luxury for groups or extra luggage',
-    defaultImage: businessVanImg,
     icon: Van,
     features: ['Premium vans', 'Extra space', 'Perfect for groups', 'Premium amenities'],
     popular: false
@@ -39,9 +32,9 @@ const services = [
 
 export default function ServiceCards() {
   const [vehicleImages] = useKV<Record<string, string>>('vehicle-images', {
-    business: businessClassImg,
-    firstclass: firstClassImg,
-    suv: businessVanImg
+    business: '',
+    firstclass: '',
+    suv: ''
   })
 
   return (
@@ -60,8 +53,8 @@ export default function ServiceCards() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {services.map((service, index) => {
             const imageUrl = service.id === 'businessvan' 
-              ? (vehicleImages?.suv || service.defaultImage)
-              : (vehicleImages?.[service.id] || service.defaultImage)
+              ? (vehicleImages?.suv || '')
+              : (vehicleImages?.[service.id] || '')
             
             return (
               <motion.div
@@ -78,7 +71,15 @@ export default function ServiceCards() {
                     </div>
                   )}
                   <div className="relative w-full h-64 overflow-hidden bg-primary flex items-center justify-center">
-                    <service.icon size={120} weight="thin" className="text-accent opacity-80 group-hover:scale-105 transition-transform duration-500" />
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt={service.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <service.icon size={120} weight="thin" className="text-accent opacity-80 group-hover:scale-105 transition-transform duration-500" />
+                    )}
                   </div>
                   <CardHeader className="pb-4 pt-6">
                     <CardTitle className="text-2xl uppercase tracking-wide" style={{ fontFamily: 'var(--font-body)' }}>
