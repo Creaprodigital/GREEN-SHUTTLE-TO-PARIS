@@ -18,6 +18,12 @@ export default function CircuitMap({ circuit, className = '' }: CircuitMapProps)
       const map = new google.maps.Map(mapRef.current, {
         center: { lat: circuit.stops[0].lat, lng: circuit.stops[0].lng },
         zoom: 12,
+        mapTypeId: 'roadmap',
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        zoomControl: true,
+        scaleControl: true,
         styles: [
           {
             featureType: 'all',
