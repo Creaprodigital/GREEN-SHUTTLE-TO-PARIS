@@ -6,7 +6,7 @@ import Features from '@/components/Features'
 import Footer from '@/components/Footer'
 
 interface HomeProps {
-  onNavigateToLogin: () => void
+  onNavigateToLogin: (isAdmin: boolean) => void
   onNavigateToAirportTransfer: () => void
 }
 

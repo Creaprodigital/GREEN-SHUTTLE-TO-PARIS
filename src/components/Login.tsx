@@ -12,9 +12,10 @@ interface LoginProps {
   onLogin: (email: string, isAdmin: boolean) => void
   onNavigateToHome: () => void
   onNavigateToAirportTransfer: () => void
+  isAdminMode?: boolean
 }
 
-export default function Login({ onLogin, onNavigateToHome, onNavigateToAirportTransfer }: LoginProps) {
+export default function Login({ onLogin, onNavigateToHome, onNavigateToAirportTransfer, isAdminMode = false }: LoginProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -31,13 +32,12 @@ export default function Login({ onLogin, onNavigateToHome, onNavigateToAirportTr
       return
     }
 
-    if (email.toLowerCase() === 'admin@admin.fr' && password === 'admin') {
-      onLogin(email, true)
-      toast.success('Bienvenue Admin!')
-      return
-    }
-
-    if (password) {
+    if (isAdminMode) {
+      if (email.toLowerCase() === 'admin@admin.fr' && password === 'admin') {
+        onLogin(email, true)
+        toast.success('Bienvenue Admin!')
+        return
+      }
       toast.error('Identifiants admin invalides')
       return
     }
@@ -68,7 +68,7 @@ export default function Login({ onLogin, onNavigateToHome, onNavigateToAirportTr
                 Green Shuttle To Paris
               </CardTitle>
               <CardDescription className="text-base mt-2">
-                Access your account
+                {isAdminMode ? 'Admin Access' : 'Client Access'}
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
@@ -87,25 +87,34 @@ export default function Login({ onLogin, onNavigateToHome, onNavigateToAirportTr
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium uppercase tracking-wide">
-                    Password <span className="text-muted-foreground text-xs normal-case">(For Admin Only)</span>
-                  </Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter password for admin access"
-                    className="h-12 bg-secondary border-border"
-                  />
-                </div>
+                {isAdminMode && (
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-sm font-medium uppercase tracking-wide">
+                      Password
+                    </Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter your password"
+                      className="h-12 bg-secondary border-border"
+                    />
+                  </div>
+                )}
 
-                <div className="p-3 bg-secondary/50 rounded border border-border text-xs text-muted-foreground">
-                  <p className="font-medium mb-1">Access Information:</p>
-                  <p>• Clients: Enter email only</p>
-                  <p>• Admins: Enter email and password</p>
-                </div>
+                {isAdminMode ? (
+                  <div className="p-3 bg-secondary/50 rounded border border-border text-xs text-muted-foreground">
+                    <p className="font-medium mb-1">Admin Credentials:</p>
+                    <p>• Email: admin@admin.fr</p>
+                    <p>• Password: admin</p>
+                  </div>
+                ) : (
+                  <div className="p-3 bg-secondary/50 rounded border border-border text-xs text-muted-foreground">
+                    <p className="font-medium mb-1">Client Access:</p>
+                    <p>• Enter your email address to continue</p>
+                  </div>
+                )}
 
                 <Button 
                   type="submit" 

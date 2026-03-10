@@ -4,7 +4,7 @@ import { User, List, X, CaretDown, SignOut } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface HeaderProps {
-  onNavigateToLogin?: () => void
+  onNavigateToLogin?: (isAdmin: boolean) => void
   onNavigateToAirportTransfer?: () => void
   onNavigateToHome?: () => void
   onLogout?: () => void
@@ -142,14 +142,24 @@ export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer,
                 </div>
               </>
             ) : (
-              <Button
-                onClick={onNavigateToLogin}
-                variant="outline"
-                className="hidden sm:flex border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
-              >
-                <User className="mr-2" size={18} />
-                Client / Admin
-              </Button>
+              <div className="hidden sm:flex items-center gap-2">
+                <Button
+                  onClick={() => onNavigateToLogin?.(false)}
+                  variant="outline"
+                  className="border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
+                >
+                  <User className="mr-2" size={18} />
+                  Client
+                </Button>
+                <Button
+                  onClick={() => onNavigateToLogin?.(true)}
+                  variant="outline"
+                  className="border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
+                >
+                  <User className="mr-2" size={18} />
+                  Admin
+                </Button>
+              </div>
             )}
 
             <Button
@@ -235,19 +245,30 @@ export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer,
                   </Button>
                 </div>
               ) : (
-                <Button
-                  onClick={() => {
-                    setMobileMenuOpen(false)
-                    if (onNavigateToLogin) {
-                      onNavigateToLogin()
-                    }
-                  }}
-                  variant="outline"
-                  className="w-full border-accent text-foreground hover:bg-accent hover:text-accent-foreground sm:hidden"
-                >
-                  <User className="mr-2" size={18} />
-                  Client / Admin
-                </Button>
+                <div className="sm:hidden space-y-2">
+                  <Button
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      onNavigateToLogin?.(false)
+                    }}
+                    variant="outline"
+                    className="w-full border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
+                  >
+                    <User className="mr-2" size={18} />
+                    Client
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      onNavigateToLogin?.(true)
+                    }}
+                    variant="outline"
+                    className="w-full border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
+                  >
+                    <User className="mr-2" size={18} />
+                    Admin
+                  </Button>
+                </div>
               )}
             </nav>
           </motion.div>

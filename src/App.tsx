@@ -14,6 +14,12 @@ function App() {
   const [view, setView] = useState<View>('home')
   const [currentUser, setCurrentUser] = useState<{ email: string; isAdmin: boolean } | null>(null)
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [])
+  const [isAdminMode, setIsAdminMode] = useState(false)
+
+  const handleNavigateToLogin = (isAdmin: boolean) => {
+    setIsAdminMode(isAdmin)
+    setView('login')
+  }
 
   const handleLogin = (email: string, isAdmin: boolean) => {
     setCurrentUser({ email, isAdmin })
@@ -42,11 +48,11 @@ function App() {
       <Toaster />
       {view === 'home' && (
         <Home 
-          onNavigateToLogin={() => setView('login')}
+          onNavigateToLogin={handleNavigateToLogin}
           onNavigateToAirportTransfer={() => setView('airport-transfer')}
         />
       )}
-      {view === 'login' && <Login onLogin={handleLogin} onNavigateToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} />}
+      {view === 'login' && <Login onLogin={handleLogin} onNavigateToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} isAdminMode={isAdminMode} />}
       {view === 'airport-transfer' && <AirportTransfer onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} />}
       {view === 'client' && currentUser && (
         <ClientDashboard
