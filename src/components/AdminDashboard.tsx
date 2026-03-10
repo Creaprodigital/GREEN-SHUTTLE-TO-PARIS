@@ -19,6 +19,7 @@ import { toast } from 'sonner'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import CircuitManager from '@/components/CircuitManager'
+import ZonePricingManager from '@/components/ZonePricingManager'
 import { useKV } from '@github/spark/hooks'
 
 interface AdminAccount {
@@ -550,10 +551,11 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Tabs defaultValue="bookings" className="w-full">
-          <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-6 mb-8">
+          <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-7 mb-8">
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
             <TabsTrigger value="fleet">Our Fleet</TabsTrigger>
             <TabsTrigger value="pricing">Tarifs</TabsTrigger>
+            <TabsTrigger value="zones">Zones</TabsTrigger>
             <TabsTrigger value="options">Options</TabsTrigger>
             <TabsTrigger value="circuits">Circuits</TabsTrigger>
             <TabsTrigger value="admins">Admin Accounts</TabsTrigger>
@@ -1322,6 +1324,18 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
           <TabsContent value="circuits" className="space-y-6">
             <CircuitManager />
+          </TabsContent>
+
+          <TabsContent value="zones" className="space-y-6">
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+                Gestion des Zones Tarifaires
+              </h2>
+              <p className="text-foreground/70">
+                Créez des zones géographiques et définissez des forfaits fixes pour chaque trajet zone à zone
+              </p>
+            </div>
+            <ZonePricingManager />
           </TabsContent>
 
           <TabsContent value="bookings" className="space-y-6">

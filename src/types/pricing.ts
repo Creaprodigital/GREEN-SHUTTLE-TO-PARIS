@@ -16,6 +16,23 @@ export interface PricingSettings {
   roundToWholeEuro: boolean
 }
 
+export interface PricingZone {
+  id: string
+  name: string
+  color: string
+  polygon: { lat: number; lng: number }[]
+  description?: string
+}
+
+export interface ZonePricing {
+  id: string
+  fromZoneId: string
+  toZoneId: string
+  vehicleId: string
+  fixedPrice: number
+  createdAt: string
+}
+
 export interface ServiceOption {
   id: string
   name: string
