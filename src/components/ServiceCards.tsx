@@ -1,9 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { motion } from 'framer-motion'
-import businessClassImg from '@/assets/images/E.jpg'
-import firstClassImg from '@/assets/images/S.jpg'
-import businessVanImg from '@/assets/images/C.jpg'
 import { useKV } from '@github/spark/hooks'
+import { Car, Crown, Van } from '@phosphor-icons/react'
+
+const businessClassImg = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzFhMWExYSIvPjwvc3ZnPg=='
+const firstClassImg = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzFhMWExYSIvPjwvc3ZnPg=='
+const businessVanImg = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzFhMWExYSIvPjwvc3ZnPg=='
 
 const services = [
   {
@@ -11,6 +13,7 @@ const services = [
     name: 'Business Class',
     description: 'Professional transportation for everyday business needs',
     defaultImage: businessClassImg,
+    icon: Car,
     features: ['Sedan vehicles', 'Professional drivers', 'Real-time tracking', 'Wi-Fi available'],
     popular: false
   },
@@ -19,6 +22,7 @@ const services = [
     name: 'First Class',
     description: 'Premium comfort for those who demand excellence',
     defaultImage: firstClassImg,
+    icon: Crown,
     features: ['Luxury sedans', 'Top-rated drivers', 'Complimentary refreshments', 'Priority support'],
     popular: true
   },
@@ -27,6 +31,7 @@ const services = [
     name: 'Business Van',
     description: 'Spacious luxury for groups or extra luggage',
     defaultImage: businessVanImg,
+    icon: Van,
     features: ['Premium vans', 'Extra space', 'Perfect for groups', 'Premium amenities'],
     popular: false
   }
@@ -72,12 +77,8 @@ export default function ServiceCards() {
                       <span className="text-xs uppercase tracking-widest font-medium">Premium Choice</span>
                     </div>
                   )}
-                  <div className="relative w-full h-64 overflow-hidden bg-primary">
-                    <img 
-                      src={imageUrl} 
-                      alt={service.name}
-                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                    />
+                  <div className="relative w-full h-64 overflow-hidden bg-primary flex items-center justify-center">
+                    <service.icon size={120} weight="thin" className="text-accent opacity-80 group-hover:scale-105 transition-transform duration-500" />
                   </div>
                   <CardHeader className="pb-4 pt-6">
                     <CardTitle className="text-2xl uppercase tracking-wide" style={{ fontFamily: 'var(--font-body)' }}>
