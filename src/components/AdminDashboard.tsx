@@ -18,6 +18,7 @@ import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import CircuitManager from '@/components/CircuitManager'
 import { useKV } from '@github/spark/hooks'
 
 interface AdminAccount {
@@ -549,11 +550,12 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Tabs defaultValue="bookings" className="w-full">
-          <TabsList className="grid w-full max-w-5xl mx-auto grid-cols-5 mb-8">
+          <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-6 mb-8">
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
             <TabsTrigger value="fleet">Our Fleet</TabsTrigger>
             <TabsTrigger value="pricing">Tarifs</TabsTrigger>
             <TabsTrigger value="options">Options</TabsTrigger>
+            <TabsTrigger value="circuits">Circuits</TabsTrigger>
             <TabsTrigger value="admins">Admin Accounts</TabsTrigger>
           </TabsList>
 
@@ -1316,6 +1318,10 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                 </motion.div>
               ))}
             </div>
+          </TabsContent>
+
+          <TabsContent value="circuits" className="space-y-6">
+            <CircuitManager />
           </TabsContent>
 
           <TabsContent value="bookings" className="space-y-6">
