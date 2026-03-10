@@ -1,14 +1,15 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Car, Jeep, Sparkle } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
+import businessSedan from '@/assets/images/business-sedan.svg'
+import luxurySedan from '@/assets/images/luxury-sedan.svg'
+import premiumSuv from '@/assets/images/premium-suv.svg'
 
 const services = [
   {
     id: 'business',
     name: 'Business Class',
     description: 'Professional transportation for everyday business needs',
-    icon: Car,
+    image: businessSedan,
     features: ['Sedan vehicles', 'Professional drivers', 'Real-time tracking', 'Wi-Fi available'],
     popular: false
   },
@@ -16,7 +17,7 @@ const services = [
     id: 'firstclass',
     name: 'First Class',
     description: 'Premium comfort for those who demand excellence',
-    icon: Sparkle,
+    image: luxurySedan,
     features: ['Luxury sedans', 'Top-rated drivers', 'Complimentary refreshments', 'Priority support'],
     popular: true
   },
@@ -24,7 +25,7 @@ const services = [
     id: 'suv',
     name: 'Premium SUV',
     description: 'Spacious luxury for groups or extra luggage',
-    icon: Jeep,
+    image: premiumSuv,
     features: ['High-end SUVs', 'Extra space', 'Perfect for groups', 'Premium amenities'],
     popular: false
   }
@@ -46,7 +47,6 @@ export default function ServiceCards() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {services.map((service, index) => {
-            const Icon = service.icon
             return (
               <motion.div
                 key={service.id}
@@ -62,8 +62,8 @@ export default function ServiceCards() {
                     </div>
                   )}
                   <CardHeader className="pb-4 pt-8">
-                    <div className="w-16 h-16 border-2 border-accent flex items-center justify-center mb-4 group-hover:bg-accent/10 transition-colors">
-                      <Icon size={32} className="text-accent" weight="duotone" />
+                    <div className="w-full h-24 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
+                      <img src={service.image} alt={service.name} className="w-auto h-full object-contain" />
                     </div>
                     <CardTitle className="text-2xl uppercase tracking-wide" style={{ fontFamily: 'var(--font-body)' }}>
                       {service.name}
