@@ -156,13 +156,14 @@ export default function BookingForm() {
           basePrice = zonePricing.fixedPrice
           isForfaitApplied = true
           console.log(`🎯 FORFAIT ZONE TROUVÉ: ${fromZone?.name} → ${toZone?.name} = ${basePrice}€ FIXE`)
+          console.log(`✅ FORFAIT APPLIQUÉ - Prix fixe utilisé (pas de minimum transfert appliqué)`)
           
           if (transferType === 'roundtrip') {
             basePrice *= 2
             console.log(`↔️ Aller-retour: × 2 = ${basePrice.toFixed(2)}€`)
           }
           
-          console.log(`✅ FORFAIT APPLIQUÉ - Prix fixe final: ${basePrice.toFixed(2)}€ (options et arrondis ignorés)`)
+          console.log(`✅ Prix forfait final: ${basePrice.toFixed(2)}€ (options et arrondis ignorés)`)
         } else {
           if (fromZone || toZone) {
             console.log(`ℹ️ Point(s) dans zone(s): ${fromZone?.name || 'hors zone'} → ${toZone?.name || 'hors zone'}, mais pas de forfait défini`)
@@ -172,7 +173,7 @@ export default function BookingForm() {
           const pricePerMinute = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
           const minimumPrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonMinimumTransferPrice || vehiclePricing.minimumTransferPrice || 40) : (vehiclePricing.minimumTransferPrice || 40)
           
-          console.log(`💰 Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€, Prix minimum transfert: ${minimumPrice}€`)
+          console.log(`💰 TARIF AU KM/MIN - Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€, Prix minimum transfert: ${minimumPrice}€`)
           
           if (distanceKm > 0 && durationMinutes > 0) {
             const kmPrice = pricePerKm * distanceKm
