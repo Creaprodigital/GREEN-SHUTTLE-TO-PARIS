@@ -34,6 +34,7 @@ export default function BookingForm() {
   const [destinationCoords, setDestinationCoords] = useState<{ lat: number; lng: number } | null>(null)
   const [distanceKm, setDistanceKm] = useState<number>(0)
   const [durationMinutes, setDurationMinutes] = useState<number>(0)
+  const [isCalculatingDistance, setIsCalculatingDistance] = useState(false)
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
   const [returnDate, setReturnDate] = useState('')
@@ -89,26 +90,51 @@ export default function BookingForm() {
     if (serviceType !== 'transfer' || !pickupCoords || !destinationCoords) {
       setDistanceKm(0)
       setDurationMinutes(0)
+      setIsCalculatingDistance(false)
       return
     }
 
     const google = (window as any).google
-    if (!google || !google.maps) return
+    if (!google || !google.maps) {
+      console.error('Google Maps API non disponible')
+      setIsCalculatingDistance(false)
+      return
+    }
+
+    setIsCalculatingDistance(true)
+    console.log('Calcul de la distance entre:', pickupCoords, 'et', destinationCoords)
 
     const service = new google.maps.DistanceMatrixService()
     service.getDistanceMatrix(
       {
-        origins: [pickupCoords],
-        destinations: [destinationCoords],
+        origins: [new google.maps.LatLng(pickupCoords.lat, pickupCoords.lng)],
+        destinations: [new google.maps.LatLng(destinationCoords.lat, destinationCoords.lng)],
         travelMode: google.maps.TravelMode.DRIVING,
+        unitSystem: google.maps.UnitSystem.METRIC
       },
       (response: any, status: any) => {
+        console.log('Distance Matrix API Status:', status)
+        console.log('Distance Matrix API Response:', response)
+        
         if (status === 'OK' && response.rows[0]?.elements[0]?.status === 'OK') {
           const element = response.rows[0].elements[0]
           const distanceMeters = element.distance.value
           const durationSeconds = element.duration.value
-          setDistanceKm(distanceMeters / 1000)
-          setDurationMinutes(Math.ceil(durationSeconds / 60))
+          const km = distanceMeters / 1000
+          const minutes = Math.ceil(durationSeconds / 60)
+          
+          console.log('Distance calculée:', km, 'km')
+          console.log('Durée calculée:', minutes, 'minutes')
+          
+          setDistanceKm(km)
+          setDurationMinutes(minutes)
+          setIsCalculatingDistance(false)
+        } else {
+          console.error('Erreur Distance Matrix:', status, response?.rows[0]?.elements[0]?.status)
+          setDistanceKm(0)
+          setDurationMinutes(0)
+          setIsCalculatingDistance(false)
+          toast.error('Impossible de calculer la distance. Veuillez réessayer.')
         }
       }
     )
@@ -600,16 +626,25 @@ export default function BookingForm() {
                           <span className="text-muted-foreground">Véhicule avec Chauffeur:</span>
                           <span className="font-medium">{fleet?.find(v => v.id === vehicleType)?.title}</span>
                         </div>
-                        {serviceType === 'transfer' && distanceKm > 0 && (
+                        {serviceType === 'transfer' && (
                           <>
-                            <div className="flex justify-between items-center text-xs">
-                              <span className="text-muted-foreground">Distance:</span>
-                              <span className="font-medium">{distanceKm.toFixed(1)} km</span>
-                            </div>
-                            <div className="flex justify-between items-center text-xs">
-                              <span className="text-muted-foreground">Durée estimée:</span>
-                              <span className="font-medium">{durationMinutes} min</span>
-                            </div>
+                            {isCalculatingDistance ? (
+                              <div className="flex justify-center items-center text-xs text-muted-foreground py-2">
+                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-accent border-t-transparent mr-2"></div>
+                                Calcul de la distance en cours...
+                              </div>
+                            ) : distanceKm > 0 ? (
+                              <>
+                                <div className="flex justify-between items-center text-xs">
+                                  <span className="text-muted-foreground">Distance:</span>
+                                  <span className="font-medium">{distanceKm.toFixed(1)} km</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs">
+                                  <span className="text-muted-foreground">Durée estimée:</span>
+                                  <span className="font-medium">{durationMinutes} min</span>
+                                </div>
+                              </>
+                            ) : null}
                           </>
                         )}
                         {serviceType === 'hourly' && (
