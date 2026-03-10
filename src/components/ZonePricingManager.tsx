@@ -37,6 +37,9 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
   const [newZoneColor, setNewZoneColor] = useState(ZONE_COLORS[0])
   const [drawingPoints, setDrawingPoints] = useState<{ lat: number; lng: number }[]>([])
   const [drawingMode, setDrawingMode] = useState<'manual' | 'circle' | 'rectangle'>('manual')
+  const [circleRadius, setCircleRadius] = useState(2)
+  const [rectangleWidth, setRectangleWidth] = useState(3)
+  const [rectangleHeight, setRectangleHeight] = useState(2)
   
   const [newPricingFromZone, setNewPricingFromZone] = useState('')
   const [newPricingToZone, setNewPricingToZone] = useState('')
@@ -183,7 +186,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
   }
 
   const handleDrawCircle = (center: google.maps.LatLng) => {
-    const radiusInKm = 2
+    const radiusInKm = circleRadius
     const radiusInDegrees = radiusInKm / 111
     const numPoints = 36
     
@@ -253,8 +256,8 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
   }
 
   const handleDrawRectangle = (corner: google.maps.LatLng) => {
-    const widthInKm = 3
-    const heightInKm = 2
+    const widthInKm = rectangleWidth
+    const heightInKm = rectangleHeight
     const widthInDegrees = widthInKm / 111
     const heightInDegrees = heightInKm / 111
     
@@ -678,9 +681,9 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex gap-2 p-3 bg-secondary/30 rounded-lg border border-border/50"
+                className="space-y-3 p-3 bg-secondary/30 rounded-lg border border-border/50"
               >
-                <div className="flex-1 space-y-1">
+                <div className="space-y-1">
                   <Label className="text-xs">Mode de dessin</Label>
                   <div className="flex gap-2">
                     <Button
@@ -712,6 +715,59 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
                     </Button>
                   </div>
                 </div>
+
+                {drawingMode === 'circle' && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="space-y-2"
+                  >
+                    <Label htmlFor="circle-radius" className="text-xs">Rayon du cercle (km)</Label>
+                    <Input
+                      id="circle-radius"
+                      type="number"
+                      min="0.1"
+                      step="0.1"
+                      value={circleRadius}
+                      onChange={(e) => setCircleRadius(parseFloat(e.target.value) || 2)}
+                      placeholder="2"
+                      className="w-full"
+                    />
+                  </motion.div>
+                )}
+
+                {drawingMode === 'rectangle' && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="grid grid-cols-2 gap-3"
+                  >
+                    <div className="space-y-2">
+                      <Label htmlFor="rectangle-width" className="text-xs">Largeur (km)</Label>
+                      <Input
+                        id="rectangle-width"
+                        type="number"
+                        min="0.1"
+                        step="0.1"
+                        value={rectangleWidth}
+                        onChange={(e) => setRectangleWidth(parseFloat(e.target.value) || 3)}
+                        placeholder="3"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="rectangle-height" className="text-xs">Hauteur (km)</Label>
+                      <Input
+                        id="rectangle-height"
+                        type="number"
+                        min="0.1"
+                        step="0.1"
+                        value={rectangleHeight}
+                        onChange={(e) => setRectangleHeight(parseFloat(e.target.value) || 2)}
+                        placeholder="2"
+                      />
+                    </div>
+                  </motion.div>
+                )}
               </motion.div>
             )}
             
