@@ -4,10 +4,11 @@ import Home from '@/components/Home'
 import Login from '@/components/Login'
 import ClientDashboard from '@/components/ClientDashboard'
 import AdminDashboard from '@/components/AdminDashboard'
+import AirportTransfer from '@/components/AirportTransfer'
 import { useKV } from '@github/spark/hooks'
 import { Booking } from '@/types/booking'
 
-type View = 'home' | 'login' | 'client' | 'admin'
+type View = 'home' | 'login' | 'client' | 'admin' | 'airport-transfer'
 
 function App() {
   const [view, setView] = useState<View>('home')
@@ -39,8 +40,14 @@ function App() {
   return (
     <div className="min-h-screen bg-background">
       <Toaster />
-      {view === 'home' && <Home onNavigateToLogin={() => setView('login')} />}
+      {view === 'home' && (
+        <Home 
+          onNavigateToLogin={() => setView('login')}
+          onNavigateToAirportTransfer={() => setView('airport-transfer')}
+        />
+      )}
       {view === 'login' && <Login onLogin={handleLogin} />}
+      {view === 'airport-transfer' && <AirportTransfer onBackToHome={() => setView('home')} />}
       {view === 'client' && currentUser && (
         <ClientDashboard
           userEmail={currentUser.email}

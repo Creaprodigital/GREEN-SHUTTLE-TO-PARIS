@@ -7,12 +7,16 @@ import Footer from '@/components/Footer'
 
 interface HomeProps {
   onNavigateToLogin: () => void
+  onNavigateToAirportTransfer: () => void
 }
 
-export default function Home({ onNavigateToLogin }: HomeProps) {
+export default function Home({ onNavigateToLogin, onNavigateToAirportTransfer }: HomeProps) {
   return (
     <>
-      <Header onNavigateToLogin={onNavigateToLogin} />
+      <Header 
+        onNavigateToLogin={onNavigateToLogin}
+        onNavigateToAirportTransfer={onNavigateToAirportTransfer}
+      />
       <div id="accueil">
         <Hero />
       </div>

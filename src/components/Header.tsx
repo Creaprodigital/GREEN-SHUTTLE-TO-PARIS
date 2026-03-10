@@ -1,24 +1,27 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { User, List, X } from '@phosphor-icons/react'
+import { User, List, X, CaretDown } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface HeaderProps {
   onNavigateToLogin: () => void
+  onNavigateToAirportTransfer?: () => void
 }
 
-export default function Header({ onNavigateToLogin }: HeaderProps) {
+export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false)
 
   const menuItems = [
     { label: 'ACCUEIL', href: '#accueil' },
-    { label: 'SERVICES DE CHAUFFEUR PRIVÉ', href: '#services' },
+    { label: 'SERVICES DE CHAUFFEUR PRIVÉ', href: '#services', hasDropdown: true },
     { label: 'VÉHICULES DE LUXE', href: '#vehicules' },
     { label: 'CONTACT', href: '#contact' }
   ]
 
   const scrollToSection = (href: string) => {
     setMobileMenuOpen(false)
+    setServicesDropdownOpen(false)
     const element = document.querySelector(href)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
@@ -49,18 +52,61 @@ export default function Header({ onNavigateToLogin }: HeaderProps) {
 
           <nav className="hidden lg:flex items-center space-x-8">
             {menuItems.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                onClick={(e) => {
-                  e.preventDefault()
-                  scrollToSection(item.href)
-                }}
-                className="text-foreground/80 hover:text-accent text-sm font-medium tracking-wide transition-colors relative group"
-              >
-                {item.label}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
-              </a>
+              item.hasDropdown ? (
+                <div 
+                  key={item.href}
+                  className="relative"
+                  onMouseEnter={() => setServicesDropdownOpen(true)}
+                  onMouseLeave={() => setServicesDropdownOpen(false)}
+                >
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      scrollToSection(item.href)
+                    }}
+                    className="text-foreground/80 hover:text-accent text-sm font-medium tracking-wide transition-colors relative group flex items-center gap-1"
+                  >
+                    {item.label}
+                    <CaretDown size={14} className={`transition-transform ${servicesDropdownOpen ? 'rotate-180' : ''}`} />
+                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
+                  </button>
+                  
+                  <AnimatePresence>
+                    {servicesDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full left-0 mt-2 w-64 bg-card border border-border rounded-lg shadow-xl overflow-hidden"
+                      >
+                        <button
+                          onClick={() => {
+                            setServicesDropdownOpen(false)
+                            onNavigateToAirportTransfer?.()
+                          }}
+                          className="w-full text-left px-4 py-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                        >
+                          Transfert Aéroports / Gares
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    scrollToSection(item.href)
+                  }}
+                  className="text-foreground/80 hover:text-accent text-sm font-medium tracking-wide transition-colors relative group"
+                >
+                  {item.label}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
+                </a>
+              )
             ))}
           </nav>
 
@@ -96,17 +142,43 @@ export default function Header({ onNavigateToLogin }: HeaderProps) {
           >
             <nav className="px-4 py-6 space-y-4">
               {menuItems.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    scrollToSection(item.href)
-                  }}
-                  className="block text-foreground hover:text-accent text-sm font-medium tracking-wide transition-colors py-2"
-                >
-                  {item.label}
-                </a>
+                item.hasDropdown ? (
+                  <div key={item.href}>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault()
+                        scrollToSection(item.href)
+                      }}
+                      className="w-full text-left text-foreground hover:text-accent text-sm font-medium tracking-wide transition-colors py-2 flex items-center justify-between"
+                    >
+                      {item.label}
+                      <CaretDown size={14} />
+                    </button>
+                    <div className="pl-4 mt-2 space-y-2">
+                      <button
+                        onClick={() => {
+                          setMobileMenuOpen(false)
+                          onNavigateToAirportTransfer?.()
+                        }}
+                        className="block text-foreground/70 hover:text-accent text-sm transition-colors py-2"
+                      >
+                        Transfert Aéroports / Gares
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      scrollToSection(item.href)
+                    }}
+                    className="block text-foreground hover:text-accent text-sm font-medium tracking-wide transition-colors py-2"
+                  >
+                    {item.label}
+                  </a>
+                )
               ))}
               <Button
                 onClick={() => {
