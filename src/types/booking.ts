@@ -2,13 +2,13 @@ export interface Booking {
   id: string
   userId: string
   userEmail: string
-  tripType: 'oneway' | 'roundtrip' | 'hourly'
+  serviceType: 'transfer' | 'hourly' | 'tour'
+  transferType?: 'oneway' | 'roundtrip'
+  hourlyDuration?: string
   pickup: string
-  destination: string
+  destination?: string
   date: string
   time: string
-  returnDate?: string
-  returnTime?: string
   passengers: string
   vehicleType: string
   firstName: string

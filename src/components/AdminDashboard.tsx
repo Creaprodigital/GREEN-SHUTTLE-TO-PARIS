@@ -71,7 +71,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     const matchesSearch = !searchTerm || 
       b.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
       b.pickup.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      b.destination.toLowerCase().includes(searchTerm.toLowerCase())
+      (b.destination?.toLowerCase().includes(searchTerm.toLowerCase()) || false)
     return matchesStatus && matchesSearch
   })
 

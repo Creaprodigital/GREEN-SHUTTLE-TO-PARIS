@@ -20,13 +20,13 @@ export default function BookingForm() {
   const [fleet] = useKV<VehicleClass[]>('fleet', [])
   const [currentStep, setCurrentStep] = useState(1)
   
-  const [tripType, setTripType] = useState<'oneway' | 'roundtrip' | 'hourly'>('oneway')
+  const [serviceType, setServiceType] = useState<'transfer' | 'hourly' | 'tour'>('transfer')
+  const [transferType, setTransferType] = useState<'oneway' | 'roundtrip'>('oneway')
+  const [hourlyDuration, setHourlyDuration] = useState('2')
   const [pickup, setPickup] = useState('')
   const [destination, setDestination] = useState('')
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
-  const [returnDate, setReturnDate] = useState('')
-  const [returnTime, setReturnTime] = useState('')
   const [passengers, setPassengers] = useState('1')
   
   const [vehicleType, setVehicleType] = useState('')
@@ -40,12 +40,12 @@ export default function BookingForm() {
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'cash' | 'transfer'>('card')
 
   const validateStep1 = () => {
-    if (!pickup || !destination || !date || !time) {
+    if (!pickup || !date || !time) {
       toast.error('Veuillez remplir tous les champs obligatoires')
       return false
     }
-    if (tripType === 'roundtrip' && (!returnDate || !returnTime)) {
-      toast.error('Veuillez remplir les informations de retour')
+    if (serviceType === 'transfer' && !destination) {
+      toast.error('Veuillez indiquer la destination')
       return false
     }
     return true
@@ -89,13 +89,13 @@ export default function BookingForm() {
       id: `booking-${Date.now()}-${Math.random().toString(36).substring(7)}`,
       userId: email,
       userEmail: email,
-      tripType,
+      serviceType,
+      transferType: serviceType === 'transfer' ? transferType : undefined,
+      hourlyDuration: serviceType === 'hourly' ? hourlyDuration : undefined,
       pickup,
-      destination,
+      destination: serviceType === 'transfer' || serviceType === 'tour' ? destination : undefined,
       date,
       time,
-      returnDate: tripType === 'roundtrip' ? returnDate : undefined,
-      returnTime: tripType === 'roundtrip' ? returnTime : undefined,
       passengers,
       vehicleType,
       firstName,
@@ -115,12 +115,13 @@ export default function BookingForm() {
     })
 
     setCurrentStep(1)
+    setServiceType('transfer')
+    setTransferType('oneway')
+    setHourlyDuration('2')
     setPickup('')
     setDestination('')
     setDate('')
     setTime('')
-    setReturnDate('')
-    setReturnTime('')
     setPassengers('1')
     setVehicleType('')
     setFirstName('')
@@ -184,17 +185,74 @@ export default function BookingForm() {
                   transition={{ duration: 0.3 }}
                   className="space-y-5"
                 >
-                  <Tabs value={tripType} onValueChange={(v) => setTripType(v as 'oneway' | 'roundtrip' | 'hourly')} className="mb-6">
+                  <Tabs value={serviceType} onValueChange={(v) => setServiceType(v as 'transfer' | 'hourly' | 'tour')} className="mb-6">
                     <TabsList className="grid w-full grid-cols-3 bg-secondary">
-                      <TabsTrigger value="oneway">Aller Simple</TabsTrigger>
-                      <TabsTrigger value="roundtrip">Aller-Retour</TabsTrigger>
-                      <TabsTrigger value="hourly">À l'heure</TabsTrigger>
+                      <TabsTrigger value="transfer">Transfert</TabsTrigger>
+                      <TabsTrigger value="hourly">Mise à Disposition</TabsTrigger>
+                      <TabsTrigger value="tour">Circuit Touristique</TabsTrigger>
                     </TabsList>
                   </Tabs>
 
+                  {serviceType === 'transfer' && (
+                    <div className="mb-4">
+                      <Label className="text-sm font-medium uppercase tracking-wide mb-3 block">Type de Transfert</Label>
+                      <RadioGroup value={transferType} onValueChange={(v) => setTransferType(v as 'oneway' | 'roundtrip')}>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <RadioGroupItem
+                              value="oneway"
+                              id="oneway"
+                              className="peer sr-only"
+                            />
+                            <Label
+                              htmlFor="oneway"
+                              className="flex items-center justify-center rounded-lg border-2 border-border bg-secondary p-3 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all font-medium uppercase tracking-wide text-sm"
+                            >
+                              Aller Simple
+                            </Label>
+                          </div>
+                          <div>
+                            <RadioGroupItem
+                              value="roundtrip"
+                              id="roundtrip"
+                              className="peer sr-only"
+                            />
+                            <Label
+                              htmlFor="roundtrip"
+                              className="flex items-center justify-center rounded-lg border-2 border-border bg-secondary p-3 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all font-medium uppercase tracking-wide text-sm"
+                            >
+                              Aller-Retour
+                            </Label>
+                          </div>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  )}
+
+                  {serviceType === 'hourly' && (
+                    <div className="mb-4">
+                      <Label htmlFor="hourlyDuration" className="text-sm font-medium uppercase tracking-wide">Nombre d'Heures</Label>
+                      <div className="relative mt-2">
+                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                        <Select value={hourlyDuration} onValueChange={setHourlyDuration}>
+                          <SelectTrigger id="hourlyDuration" className="pl-11 h-12 bg-secondary border-border">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: 23 }, (_, i) => i + 2).map((num) => (
+                              <SelectItem key={num} value={num.toString()}>
+                                {num} {num === 1 ? 'Heure' : 'Heures'}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-2">
-                      <Label htmlFor="pickup" className="text-sm font-medium uppercase tracking-wide">Lieu de Prise en Charge</Label>
+                      <Label htmlFor="pickup" className="text-sm font-medium uppercase tracking-wide">Lieu de Départ</Label>
                       <PlacesAutocomplete
                         id="pickup"
                         value={pickup}
@@ -205,20 +263,22 @@ export default function BookingForm() {
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="destination" className="text-sm font-medium uppercase tracking-wide">Destination</Label>
-                      <PlacesAutocomplete
-                        id="destination"
-                        value={destination}
-                        onChange={setDestination}
-                        placeholder="Adresse d'arrivée"
-                        className="h-12 bg-secondary border-border"
-                        icon={<MapPin size={20} weight="fill" />}
-                      />
-                    </div>
+                    {(serviceType === 'transfer' || serviceType === 'tour') && (
+                      <div className="space-y-2">
+                        <Label htmlFor="destination" className="text-sm font-medium uppercase tracking-wide">Destination</Label>
+                        <PlacesAutocomplete
+                          id="destination"
+                          value={destination}
+                          onChange={setDestination}
+                          placeholder="Adresse d'arrivée"
+                          className="h-12 bg-secondary border-border"
+                          icon={<MapPin size={20} weight="fill" />}
+                        />
+                      </div>
+                    )}
 
                     <div className="space-y-2">
-                      <Label htmlFor="date" className="text-sm font-medium uppercase tracking-wide">Date</Label>
+                      <Label htmlFor="date" className="text-sm font-medium uppercase tracking-wide">Date de Départ</Label>
                       <div className="relative">
                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                         <Input
@@ -245,39 +305,6 @@ export default function BookingForm() {
                         />
                       </div>
                     </div>
-
-                    {tripType === 'roundtrip' && (
-                      <>
-                        <div className="space-y-2">
-                          <Label htmlFor="returnDate" className="text-sm font-medium uppercase tracking-wide">Date de Retour</Label>
-                          <div className="relative">
-                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
-                            <Input
-                              id="returnDate"
-                              type="date"
-                              value={returnDate}
-                              onChange={(e) => setReturnDate(e.target.value)}
-                              min={date || new Date().toISOString().split('T')[0]}
-                              className="pl-11 h-12 bg-secondary border-border"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="returnTime" className="text-sm font-medium uppercase tracking-wide">Heure de Retour</Label>
-                          <div className="relative">
-                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
-                            <Input
-                              id="returnTime"
-                              type="time"
-                              value={returnTime}
-                              onChange={(e) => setReturnTime(e.target.value)}
-                              className="pl-11 h-12 bg-secondary border-border"
-                            />
-                          </div>
-                        </div>
-                      </>
-                    )}
 
                     <div className="space-y-2">
                       <Label htmlFor="passengers" className="text-sm font-medium uppercase tracking-wide">Passagers</Label>
@@ -550,17 +577,23 @@ export default function BookingForm() {
                     <h4 className="font-semibold uppercase tracking-wide text-sm">Récapitulatif</h4>
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Trajet:</span>
-                        <span className="font-medium">{tripType === 'oneway' ? 'Aller Simple' : tripType === 'roundtrip' ? 'Aller-Retour' : 'À l\'heure'}</span>
+                        <span className="text-muted-foreground">Service:</span>
+                        <span className="font-medium">
+                          {serviceType === 'transfer' ? 'Transfert' : serviceType === 'hourly' ? 'Mise à Disposition' : 'Circuit Touristique'}
+                          {serviceType === 'transfer' && ` (${transferType === 'oneway' ? 'Aller Simple' : 'Aller-Retour'})`}
+                          {serviceType === 'hourly' && ` (${hourlyDuration}h)`}
+                        </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">De:</span>
+                        <span className="text-muted-foreground">Départ:</span>
                         <span className="font-medium text-right">{pickup || '-'}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">À:</span>
-                        <span className="font-medium text-right">{destination || '-'}</span>
-                      </div>
+                      {(serviceType === 'transfer' || serviceType === 'tour') && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Destination:</span>
+                          <span className="font-medium text-right">{destination || '-'}</span>
+                        </div>
+                      )}
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Date:</span>
                         <span className="font-medium">{date || '-'} à {time || '-'}</span>
