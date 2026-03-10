@@ -7,6 +7,7 @@ import { SignIn, User as UserIcon } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import Header from '@/components/Header'
+import { useKV } from '@github/spark/hooks'
 
 interface LoginProps {
   onLogin: (email: string, isAdmin: boolean) => void
@@ -14,9 +15,17 @@ interface LoginProps {
   onNavigateToAirportTransfer: () => void
 }
 
+interface AdminAccount {
+  email: string
+  password: string
+}
+
 export default function Login({ onLogin, onNavigateToHome, onNavigateToAirportTransfer }: LoginProps) {
   const [email, setEmail] = useState('')
-  const [isAdmin, setIsAdmin] = useState(false)
+  const [password, setPassword] = useState('')
+  const [adminAccounts] = useKV<AdminAccount[]>('admin-accounts', [
+    { email: 'admin@greenshuttle.com', password: 'admin123' }
+  ])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,8 +40,19 @@ export default function Login({ onLogin, onNavigateToHome, onNavigateToAirportTr
       return
     }
 
-    onLogin(email, isAdmin)
-    toast.success(`Welcome ${isAdmin ? 'Admin' : 'Client'}!`)
+    const adminAccount = adminAccounts?.find(
+      acc => acc.email.toLowerCase() === email.toLowerCase() && acc.password === password
+    )
+
+    if (adminAccount) {
+      onLogin(email, true)
+      toast.success('Welcome Admin!')
+    } else if (password) {
+      toast.error('Invalid admin credentials')
+    } else {
+      onLogin(email, false)
+      toast.success('Welcome Client!')
+    }
   }
 
   return (
@@ -76,17 +96,24 @@ export default function Login({ onLogin, onNavigateToHome, onNavigateToAirportTr
                   />
                 </div>
 
-                <div className="flex items-center gap-3 p-4 bg-secondary rounded border border-border">
-                  <input
-                    type="checkbox"
-                    id="admin-mode"
-                    checked={isAdmin}
-                    onChange={(e) => setIsAdmin(e.target.checked)}
-                    className="w-4 h-4 accent-accent"
-                  />
-                  <Label htmlFor="admin-mode" className="text-sm cursor-pointer">
-                    Login as Administrator
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm font-medium uppercase tracking-wide">
+                    Password <span className="text-muted-foreground text-xs normal-case">(For Admin Only)</span>
                   </Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password for admin access"
+                    className="h-12 bg-secondary border-border"
+                  />
+                </div>
+
+                <div className="p-3 bg-secondary/50 rounded border border-border text-xs text-muted-foreground">
+                  <p className="font-medium mb-1">Access Information:</p>
+                  <p>• Clients: Enter email only</p>
+                  <p>• Admins: Enter email and password</p>
                 </div>
 
                 <Button 
