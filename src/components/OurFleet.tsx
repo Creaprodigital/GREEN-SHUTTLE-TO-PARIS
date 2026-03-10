@@ -1,5 +1,5 @@
 import { useKV } from '@github/spark/hooks'
-import { VehicleClass, VehicleClassType, DEFAULT_FLEET } from '@/types/fleet'
+import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { Card, CardContent } from '@/components/ui/card'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { motion } from 'framer-motion'
@@ -7,10 +7,10 @@ import { Car } from '@phosphor-icons/react'
 import { useMemo } from 'react'
 
 export default function OurFleet() {
-  const [fleetData] = useKV<Record<VehicleClassType, VehicleClass>>('fleet-data', DEFAULT_FLEET)
+  const [fleetData] = useKV<VehicleClass[]>('fleet-data', DEFAULT_FLEET)
   
   const vehicles = useMemo(() => {
-    return Object.values(fleetData || DEFAULT_FLEET).sort((a, b) => a.order - b.order)
+    return (fleetData || DEFAULT_FLEET).sort((a, b) => a.order - b.order)
   }, [fleetData])
 
   return (

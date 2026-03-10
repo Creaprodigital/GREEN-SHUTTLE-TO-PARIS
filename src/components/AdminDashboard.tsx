@@ -8,9 +8,9 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Slider } from '@/components/ui/slider'
-import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple } from '@phosphor-icons/react'
+import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple, X } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
-import { VehicleClass, VehicleClassType, DEFAULT_FLEET } from '@/types/fleet'
+import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import Header from '@/components/Header'
@@ -54,16 +54,18 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   const [newAdminEmail, setNewAdminEmail] = useState('')
   const [newAdminPassword, setNewAdminPassword] = useState('')
   
-  const [fleetData, setFleetData] = useKV<Record<VehicleClassType, VehicleClass>>('fleet-data', DEFAULT_FLEET)
-  const [editingVehicle, setEditingVehicle] = useState<VehicleClassType | null>(null)
-  const [uploadingImage, setUploadingImage] = useState<VehicleClassType | null>(null)
+  const [fleetData, setFleetData] = useKV<VehicleClass[]>('fleet-data', DEFAULT_FLEET)
+  const [editingVehicle, setEditingVehicle] = useState<string | null>(null)
+  const [uploadingImage, setUploadingImage] = useState<string | null>(null)
   const [editedTitle, setEditedTitle] = useState<string>('')
   const [editedDescription, setEditedDescription] = useState<string>('')
-  const [viewingImage, setViewingImage] = useState<VehicleClassType | null>(null)
+  const [viewingImage, setViewingImage] = useState<string | null>(null)
   const [imageZoom, setImageZoom] = useState<number>(100)
   const [imagePosition, setImagePosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 })
   const [imageFit, setImageFit] = useState<'cover' | 'contain' | 'fill'>('cover')
   const [hasImageChanges, setHasImageChanges] = useState(false)
+  const [newVehicleTitle, setNewVehicleTitle] = useState('')
+  const [newVehicleDescription, setNewVehicleDescription] = useState('')
 
   const filteredBookings = bookings.filter(b => {
     const matchesStatus = filterStatus === 'all' || b.status === filterStatus
@@ -150,7 +152,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     }
   }
 
-  const handleImageUpload = (vehicleId: VehicleClassType, file: File) => {
+  const handleImageUpload = (vehicleId: string, file: File) => {
     if (!file.type.startsWith('image/')) {
       toast.error('Please upload an image file')
       return
@@ -166,31 +168,63 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     const reader = new FileReader()
     reader.onload = (e) => {
       const result = e.target?.result as string
-      setFleetData((current) => {
-        const updated = { ...(current || DEFAULT_FLEET) }
-        updated[vehicleId] = {
-          ...updated[vehicleId],
-          image: result
-        }
-        return updated
-      })
+      setFleetData((current) =>
+        (current || DEFAULT_FLEET).map((vehicle) =>
+          vehicle.id === vehicleId
+            ? { ...vehicle, image: result }
+            : vehicle
+        )
+      )
       setUploadingImage(null)
       toast.success('Image uploaded successfully')
     }
     reader.readAsDataURL(file)
   }
 
-  const handleUpdateVehicle = (vehicleId: VehicleClassType, updates: Partial<VehicleClass>) => {
-    setFleetData((current) => {
-      const updated = { ...(current || DEFAULT_FLEET) }
-      updated[vehicleId] = {
-        ...updated[vehicleId],
-        ...updates
-      }
-      return updated
-    })
+  const handleUpdateVehicle = (vehicleId: string, updates: Partial<VehicleClass>) => {
+    setFleetData((current) =>
+      (current || DEFAULT_FLEET).map((vehicle) =>
+        vehicle.id === vehicleId
+          ? { ...vehicle, ...updates }
+          : vehicle
+      )
+    )
     setEditingVehicle(null)
     toast.success('Vehicle updated successfully')
+  }
+
+  const handleAddVehicle = () => {
+    if (!newVehicleTitle || !newVehicleDescription) {
+      toast.error('Please enter both title and description')
+      return
+    }
+
+    const maxOrder = Math.max(...(fleetData || DEFAULT_FLEET).map(v => v.order), 0)
+    const newId = `vehicle-${Date.now()}`
+    
+    setFleetData((current) => [
+      ...(current || DEFAULT_FLEET),
+      {
+        id: newId,
+        title: newVehicleTitle,
+        description: newVehicleDescription,
+        image: '',
+        order: maxOrder + 1
+      }
+    ])
+
+    setNewVehicleTitle('')
+    setNewVehicleDescription('')
+    toast.success('Vehicle added successfully')
+  }
+
+  const handleDeleteVehicle = (vehicleId: string) => {
+    if (confirm('Are you sure you want to delete this vehicle?')) {
+      setFleetData((current) =>
+        (current || DEFAULT_FLEET).filter((vehicle) => vehicle.id !== vehicleId)
+      )
+      toast.success('Vehicle deleted')
+    }
   }
 
   return (
@@ -208,16 +242,18 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold uppercase tracking-wide">
-              {viewingImage && fleetData?.[viewingImage]?.title} - Prévisualisation
+              {viewingImage && (fleetData || DEFAULT_FLEET).find(v => v.id === viewingImage)?.title} - Prévisualisation
             </DialogTitle>
           </DialogHeader>
           
-          {viewingImage && fleetData?.[viewingImage]?.image && (
+          {viewingImage && (() => {
+            const vehicle = (fleetData || DEFAULT_FLEET).find(v => v.id === viewingImage)
+            return vehicle?.image && (
             <div className="space-y-6 pt-4">
               <div 
                 className="relative aspect-[4/3] bg-muted/50 border-2 border-border overflow-hidden"
                 style={{
-                  backgroundImage: `url(${fleetData[viewingImage].image})`,
+                  backgroundImage: `url(${vehicle.image})`,
                   backgroundSize: imageFit,
                   backgroundPosition: `${imagePosition.x}% ${imagePosition.y}%`,
                   backgroundRepeat: 'no-repeat',
@@ -335,18 +371,20 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                     <Button
                       onClick={() => {
                         if (viewingImage) {
-                          setFleetData((current) => {
-                            const updated = { ...(current || DEFAULT_FLEET) }
-                            updated[viewingImage] = {
-                              ...updated[viewingImage],
-                              imageSettings: {
-                                fit: imageFit,
-                                positionX: imagePosition.x,
-                                positionY: imagePosition.y
-                              }
-                            }
-                            return updated
-                          })
+                          setFleetData((current) =>
+                            (current || DEFAULT_FLEET).map((vehicle) =>
+                              vehicle.id === viewingImage
+                                ? {
+                                    ...vehicle,
+                                    imageSettings: {
+                                      fit: imageFit,
+                                      positionX: imagePosition.x,
+                                      positionY: imagePosition.y
+                                    }
+                                  }
+                                : vehicle
+                            )
+                          )
                           toast.success('Paramètres d\'affichage enregistrés')
                           setViewingImage(null)
                           setHasImageChanges(false)
@@ -372,7 +410,8 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                 </div>
               </div>
             </div>
-          )}
+            )
+          })()}
         </DialogContent>
       </Dialog>
 
@@ -511,16 +550,60 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
               </p>
             </div>
 
+            <Card className="border-2 border-accent/20 mb-6">
+              <CardHeader className="border-b border-border">
+                <CardTitle className="text-xl font-semibold uppercase tracking-wide flex items-center gap-2">
+                  <Plus size={24} className="text-accent" />
+                  Add New Vehicle
+                </CardTitle>
+                <CardDescription>Create a new vehicle class</CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="grid md:grid-cols-2 gap-4 mb-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="new-vehicle-title" className="text-sm font-medium uppercase tracking-wide">
+                      Title
+                    </Label>
+                    <Input
+                      id="new-vehicle-title"
+                      value={newVehicleTitle}
+                      onChange={(e) => setNewVehicleTitle(e.target.value)}
+                      placeholder="e.g., PREMIUM SUV"
+                      className="h-12 bg-secondary border-border"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="new-vehicle-description" className="text-sm font-medium uppercase tracking-wide">
+                      Description
+                    </Label>
+                    <Textarea
+                      id="new-vehicle-description"
+                      value={newVehicleDescription}
+                      onChange={(e) => setNewVehicleDescription(e.target.value)}
+                      placeholder="Describe the vehicle class..."
+                      className="h-12 bg-secondary border-border resize-none"
+                    />
+                  </div>
+                </div>
+                <Button
+                  onClick={handleAddVehicle}
+                  className="w-full md:w-auto h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+                >
+                  <Plus className="mr-2" size={20} />
+                  Add Vehicle
+                </Button>
+              </CardContent>
+            </Card>
+
             <div className="space-y-4">
-              {Object.entries(fleetData || DEFAULT_FLEET)
-                .sort(([, a], [, b]) => a.order - b.order)
-                .map(([key, vehicle], index) => {
-                  const vehicleKey = key as VehicleClassType
-                  const isEditing = editingVehicle === vehicleKey
+              {(fleetData || DEFAULT_FLEET)
+                .sort((a, b) => a.order - b.order)
+                .map((vehicle, index) => {
+                  const isEditing = editingVehicle === vehicle.id
                   
                   return (
                     <motion.div
-                      key={vehicleKey}
+                      key={vehicle.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -542,7 +625,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                         variant="secondary"
                                         size="icon"
                                         onClick={() => {
-                                          setViewingImage(vehicleKey)
+                                          setViewingImage(vehicle.id)
                                           const settings = vehicle.imageSettings
                                           setImageZoom(100)
                                           setImagePosition({ 
@@ -573,20 +656,20 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                   <Input
                                     type="file"
                                     accept="image/*"
-                                    id={`file-${vehicleKey}`}
+                                    id={`file-${vehicle.id}`}
                                     onChange={(e) => {
                                       const file = e.target.files?.[0]
-                                      if (file) handleImageUpload(vehicleKey, file)
+                                      if (file) handleImageUpload(vehicle.id, file)
                                     }}
                                     className="h-10 text-xs bg-secondary border-border"
-                                    disabled={uploadingImage === vehicleKey}
+                                    disabled={uploadingImage === vehicle.id}
                                   />
-                                  {uploadingImage === vehicleKey && (
+                                  {uploadingImage === vehicle.id && (
                                     <Button disabled size="icon" className="h-10 w-10 flex-shrink-0">
                                       <Upload className="animate-pulse" size={16} />
                                     </Button>
                                   )}
-                                  {vehicle.image && uploadingImage !== vehicleKey && (
+                                  {vehicle.image && uploadingImage !== vehicle.id && (
                                     <Button
                                       variant="outline"
                                       size="icon"
@@ -604,31 +687,39 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                             </div>
 
                             <div className="flex-1 min-w-0">
-                              <div className="mb-4">
+                              <div className="mb-4 flex items-start justify-between">
                                 <h3 className="text-2xl font-semibold uppercase tracking-wide text-foreground">
                                   {vehicle.title}
                                 </h3>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={() => handleDeleteVehicle(vehicle.id)}
+                                  className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                                >
+                                  <X size={20} />
+                                </Button>
                               </div>
 
                               {isEditing ? (
                                 <div className="space-y-4">
                                   <div className="space-y-2">
-                                    <Label htmlFor={`title-${vehicleKey}`} className="text-sm font-medium uppercase tracking-wide">
+                                    <Label htmlFor={`title-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
                                       Title
                                     </Label>
                                     <Input
-                                      id={`title-${vehicleKey}`}
+                                      id={`title-${vehicle.id}`}
                                       value={editedTitle}
                                       onChange={(e) => setEditedTitle(e.target.value)}
                                       className="h-11 bg-secondary border-border"
                                     />
                                   </div>
                                   <div className="space-y-2">
-                                    <Label htmlFor={`desc-${vehicleKey}`} className="text-sm font-medium uppercase tracking-wide">
+                                    <Label htmlFor={`desc-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
                                       Description
                                     </Label>
                                     <Textarea
-                                      id={`desc-${vehicleKey}`}
+                                      id={`desc-${vehicle.id}`}
                                       value={editedDescription}
                                       onChange={(e) => setEditedDescription(e.target.value)}
                                       className="min-h-[100px] bg-secondary border-border resize-none"
@@ -636,7 +727,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                   </div>
                                   <div className="flex gap-2 pt-2">
                                     <Button
-                                      onClick={() => handleUpdateVehicle(vehicleKey, { 
+                                      onClick={() => handleUpdateVehicle(vehicle.id, { 
                                         title: editedTitle, 
                                         description: editedDescription 
                                       })}
@@ -662,7 +753,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                   </div>
                                   <Button
                                     onClick={() => {
-                                      setEditingVehicle(vehicleKey)
+                                      setEditingVehicle(vehicle.id)
                                       setEditedTitle(vehicle.title)
                                       setEditedDescription(vehicle.description)
                                     }}
