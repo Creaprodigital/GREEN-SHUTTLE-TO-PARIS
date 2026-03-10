@@ -1025,8 +1025,11 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
                             <div className="space-y-2">
                               <Label htmlFor={`price-hour-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
-                                Prix heure MAD (€)
+                                Prix/Heure - MAD (€)
                               </Label>
+                              <p className="text-xs text-muted-foreground">
+                                Pour service "Mise à Disposition"
+                              </p>
                               <Input
                                 id={`price-hour-${vehicle.id}`}
                                 type="number"

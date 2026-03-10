@@ -51,17 +51,17 @@ Le système dispose de 2 modes tarifaires que l'administrateur peut basculer en 
 
 ### Mode Forte Demande (High Demand) - Par défaut 🔥
 Tarifs appliqués pendant les périodes de forte affluence:
-- `pricePerKm`: Prix au kilomètre standard
-- `pricePerMinute`: Prix à la minute standard  
-- `pricePerHour`: Prix à l'heure standard
-- `tourBasePrice`: Prix de base circuit standard
+- `pricePerKm`: Prix au kilomètre standard (pour Transferts)
+- `pricePerMinute`: Prix à la minute standard (pour Transferts)
+- `pricePerHour`: Prix à l'heure standard (pour Mise À Disposition uniquement)
+- `tourBasePrice`: Prix de base circuit standard (pour Circuits Touristiques)
 
 ### Mode Basse Saison (Low Season) ❄️
 Tarifs réduits pendant les périodes creuses:
-- `lowSeasonPricePerKm`: Prix au kilomètre réduit
-- `lowSeasonPricePerMinute`: Prix à la minute réduit
-- `lowSeasonPricePerHour`: Prix à l'heure réduit
-- `lowSeasonTourBasePrice`: Prix de base circuit réduit
+- `lowSeasonPricePerKm`: Prix au kilomètre réduit (pour Transferts)
+- `lowSeasonPricePerMinute`: Prix à la minute réduit (pour Transferts)
+- `lowSeasonPricePerHour`: Prix à l'heure réduit (pour Mise À Disposition uniquement)
+- `lowSeasonTourBasePrice`: Prix de base circuit réduit (pour Circuits Touristiques)
 
 L'administrateur bascule entre les modes via le bouton dans l'onglet "Tarifs" du tableau de bord admin.
 
@@ -140,11 +140,11 @@ Le récapitulatif final affiche:
 L'administrateur peut:
 
 1. **Gérer les tarifs** (Onglet "Tarifs"):
-   - Modifier le prix/km pour chaque véhicule
-   - Modifier le prix/minute pour chaque véhicule
-   - Modifier le prix/heure (utilisé aussi comme minimum)
-   - Modifier le prix de base des circuits
-   - Configurer les tarifs basse saison
+   - Modifier le prix/km pour chaque véhicule (utilisé pour les Transferts)
+   - Modifier le prix/minute pour chaque véhicule (utilisé pour les Transferts)
+   - Modifier le prix/heure pour chaque véhicule (utilisé pour les Mises À Disposition uniquement)
+   - Modifier le prix de base des circuits (utilisé pour les Circuits Touristiques)
+   - Configurer les tarifs basse saison pour chaque paramètre
    - Basculer entre mode forte demande et basse saison
 
 2. **Gérer les options** (Onglet "Options"):
