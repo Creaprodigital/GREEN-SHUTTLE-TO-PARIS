@@ -52,6 +52,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
   const [isCreatingPricing, setIsCreatingPricing] = useState(false)
   const [editingZone, setEditingZone] = useState<PricingZone | null>(null)
   const [isEditingZone, setIsEditingZone] = useState(false)
+  const [editingPricing, setEditingPricing] = useState<ZonePricing | null>(null)
   
   const [newZoneName, setNewZoneName] = useState('')
   const [newZoneDescription, setNewZoneDescription] = useState('')
@@ -935,6 +936,63 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     setIsCreatingPricing(false)
   }
 
+  const handleStartEditingPricing = (pricing: ZonePricing) => {
+    setEditingPricing(pricing)
+    setNewPricingFromZone(pricing.fromZoneId)
+    setNewPricingToZone(pricing.toZoneId)
+    setNewPricingVehicle(pricing.vehicleId)
+    setNewPricingPrice(pricing.fixedPrice.toString())
+    setIsCreatingPricing(true)
+  }
+
+  const handleUpdatePricing = () => {
+    if (!editingPricing || !newPricingFromZone || !newPricingToZone || !newPricingVehicle || !newPricingPrice) {
+      toast.error('Veuillez remplir tous les champs')
+      return
+    }
+
+    const price = parseFloat(newPricingPrice)
+    if (isNaN(price) || price <= 0) {
+      toast.error('Veuillez entrer un prix valide')
+      return
+    }
+
+    const fromZone = zones?.find(z => z.id === newPricingFromZone)
+    const toZone = zones?.find(z => z.id === newPricingToZone)
+    const vehicle = fleet.find(v => v.id === newPricingVehicle)
+
+    const updatedPricing: ZonePricing = {
+      ...editingPricing,
+      fromZoneId: newPricingFromZone,
+      toZoneId: newPricingToZone,
+      vehicleId: newPricingVehicle,
+      fixedPrice: price,
+    }
+
+    setZonePricings((current) => {
+      const updated = (current || []).map(p => p.id === editingPricing.id ? updatedPricing : p)
+      return updated
+    })
+    
+    toast.success(`Forfait modifié: ${fromZone?.name} → ${toZone?.name} (${vehicle?.title}) - ${price.toFixed(2)}€`)
+    
+    setEditingPricing(null)
+    setNewPricingFromZone('')
+    setNewPricingToZone('')
+    setNewPricingVehicle('')
+    setNewPricingPrice('')
+    setIsCreatingPricing(false)
+  }
+
+  const handleCancelEditingPricing = () => {
+    setEditingPricing(null)
+    setNewPricingFromZone('')
+    setNewPricingToZone('')
+    setNewPricingVehicle('')
+    setNewPricingPrice('')
+    setIsCreatingPricing(false)
+  }
+
   const handleDeletePricing = (pricingId: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce forfait ?')) {
       setZonePricings(current => (current || []).filter(p => p.id !== pricingId))
@@ -1351,6 +1409,11 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
               <CardTitle className="flex items-center gap-2">
                 <CurrencyCircleDollar className="text-accent" />
                 Forfaits Zone à Zone
+                {editingPricing && (
+                  <span className="text-sm font-normal text-accent ml-2">
+                    (Modification en cours)
+                  </span>
+                )}
               </CardTitle>
               <CardDescription>
                 Définissez des prix fixes pour chaque trajet entre deux zones
@@ -1452,17 +1515,14 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
                   </div>
 
                   <div className="flex gap-2">
-                    <Button onClick={handleCreatePricing} className="flex-1">
-                      Créer le Forfait
+                    <Button 
+                      onClick={editingPricing ? handleUpdatePricing : handleCreatePricing} 
+                      className="flex-1"
+                    >
+                      {editingPricing ? 'Modifier le Forfait' : 'Créer le Forfait'}
                     </Button>
                     <Button
-                      onClick={() => {
-                        setIsCreatingPricing(false)
-                        setNewPricingFromZone('')
-                        setNewPricingToZone('')
-                        setNewPricingVehicle('')
-                        setNewPricingPrice('')
-                      }}
+                      onClick={handleCancelEditingPricing}
                       variant="outline"
                     >
                       Annuler
@@ -1539,8 +1599,18 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
                           <Button
                             variant="ghost"
                             size="sm"
+                            onClick={() => handleStartEditingPricing(pricing)}
+                            title="Modifier ce forfait"
+                            disabled={isCreatingPricing}
+                          >
+                            <Pencil size={16} className="text-accent" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => handleDuplicatePricing(pricing)}
                             title="Dupliquer ce forfait"
+                            disabled={isCreatingPricing}
                           >
                             <Copy size={16} />
                           </Button>
@@ -1548,6 +1618,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDeletePricing(pricing.id)}
+                            disabled={isCreatingPricing}
                           >
                             <Trash className="text-destructive" size={16} />
                           </Button>
