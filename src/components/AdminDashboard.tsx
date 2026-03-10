@@ -5,8 +5,10 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Label } from '@/components/ui/label'
-import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key } from '@phosphor-icons/react'
+import { Textarea } from '@/components/ui/textarea'
+import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
+import { VehicleClass, VehicleClassType, DEFAULT_FLEET } from '@/types/fleet'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import Header from '@/components/Header'
@@ -49,6 +51,10 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   ])
   const [newAdminEmail, setNewAdminEmail] = useState('')
   const [newAdminPassword, setNewAdminPassword] = useState('')
+  
+  const [fleetData, setFleetData] = useKV<Record<VehicleClassType, VehicleClass>>('fleet-data', DEFAULT_FLEET)
+  const [editingVehicle, setEditingVehicle] = useState<VehicleClassType | null>(null)
+  const [uploadingImage, setUploadingImage] = useState<VehicleClassType | null>(null)
 
   const filteredBookings = bookings.filter(b => {
     const matchesStatus = filterStatus === 'all' || b.status === filterStatus
@@ -135,6 +141,49 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     }
   }
 
+  const handleImageUpload = (vehicleId: VehicleClassType, file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file')
+      return
+    }
+
+    const maxSize = 5 * 1024 * 1024
+    if (file.size > maxSize) {
+      toast.error('Image size should be less than 5MB')
+      return
+    }
+
+    setUploadingImage(vehicleId)
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const result = e.target?.result as string
+      setFleetData((current) => {
+        const updated = { ...(current || DEFAULT_FLEET) }
+        updated[vehicleId] = {
+          ...updated[vehicleId],
+          image: result
+        }
+        return updated
+      })
+      setUploadingImage(null)
+      toast.success('Image uploaded successfully')
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleUpdateVehicle = (vehicleId: VehicleClassType, updates: Partial<VehicleClass>) => {
+    setFleetData((current) => {
+      const updated = { ...(current || DEFAULT_FLEET) }
+      updated[vehicleId] = {
+        ...updated[vehicleId],
+        ...updates
+      }
+      return updated
+    })
+    setEditingVehicle(null)
+    toast.success('Vehicle updated successfully')
+  }
+
   return (
     <>
       <Header 
@@ -148,8 +197,9 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Tabs defaultValue="bookings" className="w-full">
-          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-2 mb-8">
+          <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-3 mb-8">
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
+            <TabsTrigger value="fleet">Our Fleet</TabsTrigger>
             <TabsTrigger value="admins">Admin Accounts</TabsTrigger>
           </TabsList>
 
@@ -268,6 +318,153 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="fleet" className="space-y-6">
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+                Fleet Management
+              </h2>
+              <p className="text-foreground/70">
+                Manage vehicle classes displayed on the home page
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {Object.entries(fleetData || DEFAULT_FLEET)
+                .sort(([, a], [, b]) => a.order - b.order)
+                .map(([key, vehicle]) => {
+                  const vehicleKey = key as VehicleClassType
+                  const isEditing = editingVehicle === vehicleKey
+                  
+                  return (
+                    <motion.div
+                      key={vehicleKey}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Card className="border-2 border-accent/20">
+                        <CardHeader className="border-b border-border">
+                          <CardTitle className="text-xl font-semibold uppercase tracking-wide">
+                            {vehicle.title}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-6 space-y-4">
+                          <div className="aspect-[4/3] bg-muted/50 relative overflow-hidden border-2 border-border">
+                            {vehicle.image ? (
+                              <img
+                                src={vehicle.image}
+                                alt={vehicle.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <ImageIcon size={80} className="text-muted-foreground/30" weight="thin" />
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-sm font-medium uppercase tracking-wide">
+                              Upload Image
+                            </Label>
+                            <div className="flex gap-2">
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                id={`file-${vehicleKey}`}
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0]
+                                  if (file) handleImageUpload(vehicleKey, file)
+                                }}
+                                className="h-12 bg-secondary border-border"
+                                disabled={uploadingImage === vehicleKey}
+                              />
+                              {uploadingImage === vehicleKey && (
+                                <Button disabled className="h-12">
+                                  <Upload className="animate-pulse" />
+                                </Button>
+                              )}
+                              {vehicle.image && uploadingImage !== vehicleKey && (
+                                <Button
+                                  variant="outline"
+                                  className="h-12 border-green-500/30 text-green-500"
+                                  disabled
+                                >
+                                  <Check />
+                                </Button>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Max 5MB. Recommended: 800x600px
+                            </p>
+                          </div>
+
+                          {isEditing ? (
+                            <div className="space-y-4">
+                              <div className="space-y-2">
+                                <Label htmlFor={`title-${vehicleKey}`} className="text-sm font-medium uppercase tracking-wide">
+                                  Title
+                                </Label>
+                                <Input
+                                  id={`title-${vehicleKey}`}
+                                  defaultValue={vehicle.title}
+                                  className="h-12 bg-secondary border-border"
+                                  onBlur={(e) => {
+                                    if (e.target.value !== vehicle.title) {
+                                      handleUpdateVehicle(vehicleKey, { title: e.target.value })
+                                    } else {
+                                      setEditingVehicle(null)
+                                    }
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor={`desc-${vehicleKey}`} className="text-sm font-medium uppercase tracking-wide">
+                                  Description
+                                </Label>
+                                <Textarea
+                                  id={`desc-${vehicleKey}`}
+                                  defaultValue={vehicle.description}
+                                  className="min-h-[100px] bg-secondary border-border"
+                                  onBlur={(e) => {
+                                    if (e.target.value !== vehicle.description) {
+                                      handleUpdateVehicle(vehicleKey, { description: e.target.value })
+                                    } else {
+                                      setEditingVehicle(null)
+                                    }
+                                  }}
+                                />
+                              </div>
+                              <Button
+                                variant="outline"
+                                onClick={() => setEditingVehicle(null)}
+                                className="w-full h-12"
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              <div>
+                                <p className="text-sm text-muted-foreground uppercase tracking-wide mb-1">Description</p>
+                                <p className="text-foreground">{vehicle.description}</p>
+                              </div>
+                              <Button
+                                onClick={() => setEditingVehicle(vehicleKey)}
+                                className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+                              >
+                                Edit Details
+                              </Button>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )
+                })}
+            </div>
           </TabsContent>
 
           <TabsContent value="bookings" className="space-y-6">
