@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { MapPin, Plus, Trash, Pencil, CurrencyCircleDollar } from '@phosphor-icons/react'
+import { MapPin, Plus, Trash, Pencil, CurrencyCircleDollar, Lightning, Copy } from '@phosphor-icons/react'
 import { PricingZone, ZonePricing } from '@/types/pricing'
 import { DEFAULT_FLEET } from '@/types/fleet'
 import { useKV } from '@github/spark/hooks'
@@ -39,6 +39,10 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
   const [newPricingToZone, setNewPricingToZone] = useState('')
   const [newPricingVehicle, setNewPricingVehicle] = useState('')
   const [newPricingPrice, setNewPricingPrice] = useState('')
+  const [isBulkPricingDialogOpen, setIsBulkPricingDialogOpen] = useState(false)
+  const [bulkFromZone, setBulkFromZone] = useState('')
+  const [bulkToZones, setBulkToZones] = useState<string[]>([])
+  const [bulkPrices, setBulkPrices] = useState<Record<string, Record<string, string>>>({})
 
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<google.maps.Map | null>(null)
@@ -249,6 +253,82 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     return DEFAULT_FLEET.find(v => v.id === vehicleId)?.title || 'Véhicule inconnu'
   }
 
+  const handleOpenBulkPricing = () => {
+    setBulkFromZone('')
+    setBulkToZones([])
+    setBulkPrices({})
+    setIsBulkPricingDialogOpen(true)
+  }
+
+  const handleBulkZoneToggle = (zoneId: string) => {
+    setBulkToZones(prev => 
+      prev.includes(zoneId) 
+        ? prev.filter(id => id !== zoneId)
+        : [...prev, zoneId]
+    )
+  }
+
+  const handleBulkPriceChange = (toZoneId: string, vehicleId: string, price: string) => {
+    setBulkPrices(prev => ({
+      ...prev,
+      [toZoneId]: {
+        ...(prev[toZoneId] || {}),
+        [vehicleId]: price
+      }
+    }))
+  }
+
+  const handleCreateBulkPricings = () => {
+    if (!bulkFromZone) {
+      toast.error('Veuillez sélectionner une zone de départ')
+      return
+    }
+
+    if (bulkToZones.length === 0) {
+      toast.error('Veuillez sélectionner au moins une zone d\'arrivée')
+      return
+    }
+
+    let createdCount = 0
+    const newPricings: ZonePricing[] = []
+
+    bulkToZones.forEach(toZoneId => {
+      DEFAULT_FLEET.forEach(vehicle => {
+        const price = bulkPrices[toZoneId]?.[vehicle.id]
+        if (price && parseFloat(price) > 0) {
+          newPricings.push({
+            id: `pricing-${Date.now()}-${createdCount}`,
+            fromZoneId: bulkFromZone,
+            toZoneId: toZoneId,
+            vehicleId: vehicle.id,
+            fixedPrice: parseFloat(price),
+            createdAt: new Date().toISOString(),
+          })
+          createdCount++
+        }
+      })
+    })
+
+    if (createdCount === 0) {
+      toast.error('Veuillez entrer au moins un prix valide')
+      return
+    }
+
+    setZonePricings(current => [...(current || []), ...newPricings])
+    toast.success(`${createdCount} forfait(s) créé(s) avec succès`)
+    setIsBulkPricingDialogOpen(false)
+  }
+
+  const handleDuplicatePricing = (pricing: ZonePricing) => {
+    const newPricing: ZonePricing = {
+      ...pricing,
+      id: `pricing-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+    }
+    setZonePricings(current => [...(current || []), newPricing])
+    toast.success('Forfait dupliqué')
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -411,16 +491,31 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {!isCreatingPricing ? (
-                <Button 
-                  onClick={() => setIsCreatingPricing(true)} 
-                  className="w-full"
-                  disabled={zones.length < 2}
-                >
-                  <Plus className="mr-2" />
-                  Nouveau Forfait
-                </Button>
-              ) : (
+              <div className="flex gap-2">
+                {!isCreatingPricing ? (
+                  <>
+                    <Button 
+                      onClick={() => setIsCreatingPricing(true)} 
+                      className="flex-1"
+                      disabled={zones.length < 2}
+                    >
+                      <Plus className="mr-2" />
+                      Nouveau Forfait
+                    </Button>
+                    <Button
+                      onClick={handleOpenBulkPricing}
+                      variant="outline"
+                      className="flex-1"
+                      disabled={zones.length < 2}
+                    >
+                      <Lightning className="mr-2" />
+                      Création en Masse
+                    </Button>
+                  </>
+                ) : null}
+              </div>
+
+              {isCreatingPricing && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -537,7 +632,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
                   <TableHead>Zone Arrivée</TableHead>
                   <TableHead>Véhicule</TableHead>
                   <TableHead className="text-right">Prix Fixe</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
+                  <TableHead className="w-[100px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -574,13 +669,23 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
                         {pricing.fixedPrice.toFixed(2)} €
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeletePricing(pricing.id)}
-                        >
-                          <Trash className="text-destructive" size={16} />
-                        </Button>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDuplicatePricing(pricing)}
+                            title="Dupliquer ce forfait"
+                          >
+                            <Copy size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeletePricing(pricing.id)}
+                          >
+                            <Trash className="text-destructive" size={16} />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   )
@@ -590,6 +695,120 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={isBulkPricingDialogOpen} onOpenChange={setIsBulkPricingDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Création en Masse de Forfaits</DialogTitle>
+            <DialogDescription>
+              Créez plusieurs forfaits simultanément pour une zone de départ vers plusieurs zones d'arrivée
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label>Zone de Départ *</Label>
+              <Select value={bulkFromZone} onValueChange={setBulkFromZone}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner la zone de départ..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {(zones || []).map(zone => (
+                    <SelectItem key={zone.id} value={zone.id}>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: zone.color }}
+                        />
+                        {zone.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Zones d'Arrivée *</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {(zones || [])
+                  .filter(zone => zone.id !== bulkFromZone)
+                  .map(zone => (
+                    <div
+                      key={zone.id}
+                      onClick={() => handleBulkZoneToggle(zone.id)}
+                      className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                        bulkToZones.includes(zone.id)
+                          ? 'border-accent bg-accent/10'
+                          : 'border-border hover:border-accent/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-4 h-4 rounded-full"
+                          style={{ backgroundColor: zone.color }}
+                        />
+                        <span className="font-medium">{zone.name}</span>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+
+            {bulkToZones.length > 0 && (
+              <div className="space-y-4">
+                <Label>Prix par Véhicule (€)</Label>
+                {bulkToZones.map(toZoneId => {
+                  const toZone = zones?.find(z => z.id === toZoneId)
+                  if (!toZone) return null
+
+                  return (
+                    <div key={toZoneId} className="p-4 bg-secondary/30 rounded-lg space-y-3">
+                      <div className="flex items-center gap-2 font-medium">
+                        <div
+                          className="w-4 h-4 rounded-full"
+                          style={{ backgroundColor: toZone.color }}
+                        />
+                        Vers {toZone.name}
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        {DEFAULT_FLEET.map(vehicle => (
+                          <div key={vehicle.id} className="space-y-1">
+                            <Label className="text-xs">{vehicle.title}</Label>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              placeholder="Prix..."
+                              value={bulkPrices[toZoneId]?.[vehicle.id] || ''}
+                              onChange={(e) =>
+                                handleBulkPriceChange(toZoneId, vehicle.id, e.target.value)
+                              }
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            <div className="flex gap-2 pt-4">
+              <Button onClick={handleCreateBulkPricings} className="flex-1">
+                <Plus className="mr-2" />
+                Créer les Forfaits
+              </Button>
+              <Button
+                onClick={() => setIsBulkPricingDialogOpen(false)}
+                variant="outline"
+              >
+                Annuler
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
