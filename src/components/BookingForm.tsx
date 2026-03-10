@@ -16,7 +16,7 @@ import PlacesAutocomplete from '@/components/PlacesAutocomplete'
 import CircuitMap from '@/components/CircuitMap'
 import { Booking } from '@/types/booking'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
-import { ServiceOption, VehiclePricing, DEFAULT_PRICING, DEFAULT_OPTIONS, PricingSettings } from '@/types/pricing'
+import { ServiceOption, VehiclePricing, DEFAULT_PRICING, DEFAULT_OPTIONS, PricingSettings, PricingZone, ZonePricing } from '@/types/pricing'
 import { Circuit } from '@/types/circuit'
 
 export default function BookingForm() {
@@ -27,6 +27,8 @@ export default function BookingForm() {
   const [circuits] = useKV<Circuit[]>('circuits', [])
   const [activePricingMode] = useKV<'high-demand' | 'low-season'>('active-pricing-mode', 'high-demand')
   const [pricingSettings] = useKV<PricingSettings>('pricing-settings', { roundToWholeEuro: false })
+  const [zones] = useKV<PricingZone[]>('pricing-zones', [])
+  const [zonePricings] = useKV<ZonePricing[]>('zone-pricings', [])
   const [currentStep, setCurrentStep] = useState(1)
   
   const [serviceType, setServiceType] = useState<'transfer' | 'hourly' | 'tour'>('transfer')
@@ -57,6 +59,41 @@ export default function BookingForm() {
   const [notes, setNotes] = useState('')
   
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'cash' | 'transfer'>('card')
+
+  const isPointInPolygon = (point: { lat: number; lng: number }, polygon: { lat: number; lng: number }[]): boolean => {
+    let inside = false
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const xi = polygon[i].lat, yi = polygon[i].lng
+      const xj = polygon[j].lat, yj = polygon[j].lng
+      const intersect = ((yi > point.lng) !== (yj > point.lng))
+        && (point.lat < (xj - xi) * (point.lng - yi) / (yj - yi) + xi)
+      if (intersect) inside = !inside
+    }
+    return inside
+  }
+
+  const findZoneForPoint = (point: { lat: number; lng: number } | null): PricingZone | null => {
+    if (!point || !zones || zones.length === 0) return null
+    
+    for (const zone of zones) {
+      if (isPointInPolygon(point, zone.polygon)) {
+        return zone
+      }
+    }
+    return null
+  }
+
+  const findZonePricing = (fromZone: PricingZone | null, toZone: PricingZone | null, vehicleId: string): ZonePricing | null => {
+    if (!fromZone || !toZone || !zonePricings || zonePricings.length === 0) return null
+    
+    const pricing = zonePricings.find(p => 
+      p.fromZoneId === fromZone.id && 
+      p.toZoneId === toZone.id && 
+      p.vehicleId === vehicleId
+    )
+    
+    return pricing || null
+  }
 
   const vehiclePrices = useMemo(() => {
     const prices: Record<string, number> = {}
@@ -104,38 +141,56 @@ export default function BookingForm() {
         basePrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonTourBasePrice || vehiclePricing.tourBasePrice) : vehiclePricing.tourBasePrice
         console.log(`🗺️ Tour: prix de base = ${basePrice}€`)
       } else {
-        const pricePerKm = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
-        const pricePerMinute = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
-        const minimumPrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonMinimumTransferPrice || vehiclePricing.minimumTransferPrice || 40) : (vehiclePricing.minimumTransferPrice || 40)
+        const fromZone = findZoneForPoint(pickupCoords)
+        const toZone = findZoneForPoint(destinationCoords)
+        const zonePricing = findZonePricing(fromZone, toZone, vehicle.id)
         
-        console.log(`💰 Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€, Prix minimum transfert: ${minimumPrice}€`)
-        
-        if (distanceKm > 0 && durationMinutes > 0) {
-          const kmPrice = pricePerKm * distanceKm
-          const minutePrice = pricePerMinute * durationMinutes
-          basePrice = kmPrice + minutePrice
-          console.log(`🚗 Transfer: (${distanceKm}km × ${pricePerKm}€) + (${durationMinutes}min × ${pricePerMinute}€) = ${kmPrice.toFixed(2)}€ + ${minutePrice.toFixed(2)}€ = ${basePrice.toFixed(2)}€`)
-          
-          if (basePrice < minimumPrice) {
-            console.log(`⬆️ Prix inférieur au minimum transfert, ajusté de ${basePrice.toFixed(2)}€ à ${minimumPrice}€`)
-            basePrice = minimumPrice
-          }
-          
-          if (transferType === 'roundtrip') {
-            basePrice *= 2
-            console.log(`↔️ Aller-retour: × 2 = ${basePrice.toFixed(2)}€`)
-          }
-        } else if (pickup && destination) {
-          basePrice = minimumPrice
-          console.log(`📍 Adresses saisies mais distance non calculée, prix minimum transfert appliqué: ${minimumPrice}€`)
+        if (zonePricing) {
+          basePrice = zonePricing.fixedPrice
+          console.log(`🎯 FORFAIT ZONE TROUVÉ: ${fromZone?.name} → ${toZone?.name} = ${basePrice}€`)
           
           if (transferType === 'roundtrip') {
             basePrice *= 2
             console.log(`↔️ Aller-retour: × 2 = ${basePrice.toFixed(2)}€`)
           }
         } else {
-          basePrice = 0
-          console.log('⚠️ Départ ou destination manquante, prix = 0')
+          if (fromZone || toZone) {
+            console.log(`ℹ️ Point(s) dans zone(s): ${fromZone?.name || 'hors zone'} → ${toZone?.name || 'hors zone'}, mais pas de forfait défini`)
+          }
+          
+          const pricePerKm = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
+          const pricePerMinute = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
+          const minimumPrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonMinimumTransferPrice || vehiclePricing.minimumTransferPrice || 40) : (vehiclePricing.minimumTransferPrice || 40)
+          
+          console.log(`💰 Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€, Prix minimum transfert: ${minimumPrice}€`)
+          
+          if (distanceKm > 0 && durationMinutes > 0) {
+            const kmPrice = pricePerKm * distanceKm
+            const minutePrice = pricePerMinute * durationMinutes
+            basePrice = kmPrice + minutePrice
+            console.log(`🚗 Transfer: (${distanceKm}km × ${pricePerKm}€) + (${durationMinutes}min × ${pricePerMinute}€) = ${kmPrice.toFixed(2)}€ + ${minutePrice.toFixed(2)}€ = ${basePrice.toFixed(2)}€`)
+            
+            if (basePrice < minimumPrice) {
+              console.log(`⬆️ Prix inférieur au minimum transfert, ajusté de ${basePrice.toFixed(2)}€ à ${minimumPrice}€`)
+              basePrice = minimumPrice
+            }
+            
+            if (transferType === 'roundtrip') {
+              basePrice *= 2
+              console.log(`↔️ Aller-retour: × 2 = ${basePrice.toFixed(2)}€`)
+            }
+          } else if (pickup && destination) {
+            basePrice = minimumPrice
+            console.log(`📍 Adresses saisies mais distance non calculée, prix minimum transfert appliqué: ${minimumPrice}€`)
+            
+            if (transferType === 'roundtrip') {
+              basePrice *= 2
+              console.log(`↔️ Aller-retour: × 2 = ${basePrice.toFixed(2)}€`)
+            }
+          } else {
+            basePrice = 0
+            console.log('⚠️ Départ ou destination manquante, prix = 0')
+          }
         }
       }
 
@@ -161,7 +216,7 @@ export default function BookingForm() {
 
     console.log('📋 Prix finaux calculés:', prices)
     return prices
-  }, [fleet, pricing, serviceType, hourlyDuration, activePricingMode, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions, pickup, destination, pricingSettings])
+  }, [fleet, pricing, serviceType, hourlyDuration, activePricingMode, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions, pickup, destination, pricingSettings, pickupCoords, destinationCoords, zones, zonePricings])
 
   const calculatePrice = (vehicleId: string): number => {
     return vehiclePrices[vehicleId] || 0
@@ -663,39 +718,58 @@ export default function BookingForm() {
                   transition={{ duration: 0.3 }}
                   className="space-y-5"
                 >
-                  {serviceType === 'transfer' && (
-                    <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4">
-                      {isCalculatingDistance ? (
-                        <div className="flex justify-center items-center text-sm text-muted-foreground py-3">
-                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-accent border-t-transparent mr-3"></div>
-                          Calcul de la distance en cours...
-                        </div>
-                      ) : distanceKm > 0 ? (
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="flex flex-col items-center justify-center p-3 bg-background rounded-md">
-                            <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Distance</div>
-                            <div className="text-2xl font-bold text-accent">{distanceKm.toFixed(1)} km</div>
+                  {serviceType === 'transfer' && (() => {
+                    const fromZone = findZoneForPoint(pickupCoords)
+                    const toZone = findZoneForPoint(destinationCoords)
+                    const hasZonePricing = fromZone && toZone && zonePricings && zonePricings.some(p => 
+                      p.fromZoneId === fromZone.id && p.toZoneId === toZone.id
+                    )
+                    
+                    return (
+                      <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4">
+                        {hasZonePricing && (
+                          <div className="mb-3 p-3 bg-accent/20 border border-accent/40 rounded-md">
+                            <div className="flex items-center gap-2 text-sm font-semibold text-accent mb-1">
+                              <MapPin size={16} weight="fill" />
+                              <span>Forfait Zone Appliqué</span>
+                            </div>
+                            <div className="text-xs text-foreground/80">
+                              {fromZone.name} → {toZone.name}
+                            </div>
                           </div>
-                          <div className="flex flex-col items-center justify-center p-3 bg-background rounded-md">
-                            <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Durée estimée</div>
-                            <div className="text-2xl font-bold text-accent">{durationMinutes} min</div>
+                        )}
+                        {isCalculatingDistance ? (
+                          <div className="flex justify-center items-center text-sm text-muted-foreground py-3">
+                            <div className="animate-spin rounded-full h-5 w-5 border-2 border-accent border-t-transparent mr-3"></div>
+                            Calcul de la distance en cours...
                           </div>
-                        </div>
-                      ) : (pickup && destination && !pickupCoords && !destinationCoords) ? (
-                        <div className="text-center text-xs text-muted-foreground py-3">
-                          ⚠️ Veuillez sélectionner une adresse dans la liste de suggestions pour calculer la distance
-                        </div>
-                      ) : (pickup && destination && (!pickupCoords || !destinationCoords)) ? (
-                        <div className="text-center text-xs text-muted-foreground py-3">
-                          ⚠️ Veuillez sélectionner {!pickupCoords ? 'le lieu de départ' : 'la destination'} dans la liste de suggestions
-                        </div>
-                      ) : (
-                        <div className="text-center text-xs text-muted-foreground py-3">
-                          Saisissez le départ et la destination pour calculer la distance
-                        </div>
-                      )}
-                    </div>
-                  )}
+                        ) : distanceKm > 0 ? (
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="flex flex-col items-center justify-center p-3 bg-background rounded-md">
+                              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Distance</div>
+                              <div className="text-2xl font-bold text-accent">{distanceKm.toFixed(1)} km</div>
+                            </div>
+                            <div className="flex flex-col items-center justify-center p-3 bg-background rounded-md">
+                              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Durée estimée</div>
+                              <div className="text-2xl font-bold text-accent">{durationMinutes} min</div>
+                            </div>
+                          </div>
+                        ) : (pickup && destination && !pickupCoords && !destinationCoords) ? (
+                          <div className="text-center text-xs text-muted-foreground py-3">
+                            ⚠️ Veuillez sélectionner une adresse dans la liste de suggestions pour calculer la distance
+                          </div>
+                        ) : (pickup && destination && (!pickupCoords || !destinationCoords)) ? (
+                          <div className="text-center text-xs text-muted-foreground py-3">
+                            ⚠️ Veuillez sélectionner {!pickupCoords ? 'le lieu de départ' : 'la destination'} dans la liste de suggestions
+                          </div>
+                        ) : (
+                          <div className="text-center text-xs text-muted-foreground py-3">
+                            Saisissez le départ et la destination pour calculer la distance
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })()}
 
                   <div className="space-y-4">
                     <Label className="text-sm font-medium uppercase tracking-wide">Sélectionnez votre véhicule</Label>
