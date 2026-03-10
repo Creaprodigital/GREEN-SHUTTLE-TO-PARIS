@@ -70,17 +70,13 @@ export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer,
                   onMouseEnter={() => setServicesDropdownOpen(true)}
                   onMouseLeave={() => setServicesDropdownOpen(false)}
                 >
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault()
-                      scrollToSection(item.href)
-                    }}
-                    className="text-foreground/80 hover:text-accent text-sm font-medium tracking-wide transition-colors relative group flex items-center gap-1"
+                  <span
+                    className="text-foreground/80 hover:text-accent text-sm font-medium tracking-wide transition-colors relative group flex items-center gap-1 cursor-default"
                   >
                     {item.label}
                     <CaretDown size={14} className={`transition-transform ${servicesDropdownOpen ? 'rotate-180' : ''}`} />
                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
-                  </button>
+                  </span>
                   
                   <AnimatePresence>
                     {servicesDropdownOpen && (
@@ -186,16 +182,12 @@ export default function Header({ onNavigateToLogin, onNavigateToAirportTransfer,
               {menuItems.map((item) => (
                 item.hasDropdown ? (
                   <div key={item.href}>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault()
-                        scrollToSection(item.href)
-                      }}
-                      className="w-full text-left text-foreground hover:text-accent text-sm font-medium tracking-wide transition-colors py-2 flex items-center justify-between"
+                    <span
+                      className="w-full text-left text-foreground/80 text-sm font-medium tracking-wide py-2 flex items-center justify-between cursor-default"
                     >
                       {item.label}
                       <CaretDown size={14} />
-                    </button>
+                    </span>
                     <div className="pl-4 mt-2 space-y-2">
                       <button
                         onClick={() => {
