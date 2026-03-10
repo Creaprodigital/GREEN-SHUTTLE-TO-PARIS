@@ -55,8 +55,11 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   ])
   const [newAdminEmail, setNewAdminEmail] = useState('')
   const [newAdminPassword, setNewAdminPassword] = useState('')
-  const [pendingImages, setPendingImages] = useState<Record<string, { file: File; preview: string }>>({})
-  const [selectedFiles, setSelectedFiles] = useState<Record<string, File | null>>({
+  const [selectedFiles, setSelectedFiles] = useState<Record<string, { 
+    file: File; 
+    preview: string; 
+    dimensions?: { width: number; height: number } 
+  } | null>>({
     business: null,
     firstclass: null,
     suv: null
@@ -100,46 +103,65 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   }
 
   const handleFileSelect = (vehicleType: string, file: File) => {
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select a valid image file')
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+    
+    if (!validTypes.includes(file.type)) {
+      toast.error('Please select a valid image file (JPG, PNG, WebP, or GIF)')
       return
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size must be less than 5MB')
-      return
-    }
-
-    setSelectedFiles((current) => ({
-      ...current,
-      [vehicleType]: file
-    }))
-  }
-
-  const handleValidateUpload = (vehicleType: string) => {
-    const file = selectedFiles[vehicleType]
-    if (!file) {
-      toast.error('No file selected')
+    const maxSize = 5 * 1024 * 1024
+    if (file.size > maxSize) {
+      const sizeMB = (file.size / 1024 / 1024).toFixed(2)
+      toast.error(`Image size (${sizeMB}MB) exceeds maximum of 5MB`)
       return
     }
 
     const reader = new FileReader()
     reader.onload = (e) => {
-      const base64String = e.target?.result as string
-      setVehicleImages((current) => ({
-        ...current,
-        [vehicleType]: base64String
-      }))
-      setSelectedFiles((current) => ({
-        ...current,
-        [vehicleType]: null
-      }))
-      toast.success(`Image uploaded for ${vehicleType}`)
+      const preview = e.target?.result as string
+      const img = new Image()
+      img.onload = () => {
+        setSelectedFiles((current) => ({
+          ...current,
+          [vehicleType]: {
+            file,
+            preview,
+            dimensions: {
+              width: img.width,
+              height: img.height
+            }
+          }
+        }))
+        toast.success('Image loaded - click Valider to confirm upload')
+      }
+      img.onerror = () => {
+        toast.error('Failed to load image')
+      }
+      img.src = preview
     }
     reader.onerror = () => {
-      toast.error('Failed to upload image')
+      toast.error('Failed to read file')
     }
     reader.readAsDataURL(file)
+  }
+
+  const handleValidateUpload = (vehicleType: string) => {
+    const selectedFile = selectedFiles[vehicleType]
+    if (!selectedFile) {
+      toast.error('No file selected')
+      return
+    }
+
+    setVehicleImages((current) => ({
+      ...current,
+      [vehicleType]: selectedFile.preview
+    }))
+    setSelectedFiles((current) => ({
+      ...current,
+      [vehicleType]: null
+    }))
+    toast.success(`Image uploaded for ${vehicleType}`)
   }
 
   const handleCancelUpload = (vehicleType: string) => {
@@ -289,14 +311,39 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                 Choose Image
                               </Button>
                               {selectedFiles[vehicle.id] && (
-                                <div className="space-y-2">
-                                  <div className="p-3 bg-secondary rounded-lg border-2 border-accent/30">
-                                    <p className="text-sm font-medium text-foreground truncate">
-                                      {selectedFiles[vehicle.id]?.name}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                      {(selectedFiles[vehicle.id]!.size / 1024 / 1024).toFixed(2)} MB
-                                    </p>
+                                <div className="space-y-3">
+                                  <div className="border-2 border-accent/30 rounded-lg overflow-hidden bg-primary">
+                                    <div className="aspect-video w-full flex items-center justify-center">
+                                      <img
+                                        src={selectedFiles[vehicle.id]?.preview}
+                                        alt="Preview"
+                                        className="w-full h-full object-contain"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="p-3 bg-secondary rounded-lg border-2 border-accent/30 space-y-2">
+                                    <div>
+                                      <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Filename</p>
+                                      <p className="text-sm font-medium text-foreground truncate">
+                                        {selectedFiles[vehicle.id]?.file.name}
+                                      </p>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <div>
+                                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">File Size</p>
+                                        <p className="text-sm font-medium text-accent">
+                                          {(selectedFiles[vehicle.id]!.file.size / 1024 / 1024).toFixed(2)} MB
+                                        </p>
+                                      </div>
+                                      {selectedFiles[vehicle.id]?.dimensions && (
+                                        <div>
+                                          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Dimensions</p>
+                                          <p className="text-sm font-medium text-accent">
+                                            {selectedFiles[vehicle.id]!.dimensions!.width} × {selectedFiles[vehicle.id]!.dimensions!.height}
+                                          </p>
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
                                   <div className="flex gap-2">
                                     <Button
@@ -317,9 +364,11 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                 </div>
                               )}
                             </div>
-                            <p className="text-xs text-muted-foreground mt-2">
-                              Maximum 5MB • JPG, PNG, WebP, GIF
-                            </p>
+                            {!selectedFiles[vehicle.id] && (
+                              <p className="text-xs text-muted-foreground mt-2">
+                                Maximum 5MB • JPG, PNG, WebP, GIF
+                              </p>
+                            )}
                           </div>
                         </div>
                       </div>
