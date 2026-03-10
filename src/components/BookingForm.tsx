@@ -610,6 +610,22 @@ export default function BookingForm() {
                       </div>
                     </div>
 
+                    {serviceType !== 'tour' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="time" className="text-sm font-medium uppercase tracking-wide">Heure de Départ</Label>
+                        <div className="relative">
+                          <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                          <Input
+                            id="time"
+                            type="time"
+                            value={time}
+                            onChange={(e) => setTime(e.target.value)}
+                            className="pl-11 h-12 bg-secondary border-border"
+                          />
+                        </div>
+                      </div>
+                    )}
+
                     <div className="space-y-2">
                       <Label htmlFor="passengers" className="text-sm font-medium uppercase tracking-wide">Passagers</Label>
                       <div className="relative">
