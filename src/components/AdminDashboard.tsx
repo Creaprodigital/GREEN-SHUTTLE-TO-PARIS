@@ -72,6 +72,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   const [newOptionName, setNewOptionName] = useState('')
   const [newOptionDescription, setNewOptionDescription] = useState('')
   const [newOptionPrice, setNewOptionPrice] = useState('')
+  const [activePricingMode, setActivePricingMode] = useKV<'high-demand' | 'low-season'>('active-pricing-mode', 'high-demand')
 
   const filteredBookings = bookings.filter(b => {
     const matchesStatus = filterStatus === 'all' || b.status === filterStatus
@@ -278,16 +279,32 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
           idx === existingIndex ? { ...pricing, [field]: value } : pricing
         )
       } else {
-        return [...data, {
+        const defaultPricing = DEFAULT_PRICING.find(p => p.vehicleId === vehicleId) || {
           vehicleId,
-          pricePerKm: field === 'pricePerKm' ? value : 0,
-          pricePerMinute: field === 'pricePerMinute' ? value : 0,
-          pricePerHour: field === 'pricePerHour' ? value : 0,
-          tourBasePrice: field === 'tourBasePrice' ? value : 0
+          pricePerKm: 0,
+          pricePerMinute: 0,
+          pricePerHour: 0,
+          tourBasePrice: 0,
+          lowSeasonPricePerKm: 0,
+          lowSeasonPricePerMinute: 0,
+          lowSeasonPricePerHour: 0,
+          lowSeasonTourBasePrice: 0
+        }
+        return [...data, {
+          ...defaultPricing,
+          [field]: value
         }]
       }
     })
     toast.success('Tarif mis à jour')
+  }
+
+  const handleTogglePricingMode = () => {
+    setActivePricingMode((current) => {
+      const newMode = current === 'high-demand' ? 'low-season' : 'high-demand'
+      toast.success(`Mode basculé vers: ${newMode === 'high-demand' ? 'Tarifs Forte demande' : 'Tarifs Basse Saison'}`)
+      return newMode
+    })
   }
 
   const handleAddOption = () => {
@@ -898,6 +915,35 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
               </p>
             </div>
 
+            <Card className="border-2 border-accent/20 mb-6">
+              <CardContent className="py-6">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <Sparkle size={32} className="text-accent" weight="fill" />
+                    <div>
+                      <h3 className="text-xl font-semibold uppercase tracking-wide">
+                        Mode Tarifaire Actif
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Basculez entre les tarifs haute demande et basse saison en 1 clic
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={handleTogglePricingMode}
+                    size="lg"
+                    className={`h-14 px-8 font-bold uppercase tracking-widest text-lg transition-all ${
+                      activePricingMode === 'high-demand'
+                        ? 'bg-accent text-accent-foreground hover:bg-accent/90'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    {activePricingMode === 'high-demand' ? '🔥 Tarifs Forte demande' : '❄️ Tarifs Basse Saison'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
             <div className="space-y-4">
               {(Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET)
                 .sort((a, b) => a.order - b.order)
@@ -908,8 +954,14 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                       pricePerKm: 0,
                       pricePerMinute: 0,
                       pricePerHour: 0,
-                      tourBasePrice: 0
+                      tourBasePrice: 0,
+                      lowSeasonPricePerKm: 0,
+                      lowSeasonPricePerMinute: 0,
+                      lowSeasonPricePerHour: 0,
+                      lowSeasonTourBasePrice: 0
                     }
+
+                  const isHighDemand = activePricingMode === 'high-demand'
 
                   return (
                     <motion.div
@@ -923,8 +975,13 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                           <CardTitle className="text-xl font-semibold uppercase tracking-wide flex items-center gap-2">
                             <CurrencyCircleDollar size={24} className="text-accent" />
                             {vehicle.title}
+                            <span className="ml-auto text-sm font-normal text-muted-foreground">
+                              {isHighDemand ? '🔥 Forte demande' : '❄️ Basse Saison'}
+                            </span>
                           </CardTitle>
-                          <CardDescription>Définissez les tarifs pour ce véhicule</CardDescription>
+                          <CardDescription>
+                            {isHighDemand ? 'Tarifs haute demande (périodes de forte affluence)' : 'Tarifs basse saison (périodes creuses)'}
+                          </CardDescription>
                         </CardHeader>
                         <CardContent className="pt-6">
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -937,8 +994,12 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                 type="number"
                                 step="0.1"
                                 min="0"
-                                value={pricing.pricePerKm}
-                                onChange={(e) => handleUpdatePricing(vehicle.id, 'pricePerKm', parseFloat(e.target.value) || 0)}
+                                value={isHighDemand ? pricing.pricePerKm : (pricing.lowSeasonPricePerKm || 0)}
+                                onChange={(e) => handleUpdatePricing(
+                                  vehicle.id, 
+                                  isHighDemand ? 'pricePerKm' : 'lowSeasonPricePerKm', 
+                                  parseFloat(e.target.value) || 0
+                                )}
                                 className="h-12 bg-secondary border-border"
                               />
                             </div>
@@ -952,23 +1013,31 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                 type="number"
                                 step="0.1"
                                 min="0"
-                                value={pricing.pricePerMinute}
-                                onChange={(e) => handleUpdatePricing(vehicle.id, 'pricePerMinute', parseFloat(e.target.value) || 0)}
+                                value={isHighDemand ? pricing.pricePerMinute : (pricing.lowSeasonPricePerMinute || 0)}
+                                onChange={(e) => handleUpdatePricing(
+                                  vehicle.id, 
+                                  isHighDemand ? 'pricePerMinute' : 'lowSeasonPricePerMinute', 
+                                  parseFloat(e.target.value) || 0
+                                )}
                                 className="h-12 bg-secondary border-border"
                               />
                             </div>
 
                             <div className="space-y-2">
                               <Label htmlFor={`price-hour-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide">
-                                Prix par Heure (€)
+                                Prix heure MAD (€)
                               </Label>
                               <Input
                                 id={`price-hour-${vehicle.id}`}
                                 type="number"
                                 step="1"
                                 min="0"
-                                value={pricing.pricePerHour}
-                                onChange={(e) => handleUpdatePricing(vehicle.id, 'pricePerHour', parseFloat(e.target.value) || 0)}
+                                value={isHighDemand ? pricing.pricePerHour : (pricing.lowSeasonPricePerHour || 0)}
+                                onChange={(e) => handleUpdatePricing(
+                                  vehicle.id, 
+                                  isHighDemand ? 'pricePerHour' : 'lowSeasonPricePerHour', 
+                                  parseFloat(e.target.value) || 0
+                                )}
                                 className="h-12 bg-secondary border-border"
                               />
                             </div>
@@ -982,8 +1051,12 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                 type="number"
                                 step="1"
                                 min="0"
-                                value={pricing.tourBasePrice}
-                                onChange={(e) => handleUpdatePricing(vehicle.id, 'tourBasePrice', parseFloat(e.target.value) || 0)}
+                                value={isHighDemand ? pricing.tourBasePrice : (pricing.lowSeasonTourBasePrice || 0)}
+                                onChange={(e) => handleUpdatePricing(
+                                  vehicle.id, 
+                                  isHighDemand ? 'tourBasePrice' : 'lowSeasonTourBasePrice', 
+                                  parseFloat(e.target.value) || 0
+                                )}
                                 className="h-12 bg-secondary border-border"
                               />
                             </div>

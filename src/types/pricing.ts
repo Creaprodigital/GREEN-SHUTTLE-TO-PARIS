@@ -4,6 +4,10 @@ export interface VehiclePricing {
   pricePerMinute: number
   pricePerHour: number
   tourBasePrice: number
+  lowSeasonPricePerKm?: number
+  lowSeasonPricePerMinute?: number
+  lowSeasonPricePerHour?: number
+  lowSeasonTourBasePrice?: number
 }
 
 export interface ServiceOption {
@@ -20,28 +24,44 @@ export const DEFAULT_PRICING: VehiclePricing[] = [
     pricePerKm: 1.5,
     pricePerMinute: 0.5,
     pricePerHour: 30,
-    tourBasePrice: 150
+    tourBasePrice: 150,
+    lowSeasonPricePerKm: 1.2,
+    lowSeasonPricePerMinute: 0.4,
+    lowSeasonPricePerHour: 25,
+    lowSeasonTourBasePrice: 120
   },
   {
     vehicleId: 'business',
     pricePerKm: 2.0,
     pricePerMinute: 0.8,
     pricePerHour: 45,
-    tourBasePrice: 250
+    tourBasePrice: 250,
+    lowSeasonPricePerKm: 1.6,
+    lowSeasonPricePerMinute: 0.65,
+    lowSeasonPricePerHour: 38,
+    lowSeasonTourBasePrice: 200
   },
   {
     vehicleId: 'van',
     pricePerKm: 2.5,
     pricePerMinute: 1.0,
     pricePerHour: 55,
-    tourBasePrice: 300
+    tourBasePrice: 300,
+    lowSeasonPricePerKm: 2.0,
+    lowSeasonPricePerMinute: 0.85,
+    lowSeasonPricePerHour: 45,
+    lowSeasonTourBasePrice: 240
   },
   {
     vehicleId: 'first',
     pricePerKm: 3.5,
     pricePerMinute: 1.5,
     pricePerHour: 80,
-    tourBasePrice: 500
+    tourBasePrice: 500,
+    lowSeasonPricePerKm: 2.8,
+    lowSeasonPricePerMinute: 1.2,
+    lowSeasonPricePerHour: 65,
+    lowSeasonTourBasePrice: 400
   }
 ]
 
