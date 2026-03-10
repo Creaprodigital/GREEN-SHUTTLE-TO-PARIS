@@ -1,15 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { motion } from 'framer-motion'
-import businessClassImg from '@/assets/images/business-class.png'
-import firstClassImg from '@/assets/images/luxury-sedan.svg'
-import businessVanImg from '@/assets/images/premium-suv.svg'
+import { Car, Leaf, Users } from '@phosphor-icons/react'
 
 const services = [
   {
     id: 'business',
     name: 'Business Class',
     description: 'Professional transportation for everyday business needs',
-    image: businessClassImg,
+    icon: Car,
     features: ['Sedan vehicles', 'Professional drivers', 'Real-time tracking', 'Wi-Fi available'],
     popular: false
   },
@@ -17,7 +15,7 @@ const services = [
     id: 'firstclass',
     name: 'First Class',
     description: 'Premium comfort for those who demand excellence',
-    image: firstClassImg,
+    icon: Leaf,
     features: ['Luxury sedans', 'Top-rated drivers', 'Complimentary refreshments', 'Priority support'],
     popular: true
   },
@@ -25,7 +23,7 @@ const services = [
     id: 'businessvan',
     name: 'Business Van',
     description: 'Spacious luxury for groups or extra luggage',
-    image: businessVanImg,
+    icon: Users,
     features: ['Premium vans', 'Extra space', 'Perfect for groups', 'Premium amenities'],
     popular: false
   }
@@ -63,7 +61,7 @@ export default function ServiceCards() {
                   )}
                   <CardHeader className="pb-4 pt-8">
                     <div className="w-full h-24 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
-                      <img src={service.image} alt={service.name} className="w-auto h-full object-contain" />
+                      <service.icon size={64} weight="thin" className="text-accent" />
                     </div>
                     <CardTitle className="text-2xl uppercase tracking-wide" style={{ fontFamily: 'var(--font-body)' }}>
                       {service.name}
