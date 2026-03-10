@@ -28,14 +28,14 @@ export default function Hero() {
           transition={{ duration: 0.6 }}
         >
           <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-foreground mb-6 tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
-            Premier Chauffeur
+            Green Shuttle
             <br />
-            Services
+            To Paris
           </h1>
           <div className="w-24 h-0.5 bg-accent mx-auto mb-6" />
           <p className="text-lg sm:text-xl text-foreground/80 max-w-2xl mx-auto mb-8 font-light">
             Experience luxury transportation with professional chauffeurs and 
-            premium vehicles for discerning clients worldwide.
+            premium vehicles to Paris and beyond.
           </p>
         </motion.div>
       </div>

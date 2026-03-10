@@ -1,6 +1,6 @@
 # Planning Guide
 
-A premium chauffeur service booking platform that enables users to reserve professional transportation with an elegant, trustworthy interface.
+Green Shuttle To Paris - A premium chauffeur service booking platform that enables users to reserve professional transportation to Paris and beyond with an elegant, trustworthy interface.
 
 **Experience Qualities**: 
 1. **Luxurious** - The interface should feel refined and premium, reflecting the high-end nature of the service
