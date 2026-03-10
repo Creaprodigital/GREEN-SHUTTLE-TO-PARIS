@@ -491,7 +491,7 @@ export default function BookingForm() {
                                           <CurrencyEur size={20} weight="bold" />
                                           <span>{vehiclePrice.toFixed(2)}</span>
                                         </div>
-                                        <div className="text-[10px] text-muted-foreground mt-1">Prix estimé</div>
+                                        <div className="text-[10px] text-muted-foreground mt-1">Véhicule avec Chauffeur</div>
                                       </div>
                                     )}
                                   </div>
