@@ -56,27 +56,36 @@ export default function BookingForm() {
   const vehiclePrices = useMemo(() => {
     const prices: Record<string, number> = {}
     
-    console.log('=== CALCUL DES PRIX ===')
+    console.log('=== RECALCUL DES PRIX ===')
     console.log('Fleet:', fleet?.length, 'véhicules')
     console.log('Pricing:', pricing?.length, 'tarifs')
     console.log('Service type:', serviceType)
     console.log('Distance:', distanceKm, 'km')
     console.log('Duration:', durationMinutes, 'min')
+    console.log('Transfer type:', transferType)
+    console.log('Hourly duration:', hourlyDuration)
+    console.log('Use low season:', useLowSeason)
+    console.log('Selected options:', selectedOptions)
     
-    if (!fleet || !pricing) {
-      console.log('Fleet ou pricing manquant')
+    if (!fleet || fleet.length === 0) {
+      console.log('❌ Fleet vide ou manquant')
+      return prices
+    }
+
+    if (!pricing || pricing.length === 0) {
+      console.log('❌ Pricing vide ou manquant')
       return prices
     }
 
     fleet.forEach((vehicle) => {
       const vehiclePricing = pricing.find(p => p.vehicleId === vehicle.id)
       if (!vehiclePricing) {
-        console.log(`Pas de tarif pour ${vehicle.id}`)
+        console.log(`❌ Pas de tarif pour ${vehicle.id}`)
         prices[vehicle.id] = 0
         return
       }
 
-      console.log(`\nCalcul pour ${vehicle.title} (${vehicle.id}):`)
+      console.log(`\n📊 Calcul pour ${vehicle.title} (${vehicle.id}):`)
       console.log('Tarif trouvé:', vehiclePricing)
 
       let basePrice = 0
@@ -85,45 +94,63 @@ export default function BookingForm() {
         const hours = parseInt(hourlyDuration)
         const pricePerHour = useLowSeason ? (vehiclePricing.lowSeasonPricePerHour || vehiclePricing.pricePerHour) : vehiclePricing.pricePerHour
         basePrice = pricePerHour * hours
-        console.log(`Hourly: ${hours}h × ${pricePerHour}€/h = ${basePrice}€`)
+        console.log(`⏱️ Hourly: ${hours}h × ${pricePerHour}€/h = ${basePrice}€`)
       } else if (serviceType === 'tour') {
         basePrice = useLowSeason ? (vehiclePricing.lowSeasonTourBasePrice || vehiclePricing.tourBasePrice) : vehiclePricing.tourBasePrice
-        console.log(`Tour: prix de base = ${basePrice}€`)
+        console.log(`🗺️ Tour: prix de base = ${basePrice}€`)
       } else {
         const pricePerKm = useLowSeason ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
         const pricePerMinute = useLowSeason ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
+        const minimumPrice = vehiclePricing.pricePerHour || 40
         
-        console.log(`Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€`)
+        console.log(`💰 Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€, Prix minimum: ${minimumPrice}€`)
         
         if (distanceKm > 0 && durationMinutes > 0) {
           const kmPrice = pricePerKm * distanceKm
           const minutePrice = pricePerMinute * durationMinutes
           basePrice = kmPrice + minutePrice
-          console.log(`Transfer: (${distanceKm}km × ${pricePerKm}€) + (${durationMinutes}min × ${pricePerMinute}€) = ${kmPrice}€ + ${minutePrice}€ = ${basePrice}€`)
+          console.log(`🚗 Transfer: (${distanceKm}km × ${pricePerKm}€) + (${durationMinutes}min × ${pricePerMinute}€) = ${kmPrice.toFixed(2)}€ + ${minutePrice.toFixed(2)}€ = ${basePrice.toFixed(2)}€`)
+          
+          if (basePrice < minimumPrice) {
+            console.log(`⬆️ Prix inférieur au minimum, ajusté de ${basePrice.toFixed(2)}€ à ${minimumPrice}€`)
+            basePrice = minimumPrice
+          }
           
           if (transferType === 'roundtrip') {
             basePrice *= 2
-            console.log(`Aller-retour: × 2 = ${basePrice}€`)
+            console.log(`↔️ Aller-retour: × 2 = ${basePrice.toFixed(2)}€`)
+          }
+        } else if (pickup && destination) {
+          basePrice = minimumPrice
+          console.log(`📍 Adresses saisies mais distance non calculée, prix minimum appliqué: ${minimumPrice}€`)
+          
+          if (transferType === 'roundtrip') {
+            basePrice *= 2
+            console.log(`↔️ Aller-retour: × 2 = ${basePrice.toFixed(2)}€`)
           }
         } else {
           basePrice = 0
-          console.log('Distance ou durée manquante, prix = 0')
+          console.log('⚠️ Départ ou destination manquante, prix = 0')
         }
       }
 
       const optionsPrice = selectedOptions.reduce((sum, optionId) => {
         const option = serviceOptions?.find(o => o.id === optionId)
-        return sum + (option?.price || 0)
+        const price = option?.price || 0
+        if (price > 0) {
+          console.log(`   ➕ Option ${option?.name}: +${price}€`)
+        }
+        return sum + price
       }, 0)
 
       const totalPrice = basePrice + optionsPrice
-      console.log(`Total: ${basePrice}€ + ${optionsPrice}€ options = ${totalPrice}€`)
+      console.log(`✅ Total ${vehicle.title}: ${basePrice.toFixed(2)}€ + ${optionsPrice.toFixed(2)}€ options = ${totalPrice.toFixed(2)}€`)
       prices[vehicle.id] = totalPrice
     })
 
-    console.log('Prix finaux:', prices)
+    console.log('📋 Prix finaux calculés:', prices)
     return prices
-  }, [fleet, pricing, serviceType, hourlyDuration, useLowSeason, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions])
+  }, [fleet, pricing, serviceType, hourlyDuration, useLowSeason, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions, pickup, destination])
 
   const calculatePrice = (vehicleId: string): number => {
     return vehiclePrices[vehicleId] || 0
