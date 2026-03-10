@@ -57,6 +57,9 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
   const drawingPolygonRef = useRef<google.maps.Polygon | null>(null)
   const markersRef = useRef<google.maps.Marker[]>([])
   const draggingMarkerIndex = useRef<number | null>(null)
+  const centerMarkerRef = useRef<google.maps.Marker | null>(null)
+  const isDraggingPolygon = useRef<boolean>(false)
+  const polygonDragStartPos = useRef<{ lat: number; lng: number } | null>(null)
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return
@@ -89,20 +92,6 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
       if (drawingMode === 'manual') {
         const newPoint = { lat: e.latLng.lat(), lng: e.latLng.lng() }
         
-        const marker = new google.maps.Marker({
-          position: newPoint,
-          map: mapInstanceRef.current,
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 6,
-            fillColor: newZoneColor,
-            fillOpacity: 1,
-            strokeColor: '#ffffff',
-            strokeWeight: 2,
-          },
-        })
-        markersRef.current.push(marker)
-
         setDrawingPoints(prev => {
           const updatedPoints = [...prev, newPoint]
           
@@ -119,9 +108,32 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
               fillColor: newZoneColor,
               fillOpacity: 0.35,
               map: mapInstanceRef.current,
+              draggable: true,
+            })
+            
+            drawingPolygonRef.current.addListener('mousedown', () => {
+              isDraggingPolygon.current = true
+            })
+            
+            drawingPolygonRef.current.addListener('mouseup', () => {
+              if (isDraggingPolygon.current) {
+                const path = drawingPolygonRef.current?.getPath()
+                if (path) {
+                  const newPoints = []
+                  for (let i = 0; i < path.getLength(); i++) {
+                    const point = path.getAt(i)
+                    newPoints.push({ lat: point.lat(), lng: point.lng() })
+                  }
+                  setDrawingPoints(newPoints)
+                  recreateManualMarkers(newPoints)
+                  toast.success('Polygone déplacé')
+                }
+                isDraggingPolygon.current = false
+              }
             })
           }
 
+          recreateManualMarkers(updatedPoints)
           return updatedPoints
         })
       } else if (drawingMode === 'circle') {
@@ -135,6 +147,95 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
       google.maps.event.removeListener(clickListener)
     }
   }, [isCreatingZone, newZoneColor, drawingMode])
+  
+  const recreateManualMarkers = (points: { lat: number; lng: number }[]) => {
+    markersRef.current.forEach(m => m.setMap(null))
+    markersRef.current = []
+    
+    points.forEach((point, index) => {
+      const marker = new google.maps.Marker({
+        position: point,
+        map: mapInstanceRef.current,
+        draggable: true,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: newZoneColor,
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 2,
+        },
+        title: `Point ${index + 1} - Glisser pour déplacer ou Ctrl+Click pour supprimer`
+      })
+      
+      marker.addListener('drag', () => {
+        const newPos = marker.getPosition()
+        if (newPos) {
+          setDrawingPoints(prev => {
+            const updated = [...prev]
+            updated[index] = { lat: newPos.lat(), lng: newPos.lng() }
+            
+            if (drawingPolygonRef.current) {
+              drawingPolygonRef.current.setPath(updated)
+            }
+            
+            return updated
+          })
+        }
+      })
+      
+      marker.addListener('click', (e: google.maps.MapMouseEvent) => {
+        if (e.domEvent && (e.domEvent as MouseEvent).ctrlKey) {
+          setDrawingPoints(prev => {
+            const updated = prev.filter((_, i) => i !== index)
+            
+            if (drawingPolygonRef.current) {
+              drawingPolygonRef.current.setMap(null)
+            }
+            
+            if (updated.length >= 3) {
+              drawingPolygonRef.current = new google.maps.Polygon({
+                paths: updated,
+                strokeColor: newZoneColor,
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: newZoneColor,
+                fillOpacity: 0.35,
+                map: mapInstanceRef.current,
+                draggable: true,
+              })
+              
+              drawingPolygonRef.current.addListener('mousedown', () => {
+                isDraggingPolygon.current = true
+              })
+              
+              drawingPolygonRef.current.addListener('mouseup', () => {
+                if (isDraggingPolygon.current) {
+                  const path = drawingPolygonRef.current?.getPath()
+                  if (path) {
+                    const newPoints = []
+                    for (let i = 0; i < path.getLength(); i++) {
+                      const point = path.getAt(i)
+                      newPoints.push({ lat: point.lat(), lng: point.lng() })
+                    }
+                    setDrawingPoints(newPoints)
+                    recreateManualMarkers(newPoints)
+                  }
+                  isDraggingPolygon.current = false
+                }
+              })
+            }
+            
+            recreateManualMarkers(updated)
+            toast.success(`Point ${index + 1} supprimé`)
+            return updated
+          })
+        }
+      })
+      
+      markersRef.current.push(marker)
+    })
+  }
 
   useEffect(() => {
     if (!mapInstanceRef.current) return
@@ -492,6 +593,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
     setNewZoneDescription(zone.description || '')
     setNewZoneColor(zone.color)
     setDrawingPoints(zone.polygon)
+    setDrawingMode('manual')
     
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
@@ -510,6 +612,7 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
             strokeColor: '#ffffff',
             strokeWeight: 2,
           },
+          title: `Point ${index + 1} - Glisser pour déplacer ou Ctrl+Click pour supprimer`
         })
         
         marker.addListener('drag', () => {
@@ -528,15 +631,52 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
           }
         })
         
-        marker.addListener('dragend', () => {
-          const newPos = marker.getPosition()
-          if (newPos) {
+        marker.addListener('click', (e: google.maps.MapMouseEvent) => {
+          if (e.domEvent && (e.domEvent as MouseEvent).ctrlKey) {
             setDrawingPoints(prev => {
-              const updated = [...prev]
-              updated[index] = { lat: newPos.lat(), lng: newPos.lng() }
+              const updated = prev.filter((_, i) => i !== index)
+              
+              if (drawingPolygonRef.current) {
+                drawingPolygonRef.current.setMap(null)
+              }
+              
+              if (updated.length >= 3) {
+                drawingPolygonRef.current = new google.maps.Polygon({
+                  paths: updated,
+                  strokeColor: zone.color,
+                  strokeOpacity: 0.8,
+                  strokeWeight: 2,
+                  fillColor: zone.color,
+                  fillOpacity: 0.35,
+                  map: mapInstanceRef.current,
+                  draggable: true,
+                })
+                
+                drawingPolygonRef.current.addListener('mousedown', () => {
+                  isDraggingPolygon.current = true
+                })
+                
+                drawingPolygonRef.current.addListener('mouseup', () => {
+                  if (isDraggingPolygon.current) {
+                    const path = drawingPolygonRef.current?.getPath()
+                    if (path) {
+                      const newPoints = []
+                      for (let i = 0; i < path.getLength(); i++) {
+                        const point = path.getAt(i)
+                        newPoints.push({ lat: point.lat(), lng: point.lng() })
+                      }
+                      setDrawingPoints(newPoints)
+                      recreateEditingMarkers(newPoints, zone.color)
+                    }
+                    isDraggingPolygon.current = false
+                  }
+                })
+              }
+              
+              recreateEditingMarkers(updated, zone.color)
+              toast.success(`Point ${index + 1} supprimé`)
               return updated
             })
-            toast.success('Point déplacé')
           }
         })
         
@@ -555,11 +695,121 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
         fillColor: zone.color,
         fillOpacity: 0.35,
         map: mapInstanceRef.current,
-        editable: false,
+        draggable: true,
+      })
+      
+      drawingPolygonRef.current.addListener('mousedown', () => {
+        isDraggingPolygon.current = true
+      })
+      
+      drawingPolygonRef.current.addListener('mouseup', () => {
+        if (isDraggingPolygon.current) {
+          const path = drawingPolygonRef.current?.getPath()
+          if (path) {
+            const newPoints = []
+            for (let i = 0; i < path.getLength(); i++) {
+              const point = path.getAt(i)
+              newPoints.push({ lat: point.lat(), lng: point.lng() })
+            }
+            setDrawingPoints(newPoints)
+            recreateEditingMarkers(newPoints, zone.color)
+            toast.success('Zone déplacée')
+          }
+          isDraggingPolygon.current = false
+        }
       })
     }
     
-    toast.info(`Modification de la zone "${zone.name}" - Déplacez les points pour modifier la zone`)
+    toast.info(`Modification de la zone "${zone.name}" - Glissez la zone pour la déplacer ou les points pour les ajuster`)
+  }
+  
+  const recreateEditingMarkers = (points: { lat: number; lng: number }[], color: string) => {
+    markersRef.current.forEach(m => m.setMap(null))
+    markersRef.current = []
+    
+    points.forEach((point, index) => {
+      const marker = new google.maps.Marker({
+        position: point,
+        map: mapInstanceRef.current,
+        draggable: true,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: color,
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 2,
+        },
+        title: `Point ${index + 1} - Glisser pour déplacer ou Ctrl+Click pour supprimer`
+      })
+      
+      marker.addListener('drag', () => {
+        const newPos = marker.getPosition()
+        if (newPos) {
+          setDrawingPoints(prev => {
+            const updated = [...prev]
+            updated[index] = { lat: newPos.lat(), lng: newPos.lng() }
+            
+            if (drawingPolygonRef.current) {
+              drawingPolygonRef.current.setPath(updated)
+            }
+            
+            return updated
+          })
+        }
+      })
+      
+      marker.addListener('click', (e: google.maps.MapMouseEvent) => {
+        if (e.domEvent && (e.domEvent as MouseEvent).ctrlKey) {
+          setDrawingPoints(prev => {
+            const updated = prev.filter((_, i) => i !== index)
+            
+            if (drawingPolygonRef.current) {
+              drawingPolygonRef.current.setMap(null)
+            }
+            
+            if (updated.length >= 3) {
+              drawingPolygonRef.current = new google.maps.Polygon({
+                paths: updated,
+                strokeColor: color,
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: color,
+                fillOpacity: 0.35,
+                map: mapInstanceRef.current,
+                draggable: true,
+              })
+              
+              drawingPolygonRef.current.addListener('mousedown', () => {
+                isDraggingPolygon.current = true
+              })
+              
+              drawingPolygonRef.current.addListener('mouseup', () => {
+                if (isDraggingPolygon.current) {
+                  const path = drawingPolygonRef.current?.getPath()
+                  if (path) {
+                    const newPoints = []
+                    for (let i = 0; i < path.getLength(); i++) {
+                      const point = path.getAt(i)
+                      newPoints.push({ lat: point.lat(), lng: point.lng() })
+                    }
+                    setDrawingPoints(newPoints)
+                    recreateEditingMarkers(newPoints, color)
+                  }
+                  isDraggingPolygon.current = false
+                }
+              })
+            }
+            
+            recreateEditingMarkers(updated, color)
+            toast.success(`Point ${index + 1} supprimé`)
+            return updated
+          })
+        }
+      })
+      
+      markersRef.current.push(marker)
+    })
   }
 
   const handleCancelDrawing = () => {
@@ -821,12 +1071,12 @@ export default function ZonePricingManager({ onClose }: ZonePricingManagerProps)
             <CardDescription>
               {isCreatingZone 
                 ? (isEditingZone 
-                    ? 'Déplacez les points existants en les faisant glisser ou cliquez sur la carte pour ajouter de nouveaux points'
+                    ? 'Glissez la zone pour la déplacer, les points pour les ajuster, ou Ctrl+Click sur un point pour le supprimer'
                     : drawingMode === 'manual'
-                      ? 'Cliquez sur la carte pour dessiner les points de la zone manuellement'
+                      ? 'Cliquez pour ajouter des points. Glissez le polygone pour le déplacer, les points pour les ajuster, ou Ctrl+Click pour supprimer un point'
                       : drawingMode === 'circle'
-                        ? 'Cliquez sur la carte pour placer le centre du cercle'
-                        : 'Cliquez sur la carte pour placer le coin du rectangle')
+                        ? 'Cliquez pour créer un cercle. Point vert = déplacer, Points rouges = ajuster le rayon'
+                        : 'Cliquez pour créer un rectangle. Point vert = déplacer, Points rouges = ajuster les dimensions')
                 : 'Cliquez sur "Nouvelle Zone" pour commencer à dessiner'
               }
             </CardDescription>
