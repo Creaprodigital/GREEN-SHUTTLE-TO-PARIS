@@ -160,11 +160,13 @@ export default function BookingForm() {
       console.log('Tarif trouvé:', vehiclePricing)
 
       let basePrice = 0
+      let usedForfait = false
       
       if (serviceType === 'transfer' && pickupCoords && destinationCoords) {
         const forfait = findForfaitForRoute(vehicle.id)
         if (forfait) {
           basePrice = forfait.fixedPrice
+          usedForfait = true
           const fromZone = findZoneForPoint(pickupCoords)
           const toZone = findZoneForPoint(destinationCoords)
           console.log(`💎 FORFAIT APPLIQUÉ: ${fromZone?.name} → ${toZone?.name} = ${basePrice}€ (tarif fixe prioritaire)`)
