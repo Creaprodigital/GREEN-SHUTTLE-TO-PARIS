@@ -58,41 +58,75 @@ function formatBookingMessage(booking: Booking): string {
     cancelled: '❌'
   }
 
-  let message = `<b>🔔 NOUVELLE RÉSERVATION</b>\n\n`
-  message += `${statusEmoji[booking.status]} <b>Statut:</b> ${booking.status}\n`
-  message += `${serviceTypeLabel}\n\n`
+  const paymentLabels = {
+    card: '💳 Carte bancaire',
+    cash: '💵 Espèces',
+    transfer: '🏦 Virement'
+  }
+
+  let message = `━━━━━━━━━━━━━━━━━━━━━\n`
+  message += `<b>🔔 NOUVELLE RÉSERVATION</b>\n`
+  message += `━━━━━━━━━━━━━━━━━━━━━\n\n`
   
-  message += `👤 <b>Client:</b> ${booking.firstName} ${booking.lastName}\n`
-  message += `📧 <b>Email:</b> ${booking.userEmail}\n`
-  message += `📱 <b>Téléphone:</b> ${booking.phone}\n\n`
+  message += `${statusEmoji[booking.status]} <b>Statut:</b> <code>${booking.status.toUpperCase()}</code>\n`
+  message += `${serviceTypeLabel}\n`
+  message += `\n━━━━━━━━━━━━━━━━━━━━━\n`
+  message += `<b>👤 INFORMATIONS CLIENT</b>\n`
+  message += `━━━━━━━━━━━━━━━━━━━━━\n\n`
   
-  message += `📍 <b>Départ:</b> ${booking.pickup}\n`
+  message += `<b>Nom:</b> ${booking.firstName} ${booking.lastName}\n`
+  message += `<b>Email:</b> ${booking.userEmail}\n`
+  message += `<b>Téléphone:</b> ${booking.phone}\n`
+  
+  message += `\n━━━━━━━━━━━━━━━━━━━━━\n`
+  message += `<b>📍 TRAJET</b>\n`
+  message += `━━━━━━━━━━━━━━━━━━━━━\n\n`
+  
+  message += `<b>Départ:</b>\n${booking.pickup}\n\n`
   if (booking.destination) {
-    message += `📍 <b>Arrivée:</b> ${booking.destination}\n`
+    message += `<b>Arrivée:</b>\n${booking.destination}\n\n`
   }
   message += `📅 <b>Date:</b> ${booking.date}\n`
-  message += `🕐 <b>Heure:</b> ${booking.time}\n\n`
+  message += `🕐 <b>Heure:</b> ${booking.time}\n`
   
   if (booking.transferType === 'roundtrip' && booking.returnDate && booking.returnTime) {
-    message += `🔄 <b>Retour:</b> ${booking.returnDate} à ${booking.returnTime}\n\n`
+    message += `\n🔄 <b>Retour:</b> ${booking.returnDate} à ${booking.returnTime}\n`
   }
   
-  message += `🚙 <b>Véhicule:</b> ${booking.vehicleType}\n`
+  message += `\n━━━━━━━━━━━━━━━━━━━━━\n`
+  message += `<b>🚙 DÉTAILS DU SERVICE</b>\n`
+  message += `━━━━━━━━━━━━━━━━━━━━━\n\n`
+  
+  message += `<b>Véhicule:</b> ${booking.vehicleType}\n`
   message += `👥 <b>Passagers:</b> ${booking.passengers}\n`
-  message += `🧳 <b>Bagages:</b> ${booking.luggage}\n\n`
+  if (booking.luggage) {
+    message += `🧳 <b>Bagages:</b> ${booking.luggage}\n`
+  }
   
   if (booking.selectedOptions && booking.selectedOptions.length > 0) {
-    message += `✨ <b>Options:</b> ${booking.selectedOptions.join(', ')}\n\n`
+    message += `\n✨ <b>Options supplémentaires:</b>\n`
+    booking.selectedOptions.forEach(option => {
+      message += `  • ${option}\n`
+    })
   }
   
-  message += `💰 <b>Prix:</b> ${booking.price ? booking.price.toFixed(2) : '0.00'}€\n`
-  message += `💳 <b>Paiement:</b> ${booking.paymentMethod}\n\n`
+  message += `\n━━━━━━━━━━━━━━━━━━━━━\n`
+  message += `<b>💰 PAIEMENT</b>\n`
+  message += `━━━━━━━━━━━━━━━━━━━━━\n\n`
+  
+  message += `<b>Prix total:</b> <b>${booking.price ? booking.price.toFixed(2) : '0.00'}€</b>\n`
+  message += `<b>Mode de paiement:</b> ${paymentLabels[booking.paymentMethod] || booking.paymentMethod}\n`
   
   if (booking.notes) {
-    message += `📝 <b>Notes:</b> ${booking.notes}\n\n`
+    message += `\n━━━━━━━━━━━━━━━━━━━━━\n`
+    message += `<b>📝 NOTES</b>\n`
+    message += `━━━━━━━━━━━━━━━━━━━━━\n\n`
+    message += `${booking.notes}\n`
   }
   
-  message += `🆔 <b>ID Réservation:</b> ${booking.id}`
+  message += `\n━━━━━━━━━━━━━━━━━━━━━\n`
+  message += `🆔 <code>${booking.id}</code>\n`
+  message += `━━━━━━━━━━━━━━━━━━━━━`
   
   return message
 }

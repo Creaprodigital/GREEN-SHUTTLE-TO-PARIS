@@ -1691,7 +1691,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                   />
                 </div>
 
-                <div className="pt-4 border-t border-border">
+                <div className="pt-4 border-t border-border flex flex-col md:flex-row gap-3">
                   <Button
                     onClick={() => {
                       if (!telegramSettings?.botToken) {
@@ -1704,10 +1704,72 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                       }
                       toast.success('Paramètres Telegram enregistrés')
                     }}
-                    className="w-full md:w-auto h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+                    className="flex-1 md:flex-initial h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
                   >
                     <Check className="mr-2" size={20} />
                     Enregistrer les paramètres
+                  </Button>
+                  
+                  <Button
+                    onClick={async () => {
+                      if (!telegramSettings?.botToken) {
+                        toast.error('Veuillez d\'abord configurer le Bot Token')
+                        return
+                      }
+                      if (!telegramSettings?.chatId && !telegramSettings?.groupChatId) {
+                        toast.error('Veuillez configurer au moins un Chat ID')
+                        return
+                      }
+                      if (!telegramSettings?.enabled) {
+                        toast.error('Veuillez activer les notifications Telegram')
+                        return
+                      }
+
+                      const testBooking: Booking = {
+                        id: `test-${Date.now()}`,
+                        userId: 'test@greenshuttle.com',
+                        userEmail: 'test@greenshuttle.com',
+                        serviceType: 'transfer',
+                        transferType: 'oneway',
+                        pickup: 'Aéroport Charles de Gaulle (CDG), Terminal 2E',
+                        destination: 'Paris, 5 Avenue des Champs-Élysées',
+                        date: new Date().toISOString().split('T')[0],
+                        time: '14:30',
+                        passengers: '2',
+                        luggage: '3',
+                        vehicleType: 'berline',
+                        selectedOptions: ['Wi-Fi à bord', 'Siège bébé'],
+                        firstName: 'Jean',
+                        lastName: 'Dupont',
+                        phone: '+33 6 12 34 56 78',
+                        email: 'test@greenshuttle.com',
+                        notes: 'Ceci est une réservation de test pour vérifier les notifications Telegram',
+                        paymentMethod: 'card',
+                        status: 'pending',
+                        createdAt: Date.now(),
+                        price: 85.50
+                      }
+
+                      toast.loading('Envoi de la notification test...')
+                      
+                      const { sendTelegramNotification } = await import('@/lib/telegram')
+                      const success = await sendTelegramNotification(telegramSettings, testBooking)
+                      
+                      if (success) {
+                        toast.success('✅ Notification de test envoyée avec succès !', {
+                          description: 'Vérifiez votre Telegram pour voir la notification'
+                        })
+                      } else {
+                        toast.error('❌ Échec de l\'envoi de la notification', {
+                          description: 'Vérifiez vos paramètres et réessayez'
+                        })
+                      }
+                    }}
+                    variant="outline"
+                    className="flex-1 md:flex-initial h-12 border-2 border-accent/40 text-accent hover:bg-accent/10 font-medium uppercase tracking-widest"
+                  >
+                    <Sparkle className="mr-2" size={20} />
+                    Tester la notification
                   </Button>
                 </div>
 
