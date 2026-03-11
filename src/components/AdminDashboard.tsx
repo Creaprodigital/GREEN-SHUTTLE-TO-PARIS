@@ -21,6 +21,7 @@ import Footer from '@/components/Footer'
 import CircuitManager from '@/components/CircuitManager'
 import ZoneForfaitManager from '@/components/ZoneForfaitManager'
 import PromoCodeManager from '@/components/PromoCodeManager'
+import SharedRideManager from '@/components/SharedRideManager'
 import { useKV } from '@github/spark/hooks'
 import { TelegramSettings, DEFAULT_TELEGRAM_SETTINGS } from '@/types/telegram'
 import { RoundTripDiscount, DEFAULT_ROUNDTRIP_DISCOUNT } from '@/types/promo'
@@ -610,8 +611,9 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Tabs defaultValue="bookings" className="w-full">
-          <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-8 mb-8">
+          <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-9 mb-8">
             <TabsTrigger value="bookings">Réservations</TabsTrigger>
+            <TabsTrigger value="shared-rides">Trajets Partagés</TabsTrigger>
             <TabsTrigger value="fleet">Véhicules</TabsTrigger>
             <TabsTrigger value="pricing">Tarifs KM/Min/H</TabsTrigger>
             <TabsTrigger value="options">Options</TabsTrigger>
@@ -1491,6 +1493,19 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
             </Card>
 
             <PromoCodeManager />
+          </TabsContent>
+
+          <TabsContent value="shared-rides" className="space-y-6">
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+                Gestion des Trajets Partagés
+              </h2>
+              <p className="text-foreground/70">
+                Configurez et surveillez le système de partage de trajets pour maximiser l'occupation des véhicules
+              </p>
+            </div>
+
+            <SharedRideManager bookings={bookings} />
           </TabsContent>
 
           <TabsContent value="bookings" className="space-y-6">
