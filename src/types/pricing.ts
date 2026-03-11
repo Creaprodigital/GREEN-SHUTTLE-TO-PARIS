@@ -4,14 +4,10 @@ export interface VehiclePricing {
   pricePerMinute: number
   pricePerHour: number
   tourBasePrice: number
-  minimumTransferPrice?: number
-  minimumHourlyPrice?: number
   lowSeasonPricePerKm?: number
   lowSeasonPricePerMinute?: number
   lowSeasonPricePerHour?: number
   lowSeasonTourBasePrice?: number
-  lowSeasonMinimumTransferPrice?: number
-  lowSeasonMinimumHourlyPrice?: number
 }
 
 export interface PricingSettings {
@@ -50,14 +46,10 @@ export const DEFAULT_PRICING: VehiclePricing[] = [
     pricePerMinute: 0,
     pricePerHour: 0,
     tourBasePrice: 0,
-    minimumTransferPrice: 0,
-    minimumHourlyPrice: 0,
     lowSeasonPricePerKm: 0,
     lowSeasonPricePerMinute: 0,
     lowSeasonPricePerHour: 0,
-    lowSeasonTourBasePrice: 0,
-    lowSeasonMinimumTransferPrice: 0,
-    lowSeasonMinimumHourlyPrice: 0
+    lowSeasonTourBasePrice: 0
   },
   {
     vehicleId: 'business',
@@ -65,14 +57,10 @@ export const DEFAULT_PRICING: VehiclePricing[] = [
     pricePerMinute: 0,
     pricePerHour: 0,
     tourBasePrice: 0,
-    minimumTransferPrice: 0,
-    minimumHourlyPrice: 0,
     lowSeasonPricePerKm: 0,
     lowSeasonPricePerMinute: 0,
     lowSeasonPricePerHour: 0,
-    lowSeasonTourBasePrice: 0,
-    lowSeasonMinimumTransferPrice: 0,
-    lowSeasonMinimumHourlyPrice: 0
+    lowSeasonTourBasePrice: 0
   },
   {
     vehicleId: 'van',
@@ -80,14 +68,10 @@ export const DEFAULT_PRICING: VehiclePricing[] = [
     pricePerMinute: 0,
     pricePerHour: 0,
     tourBasePrice: 0,
-    minimumTransferPrice: 0,
-    minimumHourlyPrice: 0,
     lowSeasonPricePerKm: 0,
     lowSeasonPricePerMinute: 0,
     lowSeasonPricePerHour: 0,
-    lowSeasonTourBasePrice: 0,
-    lowSeasonMinimumTransferPrice: 0,
-    lowSeasonMinimumHourlyPrice: 0
+    lowSeasonTourBasePrice: 0
   },
   {
     vehicleId: 'first',
@@ -95,14 +79,10 @@ export const DEFAULT_PRICING: VehiclePricing[] = [
     pricePerMinute: 0,
     pricePerHour: 0,
     tourBasePrice: 0,
-    minimumTransferPrice: 0,
-    minimumHourlyPrice: 0,
     lowSeasonPricePerKm: 0,
     lowSeasonPricePerMinute: 0,
     lowSeasonPricePerHour: 0,
-    lowSeasonTourBasePrice: 0,
-    lowSeasonMinimumTransferPrice: 0,
-    lowSeasonMinimumHourlyPrice: 0
+    lowSeasonTourBasePrice: 0
   }
 ]
 

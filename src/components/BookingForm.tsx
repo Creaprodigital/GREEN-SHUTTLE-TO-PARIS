@@ -232,14 +232,8 @@ export default function BookingForm() {
       if (serviceType === 'hourly') {
         const hours = parseInt(hourlyDuration)
         const pricePerHour = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerHour || vehiclePricing.pricePerHour) : vehiclePricing.pricePerHour
-        const minimumHourlyPrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonMinimumHourlyPrice || vehiclePricing.minimumHourlyPrice || 0) : (vehiclePricing.minimumHourlyPrice || 0)
         basePrice = pricePerHour * hours
         console.log(`⏱️ Hourly: ${hours}h × ${pricePerHour}€/h = ${basePrice}€`)
-        
-        if (minimumHourlyPrice > 0 && basePrice < minimumHourlyPrice) {
-          console.log(`⬆️ Prix inférieur au minimum MAD, ajusté de ${basePrice.toFixed(2)}€ à ${minimumHourlyPrice}€`)
-          basePrice = minimumHourlyPrice
-        }
       } else if (serviceType === 'tour') {
         const selectedCircuit = circuits?.find(c => c.id === selectedCircuitId)
         if (selectedCircuit && selectedCircuit.price !== undefined) {
@@ -252,9 +246,8 @@ export default function BookingForm() {
       } else {
         const pricePerKm = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
         const pricePerMinute = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
-        const minimumPrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonMinimumTransferPrice || vehiclePricing.minimumTransferPrice || 0) : (vehiclePricing.minimumTransferPrice || 0)
         
-        console.log(`💰 TARIF AU KM/MIN - Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€, Prix minimum transfert: ${minimumPrice}€`)
+        console.log(`💰 TARIF AU KM/MIN - Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€`)
         
         if (distanceKm > 0 && durationMinutes > 0) {
           const kmPrice = pricePerKm * distanceKm
@@ -262,18 +255,13 @@ export default function BookingForm() {
           basePrice = kmPrice + minutePrice
           console.log(`🚗 Transfer: (${distanceKm}km × ${pricePerKm}€) + (${durationMinutes}min × ${pricePerMinute}€) = ${kmPrice.toFixed(2)}€ + ${minutePrice.toFixed(2)}€ = ${basePrice.toFixed(2)}€`)
           
-          if (basePrice < minimumPrice) {
-            console.log(`⬆️ Prix inférieur au minimum transfert, ajusté de ${basePrice.toFixed(2)}€ à ${minimumPrice}€`)
-            basePrice = minimumPrice
-          }
-          
           if (transferType === 'roundtrip') {
             basePrice *= 2
             console.log(`↔️ Aller-retour: × 2 = ${basePrice.toFixed(2)}€`)
           }
         } else if (pickup && destination) {
-          basePrice = minimumPrice
-          console.log(`📍 Adresses saisies mais distance non calculée, prix minimum transfert appliqué: ${minimumPrice}€`)
+          basePrice = 0
+          console.log(`📍 Adresses saisies mais distance non calculée, prix = 0`)
           
           if (transferType === 'roundtrip') {
             basePrice *= 2

@@ -99,14 +99,10 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
             pricePerMinute: 0,
             pricePerHour: 0,
             tourBasePrice: 0,
-            minimumTransferPrice: 0,
-            minimumHourlyPrice: 0,
             lowSeasonPricePerKm: 0,
             lowSeasonPricePerMinute: 0,
             lowSeasonPricePerHour: 0,
-            lowSeasonTourBasePrice: 0,
-            lowSeasonMinimumTransferPrice: 0,
-            lowSeasonMinimumHourlyPrice: 0
+            lowSeasonTourBasePrice: 0
           }
         })
       
@@ -126,12 +122,10 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
           pricePerMinute: 0,
           pricePerHour: 0,
           tourBasePrice: 0,
-          minimumTransferPrice: 0,
           lowSeasonPricePerKm: 0,
           lowSeasonPricePerMinute: 0,
           lowSeasonPricePerHour: 0,
-          lowSeasonTourBasePrice: 0,
-          lowSeasonMinimumTransferPrice: 0
+          lowSeasonTourBasePrice: 0
         }
       })
       
@@ -1082,14 +1076,10 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                       pricePerMinute: 0,
                       pricePerHour: 0,
                       tourBasePrice: 0,
-                      minimumTransferPrice: 0,
-                      minimumHourlyPrice: 0,
                       lowSeasonPricePerKm: 0,
                       lowSeasonPricePerMinute: 0,
                       lowSeasonPricePerHour: 0,
-                      lowSeasonTourBasePrice: 0,
-                      lowSeasonMinimumTransferPrice: 0,
-                      lowSeasonMinimumHourlyPrice: 0
+                      lowSeasonTourBasePrice: 0
                     }
 
                   const isHighDemand = activePricingMode === 'high-demand'
@@ -1116,7 +1106,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                         </CardHeader>
                         <CardContent className="pt-6">
                           <TooltipProvider>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
                               <div className="space-y-2 flex flex-col">
                                 <div className="flex items-center gap-2 min-h-[48px]">
                                   <Label htmlFor={`price-km-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide leading-tight">
@@ -1179,36 +1169,6 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
                               <div className="space-y-2 flex flex-col">
                                 <div className="flex items-center gap-2 min-h-[48px]">
-                                  <Label htmlFor={`minimum-transfer-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide leading-tight">
-                                    Prix Min. Transfert (€)
-                                  </Label>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Info size={16} className="text-muted-foreground cursor-help flex-shrink-0" />
-                                    </TooltipTrigger>
-                                    <TooltipContent className="max-w-xs">
-                                      <p className="font-semibold mb-1">Prix Minimum pour Transferts</p>
-                                      <p className="text-sm">Prix minimum facturé pour un transfert. Si le calcul (distance × prix/km) + (durée × prix/minute) donne un montant inférieur à ce minimum, c'est ce prix minimum qui sera appliqué. Indépendant du tarif MAD.</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </div>
-                                <Input
-                                  id={`minimum-transfer-${vehicle.id}`}
-                                  type="number"
-                                  step="1"
-                                  min="0"
-                                  value={isHighDemand ? (pricing.minimumTransferPrice || 0) : (pricing.lowSeasonMinimumTransferPrice || 0)}
-                                  onChange={(e) => handleUpdatePricing(
-                                    vehicle.id, 
-                                    isHighDemand ? 'minimumTransferPrice' : 'lowSeasonMinimumTransferPrice', 
-                                    parseFloat(e.target.value) || 0
-                                  )}
-                                  className="h-12 bg-secondary border-border"
-                                />
-                              </div>
-
-                              <div className="space-y-2 flex flex-col">
-                                <div className="flex items-center gap-2 min-h-[48px]">
                                   <Label htmlFor={`price-hour-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide leading-tight">
                                     Prix/Heure - MAD (€)
                                   </Label>
@@ -1231,36 +1191,6 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                   onChange={(e) => handleUpdatePricing(
                                     vehicle.id, 
                                     isHighDemand ? 'pricePerHour' : 'lowSeasonPricePerHour', 
-                                    parseFloat(e.target.value) || 0
-                                  )}
-                                  className="h-12 bg-secondary border-border"
-                                />
-                              </div>
-
-                              <div className="space-y-2 flex flex-col">
-                                <div className="flex items-center gap-2 min-h-[48px]">
-                                  <Label htmlFor={`minimum-hourly-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide leading-tight">
-                                    Prix Min. MAD (€)
-                                  </Label>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Info size={16} className="text-muted-foreground cursor-help flex-shrink-0" />
-                                    </TooltipTrigger>
-                                    <TooltipContent className="max-w-xs">
-                                      <p className="font-semibold mb-1">Prix Minimum pour Mise à Disposition</p>
-                                      <p className="text-sm">Prix minimum facturé pour une mise à disposition. Si le calcul (nombre d'heures × prix/heure MAD) donne un montant inférieur à ce minimum, c'est ce prix minimum qui sera appliqué.</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </div>
-                                <Input
-                                  id={`minimum-hourly-${vehicle.id}`}
-                                  type="number"
-                                  step="1"
-                                  min="0"
-                                  value={isHighDemand ? (pricing.minimumHourlyPrice || 0) : (pricing.lowSeasonMinimumHourlyPrice || 0)}
-                                  onChange={(e) => handleUpdatePricing(
-                                    vehicle.id, 
-                                    isHighDemand ? 'minimumHourlyPrice' : 'lowSeasonMinimumHourlyPrice', 
                                     parseFloat(e.target.value) || 0
                                   )}
                                   className="h-12 bg-secondary border-border"
