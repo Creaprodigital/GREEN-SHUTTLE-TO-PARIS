@@ -924,13 +924,13 @@ export default function BookingForm() {
                   transition={{ duration: 0.3 }}
                   className="space-y-5"
                 >
-                  <div className="w-full overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 mb-6">
+                  <div className="w-full mb-6">
                     <Tabs value={serviceType} onValueChange={(v) => setServiceType(v as 'transfer' | 'hourly' | 'tour' | 'shared')} className="w-full">
-                      <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:grid-cols-4 bg-secondary gap-1 h-auto p-1">
-                        <TabsTrigger value="transfer" className="text-xs sm:text-sm px-3 sm:px-4 py-2.5 whitespace-nowrap">Transfert</TabsTrigger>
-                        <TabsTrigger value="shared" className="text-xs sm:text-sm px-3 sm:px-4 py-2.5 whitespace-nowrap">Partagé</TabsTrigger>
-                        <TabsTrigger value="hourly" className="text-xs sm:text-sm px-3 sm:px-4 py-2.5 whitespace-nowrap">Mise à Dispo</TabsTrigger>
-                        <TabsTrigger value="tour" className="text-xs sm:text-sm px-3 sm:px-4 py-2.5 whitespace-nowrap">Circuit</TabsTrigger>
+                      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 bg-secondary gap-1 h-auto p-1">
+                        <TabsTrigger value="transfer" className="text-xs sm:text-sm px-2 sm:px-4 py-2.5">Transfert</TabsTrigger>
+                        <TabsTrigger value="shared" className="text-xs sm:text-sm px-2 sm:px-4 py-2.5">Partagé</TabsTrigger>
+                        <TabsTrigger value="hourly" className="text-xs sm:text-sm px-2 sm:px-4 py-2.5">Mise à Dispo</TabsTrigger>
+                        <TabsTrigger value="tour" className="text-xs sm:text-sm px-2 sm:px-4 py-2.5">Circuit</TabsTrigger>
                       </TabsList>
                     </Tabs>
                   </div>
