@@ -38,9 +38,9 @@ interface AdminDashboardProps {
   onUpdateBooking: (id: string, updates: Partial<Booking>) => void
   onDeleteBooking: (id: string) => void
   onNavigateToHome: () => void
-  onNavigateToChauffeurPrive?: () => void
-  onNavigateToAirportTransfer: () => void
-  onNavigateToCorporateEvent?: () => void
+  onNavigateToServices?: () => void
+  onNavigateToAbout?: () => void
+  onNavigateToContact?: () => void
 }
 
 const statusColors = {
@@ -420,7 +420,9 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     <>
       <Header 
         onNavigateToHome={onNavigateToHome}
-        onNavigateToAirportTransfer={onNavigateToAirportTransfer}
+        onNavigateToServices={onNavigateToServices}
+        onNavigateToAbout={onNavigateToAbout}
+        onNavigateToContact={onNavigateToContact}
         onLogout={onLogout}
         userEmail={userEmail}
         isAdmin={true}

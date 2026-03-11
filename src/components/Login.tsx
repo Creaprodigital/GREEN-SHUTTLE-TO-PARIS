@@ -12,13 +12,13 @@ import Footer from '@/components/Footer'
 interface LoginProps {
   onLogin: (email: string, isAdmin: boolean) => void
   onNavigateToHome: () => void
-  onNavigateToChauffeurPrive?: () => void
-  onNavigateToAirportTransfer: () => void
-  onNavigateToCorporateEvent?: () => void
+  onNavigateToServices?: () => void
+  onNavigateToAbout?: () => void
+  onNavigateToContact?: () => void
   isAdminMode?: boolean
 }
 
-export default function Login({ onLogin, onNavigateToHome, onNavigateToChauffeurPrive, onNavigateToAirportTransfer, onNavigateToCorporateEvent, isAdminMode = false }: LoginProps) {
+export default function Login({ onLogin, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact, isAdminMode = false }: LoginProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -53,8 +53,9 @@ export default function Login({ onLogin, onNavigateToHome, onNavigateToChauffeur
     <>
       <Header 
         onNavigateToHome={onNavigateToHome}
-        onNavigateToAirportTransfer={onNavigateToAirportTransfer}
-        onNavigateToCorporateEvent={onNavigateToCorporateEvent}
+        onNavigateToServices={onNavigateToServices}
+        onNavigateToAbout={onNavigateToAbout}
+        onNavigateToContact={onNavigateToContact}
       />
       <div className="min-h-screen bg-background flex items-center justify-center px-4 pt-20">
         <motion.div

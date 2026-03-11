@@ -13,9 +13,9 @@ interface ClientDashboardProps {
   bookings: Booking[]
   onLogout: () => void
   onNavigateToHome: () => void
-  onNavigateToChauffeurPrive?: () => void
-  onNavigateToAirportTransfer: () => void
-  onNavigateToCorporateEvent?: () => void
+  onNavigateToServices?: () => void
+  onNavigateToAbout?: () => void
+  onNavigateToContact?: () => void
 }
 
 const statusColors = {
@@ -25,7 +25,7 @@ const statusColors = {
   cancelled: 'bg-red-500/20 text-red-500 border-red-500/30'
 }
 
-export default function ClientDashboard({ userEmail, bookings, onLogout, onNavigateToHome, onNavigateToChauffeurPrive, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: ClientDashboardProps) {
+export default function ClientDashboard({ userEmail, bookings, onLogout, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact }: ClientDashboardProps) {
   const userBookings = bookings.filter(b => b.userEmail === userEmail)
   const [fleet] = useKV<VehicleClass[]>('fleet', [])
 
@@ -33,9 +33,9 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
     <>
       <Header 
         onNavigateToHome={onNavigateToHome}
-        onNavigateToChauffeurPrive={onNavigateToChauffeurPrive}
-        onNavigateToAirportTransfer={onNavigateToAirportTransfer}
-        onNavigateToCorporateEvent={onNavigateToCorporateEvent}
+        onNavigateToServices={onNavigateToServices}
+        onNavigateToAbout={onNavigateToAbout}
+        onNavigateToContact={onNavigateToContact}
         onLogout={onLogout}
         userEmail={userEmail}
         isAdmin={false}

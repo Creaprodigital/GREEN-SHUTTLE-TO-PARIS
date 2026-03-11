@@ -4,11 +4,13 @@ import Home from '@/components/Home'
 import Login from '@/components/Login'
 import ClientDashboard from '@/components/ClientDashboard'
 import AdminDashboard from '@/components/AdminDashboard'
-import ChauffeurPrive from '@/components/ChauffeurPrive'
+import Services from '@/components/Services'
+import About from '@/components/About'
+import Contact from '@/components/Contact'
 import { useKV } from '@github/spark/hooks'
 import { Booking } from '@/types/booking'
 
-type View = 'home' | 'login' | 'client' | 'admin' | 'chauffeur-prive'
+type View = 'home' | 'login' | 'client' | 'admin' | 'services' | 'about' | 'contact'
 
 function App() {
   const [view, setView] = useState<View>('home')
@@ -54,22 +56,66 @@ function App() {
       {view === 'home' && (
         <Home 
           onNavigateToLogin={handleNavigateToLogin}
-          onNavigateToChauffeurPrive={() => setView('chauffeur-prive')}
-          onNavigateToAirportTransfer={() => {}}
-          onNavigateToCorporateEvent={() => {}}
+          onNavigateToServices={() => setView('services')}
+          onNavigateToAbout={() => setView('about')}
+          onNavigateToContact={() => setView('contact')}
         />
       )}
-      {view === 'login' && <Login onLogin={handleLogin} onNavigateToHome={() => setView('home')} onNavigateToChauffeurPrive={() => setView('chauffeur-prive')} onNavigateToAirportTransfer={() => {}} onNavigateToCorporateEvent={() => {}} isAdminMode={isAdminMode} />}
-      {view === 'chauffeur-prive' && <ChauffeurPrive onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => {}} onNavigateToCorporateEvent={() => {}} onNavigateToEmbassyDelegation={() => {}} />}
+      {view === 'login' && (
+        <Login 
+          onLogin={handleLogin} 
+          onNavigateToHome={() => setView('home')}
+          onNavigateToServices={() => setView('services')}
+          onNavigateToAbout={() => setView('about')}
+          onNavigateToContact={() => setView('contact')}
+          isAdminMode={isAdminMode} 
+        />
+      )}
+      {view === 'services' && (
+        <Services
+          onNavigateToLogin={handleNavigateToLogin}
+          onNavigateToHome={() => setView('home')}
+          onNavigateToServices={() => setView('services')}
+          onNavigateToAbout={() => setView('about')}
+          onNavigateToContact={() => setView('contact')}
+          userEmail={currentUser?.email}
+          isAdmin={currentUser?.isAdmin}
+          onLogout={handleLogout}
+        />
+      )}
+      {view === 'about' && (
+        <About
+          onNavigateToLogin={handleNavigateToLogin}
+          onNavigateToHome={() => setView('home')}
+          onNavigateToServices={() => setView('services')}
+          onNavigateToAbout={() => setView('about')}
+          onNavigateToContact={() => setView('contact')}
+          userEmail={currentUser?.email}
+          isAdmin={currentUser?.isAdmin}
+          onLogout={handleLogout}
+        />
+      )}
+      {view === 'contact' && (
+        <Contact
+          onNavigateToLogin={handleNavigateToLogin}
+          onNavigateToHome={() => setView('home')}
+          onNavigateToServices={() => setView('services')}
+          onNavigateToAbout={() => setView('about')}
+          onNavigateToContact={() => setView('contact')}
+          userEmail={currentUser?.email}
+          isAdmin={currentUser?.isAdmin}
+          onLogout={handleLogout}
+        />
+      )}
       {view === 'client' && currentUser && (
         <ClientDashboard
           userEmail={currentUser.email}
           bookings={bookings || []}
           onLogout={handleLogout}
           onNavigateToHome={() => setView('home')}
-          onNavigateToChauffeurPrive={() => setView('chauffeur-prive')}
-          onNavigateToAirportTransfer={() => {}}
-          onNavigateToCorporateEvent={() => {}}
+          onNavigateToServices={() => setView('services')}
+          onNavigateToAbout={() => setView('about')}
+          onNavigateToContact={() => setView('contact')}
         />
       )}
       {view === 'admin' && currentUser && (
@@ -80,9 +126,9 @@ function App() {
           onUpdateBooking={handleUpdateBooking}
           onDeleteBooking={handleDeleteBooking}
           onNavigateToHome={() => setView('home')}
-          onNavigateToChauffeurPrive={() => setView('chauffeur-prive')}
-          onNavigateToAirportTransfer={() => {}}
-          onNavigateToCorporateEvent={() => {}}
+          onNavigateToServices={() => setView('services')}
+          onNavigateToAbout={() => setView('about')}
+          onNavigateToContact={() => setView('contact')}
         />
       )}
     </div>
