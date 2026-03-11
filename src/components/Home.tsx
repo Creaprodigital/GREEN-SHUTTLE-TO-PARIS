@@ -1,7 +1,6 @@
 import Header from '@/components/Header'
 import Hero from '@/components/Hero'
 import ServiceCards from '@/components/ServiceCards'
-import OurFleet from '@/components/OurFleet'
 import Footer from '@/components/Footer'
 
 interface HomeProps {
@@ -25,9 +24,6 @@ export default function Home({ onNavigateToLogin, onNavigateToChauffeurPrive, on
       </div>
       <div id="services">
         <ServiceCards />
-      </div>
-      <div id="vehicules">
-        <OurFleet />
       </div>
       <div id="contact">
         <Footer />
