@@ -626,16 +626,16 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Tabs defaultValue="bookings" className="w-full">
-          <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-9 mb-8">
-            <TabsTrigger value="bookings">Réservations</TabsTrigger>
-            <TabsTrigger value="shared-rides">Trajets Partagés</TabsTrigger>
-            <TabsTrigger value="fleet">Véhicules</TabsTrigger>
-            <TabsTrigger value="pricing">Tarifs KM/Min/H</TabsTrigger>
-            <TabsTrigger value="options">Options</TabsTrigger>
-            <TabsTrigger value="circuits">Circuits</TabsTrigger>
-            <TabsTrigger value="promos">Codes Promo</TabsTrigger>
-            <TabsTrigger value="admins">Comptes Admin</TabsTrigger>
-            <TabsTrigger value="settings">Paramètres</TabsTrigger>
+          <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-3 md:grid-cols-5 lg:grid-cols-9 mb-8 gap-1 h-auto p-1">
+            <TabsTrigger value="bookings" className="text-xs sm:text-sm px-2 py-2.5">Réservations</TabsTrigger>
+            <TabsTrigger value="shared-rides" className="text-xs sm:text-sm px-2 py-2.5">Partagés</TabsTrigger>
+            <TabsTrigger value="fleet" className="text-xs sm:text-sm px-2 py-2.5">Véhicules</TabsTrigger>
+            <TabsTrigger value="pricing" className="text-xs sm:text-sm px-2 py-2.5">Tarifs</TabsTrigger>
+            <TabsTrigger value="options" className="text-xs sm:text-sm px-2 py-2.5">Options</TabsTrigger>
+            <TabsTrigger value="circuits" className="text-xs sm:text-sm px-2 py-2.5">Circuits</TabsTrigger>
+            <TabsTrigger value="promos" className="text-xs sm:text-sm px-2 py-2.5">Promos</TabsTrigger>
+            <TabsTrigger value="admins" className="text-xs sm:text-sm px-2 py-2.5">Admins</TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs sm:text-sm px-2 py-2.5">Paramètres</TabsTrigger>
           </TabsList>
 
           <TabsContent value="admins" className="space-y-6">

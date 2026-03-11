@@ -779,11 +779,11 @@ export default function BookingForm() {
                   className="space-y-5"
                 >
                   <Tabs value={serviceType} onValueChange={(v) => setServiceType(v as 'transfer' | 'hourly' | 'tour' | 'shared')} className="mb-6">
-                    <TabsList className="grid w-full grid-cols-4 bg-secondary">
-                      <TabsTrigger value="transfer">Transfert</TabsTrigger>
-                      <TabsTrigger value="shared">Transfert Partagé</TabsTrigger>
-                      <TabsTrigger value="hourly">Mise à Disposition</TabsTrigger>
-                      <TabsTrigger value="tour">Circuit Touristique</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-secondary gap-1 h-auto p-1">
+                      <TabsTrigger value="transfer" className="text-xs sm:text-sm px-2 py-2.5">Transfert</TabsTrigger>
+                      <TabsTrigger value="shared" className="text-xs sm:text-sm px-2 py-2.5">Partagé</TabsTrigger>
+                      <TabsTrigger value="hourly" className="text-xs sm:text-sm px-2 py-2.5">Mise à Dispo</TabsTrigger>
+                      <TabsTrigger value="tour" className="text-xs sm:text-sm px-2 py-2.5">Circuit</TabsTrigger>
                     </TabsList>
                   </Tabs>
 
