@@ -19,10 +19,13 @@ import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { ServiceOption, VehiclePricing, DEFAULT_PRICING, DEFAULT_OPTIONS, PricingSettings } from '@/types/pricing'
 import { Circuit } from '@/types/circuit'
 import { PricingZone, ZoneForfait } from '@/components/ZoneForfaitManager'
+import { TelegramSettings, DEFAULT_TELEGRAM_SETTINGS } from '@/types/telegram'
+import { sendTelegramNotification } from '@/lib/telegram'
 
 export default function BookingForm() {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
   const [fleet] = useKV<VehicleClass[]>('fleet', DEFAULT_FLEET)
+  const [telegramSettings] = useKV<TelegramSettings>('telegram-settings', DEFAULT_TELEGRAM_SETTINGS)
   const [serviceOptions] = useKV<ServiceOption[]>('service-options', DEFAULT_OPTIONS)
   const [pricing] = useKV<VehiclePricing[]>('pricing', DEFAULT_PRICING)
   const [circuits] = useKV<Circuit[]>('circuits', [])
@@ -424,7 +427,7 @@ export default function BookingForm() {
     setCurrentStep(currentStep - 1)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     const calculatedPrice = calculatePrice(vehicleType)
@@ -459,6 +462,15 @@ export default function BookingForm() {
     }
 
     setBookings((current) => [...(current || []), newBooking])
+    
+    if (telegramSettings && telegramSettings.enabled) {
+      const notificationSent = await sendTelegramNotification(telegramSettings, newBooking)
+      if (notificationSent) {
+        console.log('✅ Notification Telegram envoyée avec succès')
+      } else {
+        console.log('⚠️ Échec de l\'envoi de la notification Telegram')
+      }
+    }
     
     toast.success('Réservation enregistrée avec succès!', {
       description: `Un email de confirmation a été envoyé à ${email}`

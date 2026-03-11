@@ -21,6 +21,7 @@ import Footer from '@/components/Footer'
 import CircuitManager from '@/components/CircuitManager'
 import ZoneForfaitManager from '@/components/ZoneForfaitManager'
 import { useKV } from '@github/spark/hooks'
+import { TelegramSettings, DEFAULT_TELEGRAM_SETTINGS } from '@/types/telegram'
 
 interface AdminAccount {
   email: string
@@ -78,6 +79,8 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   const [newOptionPrice, setNewOptionPrice] = useState('')
   const [activePricingMode, setActivePricingMode] = useKV<'high-demand' | 'low-season'>('active-pricing-mode', 'high-demand')
   const [pricingSettings, setPricingSettings] = useKV<PricingSettings>('pricing-settings', { roundToWholeEuro: false })
+  
+  const [telegramSettings, setTelegramSettings] = useKV<TelegramSettings>('telegram-settings', DEFAULT_TELEGRAM_SETTINGS)
 
   useEffect(() => {
     if (!fleetData || !pricingData) return
@@ -602,13 +605,14 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Tabs defaultValue="bookings" className="w-full">
-          <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-6 mb-8">
+          <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-7 mb-8">
             <TabsTrigger value="bookings">Réservations</TabsTrigger>
             <TabsTrigger value="fleet">Véhicules</TabsTrigger>
             <TabsTrigger value="pricing">Tarifs KM/Min/H</TabsTrigger>
             <TabsTrigger value="options">Options</TabsTrigger>
             <TabsTrigger value="circuits">Circuits</TabsTrigger>
             <TabsTrigger value="admins">Comptes Admin</TabsTrigger>
+            <TabsTrigger value="settings">Paramètres</TabsTrigger>
           </TabsList>
 
           <TabsContent value="admins" className="space-y-6">
@@ -1543,6 +1547,149 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
             ))}
           </div>
         )}
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-6">
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+                Paramètres
+              </h2>
+              <p className="text-foreground/70">
+                Configurez les paramètres de notification et autres options système
+              </p>
+            </div>
+
+            <Card className="border-2 border-accent/20">
+              <CardHeader className="border-b border-border">
+                <CardTitle className="text-xl font-semibold uppercase tracking-wide flex items-center gap-2">
+                  <Sparkle size={24} className="text-accent" />
+                  Notifications Telegram
+                </CardTitle>
+                <CardDescription>
+                  Recevez une notification Telegram à chaque nouvelle réservation
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6 space-y-6">
+                <div className="flex items-center justify-between p-4 bg-secondary/50 border border-border">
+                  <div className="space-y-1">
+                    <Label htmlFor="telegram-enabled" className="text-sm font-medium uppercase tracking-wide">
+                      Activer les notifications
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Active ou désactive l'envoi de notifications Telegram
+                    </p>
+                  </div>
+                  <Switch
+                    id="telegram-enabled"
+                    checked={telegramSettings?.enabled || false}
+                    onCheckedChange={(checked) => {
+                      setTelegramSettings((current) => ({
+                        ...(current || DEFAULT_TELEGRAM_SETTINGS),
+                        enabled: checked
+                      }))
+                      toast.success(checked ? 'Notifications activées' : 'Notifications désactivées')
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="telegram-bot-token" className="text-sm font-medium uppercase tracking-wide">
+                      Bot Token
+                    </Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info size={16} className="text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-sm">
+                            Créez un bot avec @BotFather sur Telegram et copiez le token ici
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <Input
+                    id="telegram-bot-token"
+                    type="text"
+                    value={telegramSettings?.botToken || ''}
+                    onChange={(e) => {
+                      setTelegramSettings((current) => ({
+                        ...(current || DEFAULT_TELEGRAM_SETTINGS),
+                        botToken: e.target.value
+                      }))
+                    }}
+                    placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
+                    className="h-12 bg-secondary border-border font-mono text-sm"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="telegram-chat-id" className="text-sm font-medium uppercase tracking-wide">
+                      Chat ID
+                    </Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info size={16} className="text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-sm">
+                            Envoyez un message à votre bot, puis utilisez @userinfobot pour obtenir votre Chat ID
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <Input
+                    id="telegram-chat-id"
+                    type="text"
+                    value={telegramSettings?.chatId || ''}
+                    onChange={(e) => {
+                      setTelegramSettings((current) => ({
+                        ...(current || DEFAULT_TELEGRAM_SETTINGS),
+                        chatId: e.target.value
+                      }))
+                    }}
+                    placeholder="123456789"
+                    className="h-12 bg-secondary border-border font-mono text-sm"
+                  />
+                </div>
+
+                <div className="pt-4 border-t border-border">
+                  <Button
+                    onClick={() => {
+                      if (!telegramSettings?.botToken || !telegramSettings?.chatId) {
+                        toast.error('Veuillez remplir le Bot Token et le Chat ID')
+                        return
+                      }
+                      toast.success('Paramètres Telegram enregistrés')
+                    }}
+                    className="w-full md:w-auto h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+                  >
+                    <Check className="mr-2" size={20} />
+                    Enregistrer les paramètres
+                  </Button>
+                </div>
+
+                <div className="mt-6 p-4 bg-muted/30 border border-border space-y-2">
+                  <p className="text-sm font-medium uppercase tracking-wide text-foreground">
+                    ℹ️ Comment configurer Telegram
+                  </p>
+                  <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                    <li>Recherchez @BotFather sur Telegram</li>
+                    <li>Envoyez /newbot et suivez les instructions</li>
+                    <li>Copiez le Bot Token fourni</li>
+                    <li>Envoyez un message à votre bot</li>
+                    <li>Recherchez @userinfobot et envoyez-lui un message</li>
+                    <li>Copiez votre Chat ID</li>
+                    <li>Collez les deux valeurs ci-dessus</li>
+                  </ol>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
