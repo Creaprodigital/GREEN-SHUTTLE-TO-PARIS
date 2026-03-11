@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
-import { MapPin, Calendar, Clock, Users, ArrowRight, ArrowLeft, User, Phone, EnvelopeSimple, CreditCard, Money, Bank, Check, Suitcase, CurrencyEur, Tag } from '@phosphor-icons/react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { MapPin, Calendar, Clock, Users, ArrowRight, ArrowLeft, User, Phone, EnvelopeSimple, CreditCard, Money, Bank, Check, Suitcase, CurrencyEur, Tag, Percent, Sparkle, Gift } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
@@ -69,6 +70,7 @@ export default function BookingForm() {
   const [promoCodeInput, setPromoCodeInput] = useState('')
   const [appliedPromoCode, setAppliedPromoCode] = useState<PromoCode | null>(null)
   const [promoCodeError, setPromoCodeError] = useState('')
+  const [showPromoPreview, setShowPromoPreview] = useState(false)
 
   const isPointInPolygon = (point: { lat: number; lng: number }, polygon: { lat: number; lng: number }[]): boolean => {
     if (!polygon || polygon.length < 3) {
@@ -556,6 +558,90 @@ export default function BookingForm() {
       transition={{ duration: 0.5, delay: 0.2 }}
       className="relative -mt-24 z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
     >
+      <Dialog open={showPromoPreview} onOpenChange={setShowPromoPreview}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3 text-2xl font-bold uppercase tracking-wide">
+              <div className="p-3 bg-accent/20 rounded-full">
+                <Gift size={32} weight="fill" className="text-accent" />
+              </div>
+              Promotion Aller-Retour
+            </DialogTitle>
+            <DialogDescription className="text-base pt-2">
+              Profitez d'une réduction exclusive sur tous les transferts aller-retour !
+            </DialogDescription>
+          </DialogHeader>
+          
+          {roundTripDiscount?.enabled && roundTripDiscount.value > 0 && (
+            <div className="space-y-5 py-4">
+              <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-accent/30 via-accent/20 to-accent/10 p-6 border-2 border-accent/40">
+                <div className="absolute top-0 right-0 -mt-4 -mr-4">
+                  <Sparkle size={120} weight="fill" className="text-accent/10" />
+                </div>
+                <div className="relative z-10 flex flex-col items-center text-center space-y-3">
+                  <div className="p-4 bg-accent rounded-full">
+                    <Percent size={40} weight="bold" className="text-accent-foreground" />
+                  </div>
+                  <div>
+                    <div className="text-5xl font-bold text-accent mb-1">
+                      -{roundTripDiscount.value}{roundTripDiscount.type === 'percentage' ? '%' : '€'}
+                    </div>
+                    <div className="text-sm uppercase tracking-widest font-medium text-foreground/80">
+                      de réduction immédiate
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-5 space-y-3">
+                <h4 className="font-semibold uppercase tracking-wide text-sm flex items-center gap-2">
+                  <Tag size={18} weight="fill" className="text-accent" />
+                  Comment ça marche ?
+                </h4>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <Check size={18} weight="bold" className="text-accent flex-shrink-0 mt-0.5" />
+                    <span>Sélectionnez "Aller-Retour" lors de votre réservation</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check size={18} weight="bold" className="text-accent flex-shrink-0 mt-0.5" />
+                    <span>La réduction s'applique automatiquement sur le prix total</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check size={18} weight="bold" className="text-accent flex-shrink-0 mt-0.5" />
+                    <span>Cumulable avec vos codes promo valides</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check size={18} weight="bold" className="text-accent flex-shrink-0 mt-0.5" />
+                    <span>Valable sur tous les véhicules de notre flotte</span>
+                  </li>
+                </ul>
+              </div>
+
+              {roundTripDiscount.description && (
+                <div className="text-xs text-center text-muted-foreground italic px-4">
+                  {roundTripDiscount.description}
+                </div>
+              )}
+
+              <Button
+                onClick={() => {
+                  setTransferType('roundtrip')
+                  setShowPromoPreview(false)
+                  toast.success('Transfert aller-retour sélectionné !', {
+                    description: `Vous bénéficiez de -${roundTripDiscount.value}${roundTripDiscount.type === 'percentage' ? '%' : '€'}`
+                  })
+                }}
+                className="w-full h-12 text-base bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+              >
+                <Sparkle size={20} weight="fill" className="mr-2" />
+                Profiter de cette offre
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Card className="shadow-2xl border-2 border-accent/20 bg-card">
         <CardHeader className="pb-4 border-b border-border">
           <div className="flex items-center justify-center gap-2 mb-4">
@@ -618,7 +704,7 @@ export default function BookingForm() {
                               Aller Simple
                             </Label>
                           </div>
-                          <div>
+                          <div className="relative">
                             <RadioGroupItem
                               value="roundtrip"
                               id="roundtrip"
@@ -630,9 +716,18 @@ export default function BookingForm() {
                             >
                               Aller-Retour
                               {roundTripDiscount?.enabled && roundTripDiscount.value > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                    setShowPromoPreview(true)
+                                  }}
+                                  className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg hover:scale-110 transition-transform cursor-pointer z-10 flex items-center gap-0.5"
+                                >
+                                  <Sparkle size={12} weight="fill" />
                                   -{roundTripDiscount.value}{roundTripDiscount.type === 'percentage' ? '%' : '€'}
-                                </span>
+                                </button>
                               )}
                             </Label>
                           </div>
