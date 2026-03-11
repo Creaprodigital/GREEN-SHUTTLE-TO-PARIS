@@ -32,7 +32,7 @@ export default function BookingForm() {
   const [zoneForfaits] = useKV<ZoneForfait[]>('zone-forfaits', [])
   const [currentStep, setCurrentStep] = useState(1)
   
-  const [serviceType, setServiceType] = useState<'transfer' | 'hourly' | 'tour'>('transfer')
+  const [serviceType, setServiceType] = useState<'transfer' | 'tour'>('transfer')
   const [transferType, setTransferType] = useState<'oneway' | 'roundtrip'>('oneway')
   const [hourlyDuration, setHourlyDuration] = useState('2')
   const [selectedCircuitId, setSelectedCircuitId] = useState('')

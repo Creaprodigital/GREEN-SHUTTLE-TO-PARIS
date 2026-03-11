@@ -97,11 +97,9 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
             vehicleId: v.id,
             pricePerKm: 0,
             pricePerMinute: 0,
-            pricePerHour: 0,
             tourBasePrice: 0,
             lowSeasonPricePerKm: 0,
             lowSeasonPricePerMinute: 0,
-            lowSeasonPricePerHour: 0,
             lowSeasonTourBasePrice: 0
           }
         })
@@ -120,11 +118,9 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
           vehicleId: v.id,
           pricePerKm: 0,
           pricePerMinute: 0,
-          pricePerHour: 0,
           tourBasePrice: 0,
           lowSeasonPricePerKm: 0,
           lowSeasonPricePerMinute: 0,
-          lowSeasonPricePerHour: 0,
           lowSeasonTourBasePrice: 0
         }
       })
@@ -1074,11 +1070,9 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                       vehicleId: vehicle.id,
                       pricePerKm: 0,
                       pricePerMinute: 0,
-                      pricePerHour: 0,
                       tourBasePrice: 0,
                       lowSeasonPricePerKm: 0,
                       lowSeasonPricePerMinute: 0,
-                      lowSeasonPricePerHour: 0,
                       lowSeasonTourBasePrice: 0
                     }
 
@@ -1106,7 +1100,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                         </CardHeader>
                         <CardContent className="pt-6">
                           <TooltipProvider>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                               <div className="space-y-2 flex flex-col">
                                 <div className="flex items-center gap-2 min-h-[48px]">
                                   <Label htmlFor={`price-km-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide leading-tight">
@@ -1161,36 +1155,6 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                                   onChange={(e) => handleUpdatePricing(
                                     vehicle.id, 
                                     isHighDemand ? 'pricePerMinute' : 'lowSeasonPricePerMinute', 
-                                    parseFloat(e.target.value) || 0
-                                  )}
-                                  className="h-12 bg-secondary border-border"
-                                />
-                              </div>
-
-                              <div className="space-y-2 flex flex-col">
-                                <div className="flex items-center gap-2 min-h-[48px]">
-                                  <Label htmlFor={`price-hour-${vehicle.id}`} className="text-sm font-medium uppercase tracking-wide leading-tight">
-                                    Prix/Heure - MAD (€)
-                                  </Label>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Info size={16} className="text-muted-foreground cursor-help flex-shrink-0" />
-                                    </TooltipTrigger>
-                                    <TooltipContent className="max-w-xs">
-                                      <p className="font-semibold mb-1">Prix par Heure - Mise à Disposition</p>
-                                      <p className="text-sm">Utilisé UNIQUEMENT pour le service "Mise à Disposition". Le client choisit le nombre d'heures et le prix est calculé : nombre d'heures × prix/heure. Ce tarif ne s'applique pas aux autres services.</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </div>
-                                <Input
-                                  id={`price-hour-${vehicle.id}`}
-                                  type="number"
-                                  step="1"
-                                  min="0"
-                                  value={isHighDemand ? pricing.pricePerHour : (pricing.lowSeasonPricePerHour || 0)}
-                                  onChange={(e) => handleUpdatePricing(
-                                    vehicle.id, 
-                                    isHighDemand ? 'pricePerHour' : 'lowSeasonPricePerHour', 
                                     parseFloat(e.target.value) || 0
                                   )}
                                   className="h-12 bg-secondary border-border"
