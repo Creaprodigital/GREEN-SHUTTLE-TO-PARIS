@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Car, MapPin, Calendar, Clock, User as UserIcon, Users, Map, Star, CreditCard, TrendUp, Plus, BookmarkSimple, ArrowsClockwise } from '@phosphor-icons/react'
+import { Car, MapPin, Calendar, Clock, User as UserIcon, UsersThree, Map, Star, CreditCard, TrendUp, Plus, BookmarkSimple, ArrowsClockwise } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { VehicleClass } from '@/types/fleet'
 import { motion } from 'framer-motion'
@@ -325,7 +325,7 @@ function BookingCard({ booking, index, fleet, onViewRoute, showRebook, onRebook 
   }
 
   const getServiceTypeIcon = (serviceType: string) => {
-    if (serviceType === 'shared') return <Users size={14} weight="fill" className="flex-shrink-0" />
+    if (serviceType === 'shared') return <UsersThree size={14} weight="fill" className="flex-shrink-0" />
     if (serviceType === 'hourly') return <Clock size={14} weight="fill" className="flex-shrink-0" />
     if (serviceType === 'tour') return <Map size={14} weight="fill" className="flex-shrink-0" />
     return <Car size={14} className="flex-shrink-0" />
@@ -407,7 +407,7 @@ function BookingCard({ booking, index, fleet, onViewRoute, showRebook, onRebook 
               <div className="pt-3 border-t border-border">
                 <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-2.5 sm:p-3 mb-2.5">
                   <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-                    <Users size={16} weight="fill" className="text-accent flex-shrink-0" />
+                    <UsersThree size={16} weight="fill" className="text-accent flex-shrink-0" />
                     <span className="font-semibold text-xs sm:text-sm uppercase tracking-wide">Transfert Partagé</span>
                   </div>
                   <p className="text-[10px] sm:text-xs text-muted-foreground">
