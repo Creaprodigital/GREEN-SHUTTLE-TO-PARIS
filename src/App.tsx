@@ -36,7 +36,7 @@ function App() {
   }
 
   const handleNavigateToClient = () => {
-    setCurrentUser({ email: 'client@example.fr', isAdmin: false })
+    setCurrentUser({ email: 'creaprodigital@gmail.com', isAdmin: false })
     setView('client')
   }
 
