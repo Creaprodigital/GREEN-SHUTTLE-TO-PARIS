@@ -1296,7 +1296,7 @@ export default function BookingForm() {
                         className="w-full h-12 border-2 border-accent/30 hover:border-accent hover:bg-accent/10 text-accent font-medium"
                       >
                         <MapPin size={20} weight="fill" className="mr-2" />
-                        Voir l'itinéraire optimisé
+                        Voir l'itinéraire optimis��
                       </Button>
                     </div>
                   )}
