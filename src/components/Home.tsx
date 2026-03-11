@@ -24,7 +24,7 @@ export default function Home({ onNavigateToLogin, onNavigateToServices, onNaviga
       <div id="accueil">
         <Hero />
         <BookingForm />
-        <div className="h-[70px]" />
+        <div className="h-[150px]" />
       </div>
       <div id="services">
         <ServiceCards />
