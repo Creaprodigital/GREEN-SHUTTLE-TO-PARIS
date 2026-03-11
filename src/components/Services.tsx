@@ -1,19 +1,19 @@
 import Header from './Header'
 import Footer from './Footer'
-interface ServicesProps {
+import { Car, Airplane, Users, Building } from '@phosphor-icons/react'
 
 interface ServicesProps {
   onNavigateToLogin?: (isAdmin: boolean) => void
   onNavigateToHome?: () => void
   onNavigateToServices?: () => void
-  onNavigateToLogin,
-  onNavigateToServices,
-  onNavigateToContac
-  isAdmin,
-}: ServicesProps) {
- 
+  onNavigateToAbout?: () => void
+  onNavigateToContact?: () => void
+  userEmail?: string
+  isAdmin?: boolean
+  onLogout?: () => void
+}
 
-      features: [
+export default function Services({
   onNavigateToLogin,
   onNavigateToHome,
   onNavigateToServices,
@@ -34,9 +34,9 @@ interface ServicesProps {
         'Chauffeurs professionnels',
         'Service personnalisé'
       ]
-  retu
+    },
     {
-        onNavigateT
+      icon: Airplane,
       title: 'Transfert Aéroports / Gares',
       description: 'Transferts vers tous les aéroports et gares de Paris et de la région. Service porte-à-porte avec suivi de vol en temps réel.',
       features: [
@@ -44,9 +44,9 @@ interface ServicesProps {
         'Accueil personnalisé',
         'Assistance bagages',
         'Tarifs fixes'
-       
+      ]
     },
-     
+    {
       icon: Users,
       title: 'Corporate & Événementiel',
       description: 'Solutions de transport premium pour vos événements professionnels, séminaires et réunions d\'affaires.',
@@ -56,7 +56,7 @@ interface ServicesProps {
         'Facturation simplifiée',
         'Service multi-passagers'
       ]
-      
+    },
     {
       icon: Building,
       title: 'Ambassades & Délégations',
@@ -64,11 +64,11 @@ interface ServicesProps {
       features: [
         'Protocole diplomatique',
         'Sécurité renforcée',
-      <Footer />
+        'Confidentialité absolue',
         'Disponibilité permanente'
-
+      ]
     }
-
+  ]
 
   return (
     <div className="min-h-screen bg-background">
@@ -78,7 +78,7 @@ interface ServicesProps {
         onNavigateToServices={onNavigateToServices}
         onNavigateToAbout={onNavigateToAbout}
         onNavigateToContact={onNavigateToContact}
-
+        userEmail={userEmail}
         isAdmin={isAdmin}
         onLogout={onLogout}
       />
@@ -88,7 +88,7 @@ interface ServicesProps {
           <div className="text-center mb-16">
             <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6" style={{ fontFamily: 'var(--font-display)' }}>
               Nos Services
-
+            </h1>
             <p className="text-xl text-foreground/70 max-w-3xl mx-auto">
               Des solutions de transport premium adaptées à tous vos besoins, alliant confort, élégance et professionnalisme.
             </p>
@@ -98,9 +98,9 @@ interface ServicesProps {
             {services.map((service, index) => {
               const Icon = service.icon
               return (
-
+                <div
                   key={index}
-
+                  className="bg-card border border-border p-8 hover:border-accent/50 transition-colors"
                 >
                   <div className="flex items-start gap-6">
                     <div className="w-16 h-16 bg-accent flex items-center justify-center shrink-0">
@@ -120,17 +120,17 @@ interface ServicesProps {
                             {feature}
                           </li>
                         ))}
-
+                      </ul>
                     </div>
-
+                  </div>
                 </div>
-
+              )
             })}
-
+          </div>
         </div>
+      </main>
 
-
-
+      <Footer />
     </div>
-
+  )
 }
