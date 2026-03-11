@@ -21,7 +21,7 @@ import { Circuit } from '@/types/circuit'
 import { PricingZone, ZoneForfait } from '@/components/ZoneForfaitManager'
 import { TelegramSettings, DEFAULT_TELEGRAM_SETTINGS } from '@/types/telegram'
 import { sendTelegramNotification } from '@/lib/telegram'
-import { PromoCode, DEFAULT_PROMO_CODES } from '@/types/promo'
+import { PromoCode, DEFAULT_PROMO_CODES, RoundTripDiscount, DEFAULT_ROUNDTRIP_DISCOUNT } from '@/types/promo'
 
 export default function BookingForm() {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
@@ -35,6 +35,7 @@ export default function BookingForm() {
   const [pricingZones] = useKV<PricingZone[]>('pricing-zones', [])
   const [zoneForfaits] = useKV<ZoneForfait[]>('zone-forfaits', [])
   const [promoCodes] = useKV<PromoCode[]>('promo-codes', DEFAULT_PROMO_CODES)
+  const [roundTripDiscount] = useKV<RoundTripDiscount>('roundtrip-discount', DEFAULT_ROUNDTRIP_DISCOUNT)
   const [currentStep, setCurrentStep] = useState(1)
   
   const [serviceType, setServiceType] = useState<'transfer' | 'tour'>('transfer')
@@ -329,16 +330,29 @@ export default function BookingForm() {
 
   const calculateFinalPrice = (vehicleId: string): number => {
     const basePrice = calculatePrice(vehicleId)
-    if (!appliedPromoCode) return basePrice
+    let discountedPrice = basePrice
 
-    if (appliedPromoCode.type === 'percentage') {
-      const discount = (basePrice * appliedPromoCode.value) / 100
-      const discountedPrice = basePrice - discount
-      return Math.max(0, discountedPrice)
-    } else {
-      const discountedPrice = basePrice - appliedPromoCode.value
-      return Math.max(0, discountedPrice)
+    if (serviceType === 'transfer' && transferType === 'roundtrip' && roundTripDiscount?.enabled && roundTripDiscount.value > 0) {
+      if (roundTripDiscount.type === 'percentage') {
+        const discount = (basePrice * roundTripDiscount.value) / 100
+        discountedPrice = basePrice - discount
+      } else {
+        discountedPrice = basePrice - roundTripDiscount.value
+      }
+      discountedPrice = Math.max(0, discountedPrice)
     }
+
+    if (appliedPromoCode) {
+      if (appliedPromoCode.type === 'percentage') {
+        const discount = (discountedPrice * appliedPromoCode.value) / 100
+        discountedPrice = discountedPrice - discount
+      } else {
+        discountedPrice = discountedPrice - appliedPromoCode.value
+      }
+      discountedPrice = Math.max(0, discountedPrice)
+    }
+
+    return discountedPrice
   }
 
   useEffect(() => {
@@ -612,9 +626,14 @@ export default function BookingForm() {
                             />
                             <Label
                               htmlFor="roundtrip"
-                              className="flex items-center justify-center rounded-lg border-2 border-border bg-secondary p-3 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all font-medium uppercase tracking-wide text-sm"
+                              className="flex flex-col items-center justify-center rounded-lg border-2 border-border bg-secondary p-3 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all font-medium uppercase tracking-wide text-sm relative"
                             >
                               Aller-Retour
+                              {roundTripDiscount?.enabled && roundTripDiscount.value > 0 && (
+                                <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
+                                  -{roundTripDiscount.value}{roundTripDiscount.type === 'percentage' ? '%' : '€'}
+                                </span>
+                              )}
                             </Label>
                           </div>
                         </div>
@@ -1404,21 +1423,34 @@ export default function BookingForm() {
                       )}
                       {vehicleType && (
                         <div className="border-t border-accent/20 pt-2 mt-2">
-                          {appliedPromoCode ? (
+                          {(serviceType === 'transfer' && transferType === 'roundtrip' && roundTripDiscount?.enabled && roundTripDiscount.value > 0) || appliedPromoCode ? (
                             <>
                               <div className="flex justify-between items-center text-sm">
                                 <span className="text-muted-foreground">Sous-total:</span>
                                 <span className="font-medium">{calculatePrice(vehicleType).toFixed(2)}€</span>
                               </div>
-                              <div className="flex justify-between items-center text-sm text-accent">
-                                <span className="font-medium">Réduction ({appliedPromoCode.code}):</span>
-                                <span className="font-medium">
-                                  -{appliedPromoCode.type === 'percentage' 
-                                    ? `${((calculatePrice(vehicleType) * appliedPromoCode.value) / 100).toFixed(2)}€ (${appliedPromoCode.value}%)`
-                                    : `${appliedPromoCode.value.toFixed(2)}€`
-                                  }
-                                </span>
-                              </div>
+                              {serviceType === 'transfer' && transferType === 'roundtrip' && roundTripDiscount?.enabled && roundTripDiscount.value > 0 && (
+                                <div className="flex justify-between items-center text-sm text-accent">
+                                  <span className="font-medium">Promotion Aller-Retour:</span>
+                                  <span className="font-medium">
+                                    -{roundTripDiscount.type === 'percentage'
+                                      ? `${((calculatePrice(vehicleType) * roundTripDiscount.value) / 100).toFixed(2)}€ (${roundTripDiscount.value}%)`
+                                      : `${roundTripDiscount.value.toFixed(2)}€`
+                                    }
+                                  </span>
+                                </div>
+                              )}
+                              {appliedPromoCode && (
+                                <div className="flex justify-between items-center text-sm text-accent">
+                                  <span className="font-medium">Réduction ({appliedPromoCode.code}):</span>
+                                  <span className="font-medium">
+                                    -{appliedPromoCode.type === 'percentage'
+                                      ? `${((calculateFinalPrice(vehicleType) * appliedPromoCode.value) / 100).toFixed(2)}€ (${appliedPromoCode.value}%)`
+                                      : `${appliedPromoCode.value.toFixed(2)}€`
+                                    }
+                                  </span>
+                                </div>
+                              )}
                               <div className="flex justify-between items-center pt-2 mt-2 border-t border-accent/20">
                                 <span className="font-semibold uppercase tracking-wide">Prix Total:</span>
                                 <span className="text-2xl font-bold text-accent flex items-center gap-1">

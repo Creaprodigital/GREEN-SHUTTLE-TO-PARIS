@@ -13,4 +13,18 @@ export interface PromoCode {
   isActive: boolean
 }
 
+export interface RoundTripDiscount {
+  enabled: boolean
+  type: 'percentage' | 'fixed'
+  value: number
+  description?: string
+}
+
 export const DEFAULT_PROMO_CODES: PromoCode[] = []
+
+export const DEFAULT_ROUNDTRIP_DISCOUNT: RoundTripDiscount = {
+  enabled: false,
+  type: 'percentage',
+  value: 0,
+  description: 'Réduction aller-retour'
+}

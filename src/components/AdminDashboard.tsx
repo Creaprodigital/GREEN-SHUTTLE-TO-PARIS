@@ -23,6 +23,7 @@ import ZoneForfaitManager from '@/components/ZoneForfaitManager'
 import PromoCodeManager from '@/components/PromoCodeManager'
 import { useKV } from '@github/spark/hooks'
 import { TelegramSettings, DEFAULT_TELEGRAM_SETTINGS } from '@/types/telegram'
+import { RoundTripDiscount, DEFAULT_ROUNDTRIP_DISCOUNT } from '@/types/promo'
 
 interface AdminAccount {
   email: string
@@ -82,6 +83,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   const [pricingSettings, setPricingSettings] = useKV<PricingSettings>('pricing-settings', { roundToWholeEuro: false })
   
   const [telegramSettings, setTelegramSettings] = useKV<TelegramSettings>('telegram-settings', DEFAULT_TELEGRAM_SETTINGS)
+  const [roundTripDiscount, setRoundTripDiscount] = useKV<RoundTripDiscount>('roundtrip-discount', DEFAULT_ROUNDTRIP_DISCOUNT)
 
   useEffect(() => {
     if (!fleetData || !pricingData) return
@@ -1363,6 +1365,129 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                 Gérez les codes promotionnels pour offrir des réductions à vos clients
               </p>
             </div>
+
+            <Card className="border-2 border-accent/20 mb-6">
+              <CardHeader className="border-b border-border">
+                <CardTitle className="text-xl font-semibold uppercase tracking-wide flex items-center gap-2">
+                  <Sparkle size={24} className="text-accent" weight="fill" />
+                  Promotion Aller-Retour
+                </CardTitle>
+                <CardDescription>
+                  Configurez une remise automatique pour les réservations aller-retour
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6 space-y-6">
+                <div className="flex items-center justify-between p-4 bg-secondary/50 border border-border">
+                  <div className="space-y-1">
+                    <Label htmlFor="roundtrip-enabled" className="text-sm font-medium uppercase tracking-wide">
+                      Activer la promotion
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Active ou désactive la réduction sur les transferts aller-retour
+                    </p>
+                  </div>
+                  <Switch
+                    id="roundtrip-enabled"
+                    checked={roundTripDiscount?.enabled || false}
+                    onCheckedChange={(checked) => {
+                      setRoundTripDiscount((current) => ({
+                        ...(current || DEFAULT_ROUNDTRIP_DISCOUNT),
+                        enabled: checked
+                      }))
+                      toast.success(checked ? 'Promotion aller-retour activée' : 'Promotion aller-retour désactivée')
+                    }}
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="roundtrip-type" className="text-sm font-medium uppercase tracking-wide">
+                      Type de réduction
+                    </Label>
+                    <Select
+                      value={roundTripDiscount?.type || 'percentage'}
+                      onValueChange={(value: 'percentage' | 'fixed') => {
+                        setRoundTripDiscount((current) => ({
+                          ...(current || DEFAULT_ROUNDTRIP_DISCOUNT),
+                          type: value
+                        }))
+                      }}
+                    >
+                      <SelectTrigger id="roundtrip-type" className="h-12 bg-secondary border-border">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percentage">Pourcentage (%)</SelectItem>
+                        <SelectItem value="fixed">Montant fixe (€)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="roundtrip-value" className="text-sm font-medium uppercase tracking-wide">
+                      Valeur de la réduction
+                    </Label>
+                    <Input
+                      id="roundtrip-value"
+                      type="number"
+                      step={roundTripDiscount?.type === 'percentage' ? '1' : '0.5'}
+                      min="0"
+                      max={roundTripDiscount?.type === 'percentage' ? '100' : undefined}
+                      value={roundTripDiscount?.value || 0}
+                      onChange={(e) => {
+                        setRoundTripDiscount((current) => ({
+                          ...(current || DEFAULT_ROUNDTRIP_DISCOUNT),
+                          value: parseFloat(e.target.value) || 0
+                        }))
+                      }}
+                      className="h-12 bg-secondary border-border"
+                      placeholder={roundTripDiscount?.type === 'percentage' ? 'ex: 10' : 'ex: 15.00'}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="roundtrip-description" className="text-sm font-medium uppercase tracking-wide">
+                    Description (optionnel)
+                  </Label>
+                  <Input
+                    id="roundtrip-description"
+                    type="text"
+                    value={roundTripDiscount?.description || ''}
+                    onChange={(e) => {
+                      setRoundTripDiscount((current) => ({
+                        ...(current || DEFAULT_ROUNDTRIP_DISCOUNT),
+                        description: e.target.value
+                      }))
+                    }}
+                    className="h-12 bg-secondary border-border"
+                    placeholder="ex: Économisez sur vos trajets aller-retour !"
+                  />
+                </div>
+
+                {roundTripDiscount?.enabled && roundTripDiscount?.value > 0 && (
+                  <div className="bg-accent/20 border-2 border-accent rounded-lg p-4">
+                    <p className="text-sm font-semibold uppercase tracking-wide text-accent mb-2">
+                      ✓ Aperçu de la promotion
+                    </p>
+                    <p className="text-sm text-foreground/80">
+                      Les clients qui choisissent un transfert <strong>Aller-Retour</strong> recevront automatiquement une réduction de{' '}
+                      <strong className="text-accent">
+                        {roundTripDiscount.value}{roundTripDiscount.type === 'percentage' ? '%' : '€'}
+                      </strong>{' '}
+                      sur le prix total.
+                      {roundTripDiscount.description && (
+                        <>
+                          <br />
+                          <span className="italic">"{roundTripDiscount.description}"</span>
+                        </>
+                      )}
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             <PromoCodeManager />
           </TabsContent>
 
