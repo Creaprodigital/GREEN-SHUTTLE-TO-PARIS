@@ -223,32 +223,32 @@ export default function SharedRideManager({ bookings, onUpdateBooking }: SharedR
   return (
     <div className="space-y-6">
       <Dialog open={!!selectedGroupForMap} onOpenChange={(open) => !open && setSelectedGroupForMap(null)}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-full sm:max-w-6xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
               <Map size={24} weight="fill" />
               Itinéraire Multi-Passagers
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-xs sm:text-sm">
               Visualisation de l'itinéraire optimisé avec les points de prise en charge intermédiaires
             </DialogDescription>
           </DialogHeader>
           {selectedGroup && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">Groupe</div>
-                  <div className="font-semibold">{selectedGroup.bookings.length} réservation{selectedGroup.bookings.length > 1 ? 's' : ''}</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground mb-1">Groupe</div>
+                  <div className="text-sm sm:text-base font-semibold">{selectedGroup.bookings.length} réservation{selectedGroup.bookings.length > 1 ? 's' : ''}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">Total Passagers</div>
-                  <div className="font-semibold">{selectedGroup.totalPassengers} passager{selectedGroup.totalPassengers > 1 ? 's' : ''}</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground mb-1">Total Passagers</div>
+                  <div className="text-sm sm:text-base font-semibold">{selectedGroup.totalPassengers} passager{selectedGroup.totalPassengers > 1 ? 's' : ''}</div>
                 </div>
               </div>
               <MultiPassengerRouteMap 
                 bookings={bookings}
                 sharedRideId={selectedGroup.id}
-                height="600px"
+                height="400px"
                 showDetails={true}
               />
             </div>
@@ -304,16 +304,16 @@ export default function SharedRideManager({ bookings, onUpdateBooking }: SharedR
 
       {settings?.autoMatchEnabled && (
         <Alert className="border-2 border-accent/30 bg-accent/5">
-          <Sparkle size={20} weight="fill" className="text-accent" />
-          <AlertTitle>Matching Automatique Actif</AlertTitle>
-          <AlertDescription className="flex items-center justify-between">
-            <span>Le système recherche automatiquement des trajets compatibles toutes les 30 secondes</span>
+          <Sparkle size={20} weight="fill" className="text-accent flex-shrink-0" />
+          <AlertTitle className="text-sm sm:text-base">Matching Automatique Actif</AlertTitle>
+          <AlertDescription className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:justify-between">
+            <span className="text-xs sm:text-sm">Le système recherche automatiquement des trajets compatibles toutes les 30 secondes</span>
             <Button 
               onClick={runAutoMatch} 
               disabled={isMatching || !onUpdateBooking}
               variant="outline"
               size="sm"
-              className="ml-4"
+              className="w-full sm:w-auto sm:ml-4 flex-shrink-0"
             >
               {isMatching ? (
                 <>
@@ -333,19 +333,19 @@ export default function SharedRideManager({ bookings, onUpdateBooking }: SharedR
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                 <Users size={24} weight="fill" />
                 Paramètres du Transfert Partagé
               </CardTitle>
-              <CardDescription>Configurez les règles de matching et les remises</CardDescription>
+              <CardDescription className="text-xs sm:text-sm mt-1">Configurez les règles de matching et les remises</CardDescription>
             </div>
             <Button 
               onClick={runAutoMatch} 
               disabled={isMatching || !onUpdateBooking || !settings?.enabled}
               size="lg"
-              className="gap-2"
+              className="gap-2 w-full sm:w-auto"
             >
               {isMatching ? (
                 <>
@@ -625,9 +625,9 @@ export default function SharedRideManager({ bookings, onUpdateBooking }: SharedR
                 {pendingMatches.map((group) => (
                   <Card key={group.id} className="border-2 border-yellow-500/30 bg-yellow-500/5">
                     <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 gap-3">
+                        <div className="flex-1 w-full sm:w-auto">
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
                             {getStatusBadge(group.status)}
                             <Badge variant="outline" className="text-xs">
                               <Users size={12} className="mr-1" />
@@ -635,28 +635,28 @@ export default function SharedRideManager({ bookings, onUpdateBooking }: SharedR
                             </Badge>
                           </div>
                           <div className="space-y-1 text-sm">
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                              <MapPin size={14} weight="fill" />
-                              <span className="truncate">{group.route.pickup}</span>
+                            <div className="flex items-start gap-2 text-muted-foreground">
+                              <MapPin size={14} weight="fill" className="mt-0.5 flex-shrink-0" />
+                              <span className="break-words">{group.route.pickup}</span>
                             </div>
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                              <ArrowRight size={14} />
-                              <span className="truncate">{group.route.destination}</span>
+                            <div className="flex items-start gap-2 text-muted-foreground">
+                              <ArrowRight size={14} className="mt-0.5 flex-shrink-0" />
+                              <span className="break-words">{group.route.destination}</span>
                             </div>
-                            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
-                              <span>{group.date} à {group.time}</span>
-                              <span>•</span>
-                              <span>{group.vehicleType}</span>
+                            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mt-2">
+                              <span className="whitespace-nowrap">{group.date} à {group.time}</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span className="whitespace-nowrap">{group.vehicleType}</span>
                             </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-lg font-bold">{group.pricePerPassenger.toFixed(2)}€</div>
+                        <div className="text-right flex-shrink-0 w-full sm:w-auto">
+                          <div className="text-base sm:text-lg font-bold">{group.pricePerPassenger.toFixed(2)}€</div>
                           <div className="text-xs text-muted-foreground">par personne</div>
                         </div>
                       </div>
                       {group.bookings.map((booking) => (
-                        <div key={booking.id} className="text-xs text-muted-foreground border-t border-border/50 pt-2 mt-2">
+                        <div key={booking.id} className="text-xs text-muted-foreground border-t border-border/50 pt-2 mt-2 break-words">
                           {booking.firstName} {booking.lastName} • {booking.email}
                         </div>
                       ))}
@@ -687,9 +687,9 @@ export default function SharedRideManager({ bookings, onUpdateBooking }: SharedR
                 {activeGroups.map((group) => (
                   <Card key={group.id} className="border-2 border-green-500/30 bg-green-500/5">
                     <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 gap-3">
+                        <div className="flex-1 w-full sm:w-auto">
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
                             {getStatusBadge(group.status)}
                             <Badge variant="outline" className="text-xs bg-green-500/20 border-green-500/30">
                               <Users size={12} className="mr-1" />
@@ -700,33 +700,33 @@ export default function SharedRideManager({ bookings, onUpdateBooking }: SharedR
                             </Badge>
                           </div>
                           <div className="space-y-1 text-sm">
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                              <MapPin size={14} weight="fill" />
-                              <span className="truncate">{group.route.pickup}</span>
+                            <div className="flex items-start gap-2 text-muted-foreground">
+                              <MapPin size={14} weight="fill" className="mt-0.5 flex-shrink-0" />
+                              <span className="break-words">{group.route.pickup}</span>
                             </div>
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                              <ArrowRight size={14} />
-                              <span className="truncate">{group.route.destination}</span>
+                            <div className="flex items-start gap-2 text-muted-foreground">
+                              <ArrowRight size={14} className="mt-0.5 flex-shrink-0" />
+                              <span className="break-words">{group.route.destination}</span>
                             </div>
-                            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
-                              <span>{group.date} à {group.time}</span>
-                              <span>•</span>
-                              <span>{group.vehicleType}</span>
+                            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mt-2">
+                              <span className="whitespace-nowrap">{group.date} à {group.time}</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span className="whitespace-nowrap">{group.vehicleType}</span>
                             </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-lg font-bold">{group.pricePerPassenger.toFixed(2)}€</div>
+                        <div className="text-right flex-shrink-0 w-full sm:w-auto">
+                          <div className="text-base sm:text-lg font-bold">{group.pricePerPassenger.toFixed(2)}€</div>
                           <div className="text-xs text-muted-foreground">par personne</div>
                         </div>
                       </div>
                       <div className="border-t border-border/50 pt-3 mt-3 space-y-2">
                         {group.bookings.map((booking) => (
-                          <div key={booking.id} className="flex items-center justify-between text-xs">
-                            <span className="text-muted-foreground">
+                          <div key={booking.id} className="flex flex-wrap items-center justify-between text-xs gap-2">
+                            <span className="text-muted-foreground break-words">
                               {booking.firstName} {booking.lastName}
                             </span>
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="outline" className="text-xs flex-shrink-0">
                               {booking.passengers} pass.
                             </Badge>
                           </div>
@@ -738,7 +738,7 @@ export default function SharedRideManager({ bookings, onUpdateBooking }: SharedR
                             onClick={() => setSelectedGroupForMap(group.id)}
                             variant="outline"
                             size="sm"
-                            className="w-full gap-2"
+                            className="w-full gap-2 text-xs sm:text-sm"
                           >
                             <Map size={16} />
                             Voir l'itinéraire optimisé

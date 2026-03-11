@@ -1876,7 +1876,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                   />
                 </div>
 
-                <div className="pt-4 border-t border-border flex flex-col md:flex-row gap-3">
+                <div className="pt-4 border-t border-border flex flex-col sm:flex-row gap-3">
                   <Button
                     onClick={() => {
                       if (!telegramSettings?.botToken) {
@@ -1889,10 +1889,10 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                       }
                       toast.success('Paramètres Telegram enregistrés')
                     }}
-                    className="flex-1 md:flex-initial h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+                    className="flex-1 h-11 sm:h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest text-xs sm:text-sm"
                   >
-                    <Check className="mr-2" size={20} />
-                    Enregistrer les paramètres
+                    <Check className="mr-2" size={18} />
+                    Enregistrer
                   </Button>
                   
                   <Button
@@ -1951,18 +1951,18 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                       }
                     }}
                     variant="outline"
-                    className="flex-1 md:flex-initial h-12 border-2 border-accent/40 text-accent hover:bg-accent/10 font-medium uppercase tracking-widest"
+                    className="flex-1 h-11 sm:h-12 border-2 border-accent/40 text-accent hover:bg-accent/10 font-medium uppercase tracking-widest text-xs sm:text-sm"
                   >
-                    <Sparkle className="mr-2" size={20} />
-                    Tester la notification
+                    <Sparkle className="mr-2" size={18} />
+                    Tester
                   </Button>
                 </div>
 
-                <div className="mt-6 p-4 bg-muted/30 border border-border space-y-2">
-                  <p className="text-sm font-medium uppercase tracking-wide text-foreground">
+                <div className="mt-6 p-3 sm:p-4 bg-muted/30 border border-border space-y-2">
+                  <p className="text-xs sm:text-sm font-medium uppercase tracking-wide text-foreground">
                     ℹ️ Comment configurer Telegram
                   </p>
-                  <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                  <ol className="text-xs sm:text-sm text-muted-foreground space-y-1 list-decimal list-inside pl-2">
                     <li>Recherchez @BotFather sur Telegram</li>
                     <li>Envoyez /newbot et suivez les instructions</li>
                     <li>Copiez le Bot Token fourni et collez-le ci-dessus</li>
@@ -1976,34 +1976,34 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
             <Card className="border-2 border-accent/20">
               <CardHeader className="border-b border-border">
-                <div className="flex items-start justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div className="flex-1">
-                    <CardTitle className="text-xl font-semibold uppercase tracking-wide flex items-center gap-2">
-                      <EnvelopeSimple size={24} className="text-accent" />
-                      Notifications Email
+                    <CardTitle className="text-lg sm:text-xl font-semibold uppercase tracking-wide flex items-center gap-2">
+                      <EnvelopeSimple size={24} className="text-accent flex-shrink-0" />
+                      <span>Notifications Email</span>
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-xs sm:text-sm mt-1">
                       Envoyez des confirmations et mises à jour de réservation par email
                     </CardDescription>
                   </div>
-                  <div className="flex flex-col gap-2 items-end">
+                  <div className="flex flex-wrap gap-2 items-center w-full sm:w-auto">
                     {emailSettings?.smtpHost && emailSettings?.smtpPort && emailSettings?.smtpUser && emailSettings?.smtpPassword ? (
-                      <div className="px-3 py-1 bg-green-500/20 border border-green-500/30 text-green-500 text-xs font-medium uppercase tracking-wide flex items-center gap-1.5">
-                        <Check size={14} weight="bold" />
-                        SMTP Configuré
+                      <div className="px-2 sm:px-3 py-1 bg-green-500/20 border border-green-500/30 text-green-500 text-[10px] sm:text-xs font-medium uppercase tracking-wide flex items-center gap-1.5">
+                        <Check size={12} weight="bold" />
+                        <span className="whitespace-nowrap">SMTP Configuré</span>
                       </div>
                     ) : (
-                      <div className="px-3 py-1 bg-yellow-500/20 border border-yellow-500/30 text-yellow-500 text-xs font-medium uppercase tracking-wide flex items-center gap-1.5">
-                        <Info size={14} weight="bold" />
-                        SMTP Non configuré
+                      <div className="px-2 sm:px-3 py-1 bg-yellow-500/20 border border-yellow-500/30 text-yellow-500 text-[10px] sm:text-xs font-medium uppercase tracking-wide flex items-center gap-1.5">
+                        <Info size={12} weight="bold" />
+                        <span className="whitespace-nowrap">SMTP Non configuré</span>
                       </div>
                     )}
                     {emailSettings?.enabled ? (
-                      <div className="px-3 py-1 bg-accent/20 border border-accent/30 text-accent text-xs font-medium uppercase tracking-wide">
+                      <div className="px-2 sm:px-3 py-1 bg-accent/20 border border-accent/30 text-accent text-[10px] sm:text-xs font-medium uppercase tracking-wide">
                         Activé
                       </div>
                     ) : (
-                      <div className="px-3 py-1 bg-muted border border-border text-muted-foreground text-xs font-medium uppercase tracking-wide">
+                      <div className="px-2 sm:px-3 py-1 bg-muted border border-border text-muted-foreground text-[10px] sm:text-xs font-medium uppercase tracking-wide">
                         Désactivé
                       </div>
                     )}
@@ -2011,29 +2011,29 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                 </div>
               </CardHeader>
               <CardContent className="pt-6 space-y-6">
-                <div className="bg-accent/10 border-2 border-accent/30 p-4 space-y-3">
-                  <div className="flex items-start gap-3">
-                    <Info size={24} className="text-accent flex-shrink-0 mt-0.5" weight="fill" />
+                <div className="bg-accent/10 border-2 border-accent/30 p-3 sm:p-4 space-y-3">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <Info size={20} className="text-accent flex-shrink-0 mt-0.5" weight="fill" />
                     <div className="flex-1 space-y-2">
-                      <p className="text-sm font-semibold text-accent uppercase tracking-wide">
+                      <p className="text-xs sm:text-sm font-semibold text-accent uppercase tracking-wide">
                         Guide de Configuration SMTP
                       </p>
-                      <p className="text-sm text-foreground/80">
+                      <p className="text-xs sm:text-sm text-foreground/80">
                         Configurez vos paramètres SMTP pour envoyer des emails automatiques de confirmation, notification et mise à jour à vos clients et administrateurs.
                       </p>
                       <div className="flex flex-wrap gap-2 pt-2">
-                        <div className="px-2 py-1 bg-background/50 border border-border text-xs font-medium">
+                        <div className="px-2 py-1 bg-background/50 border border-border text-[10px] sm:text-xs font-medium whitespace-nowrap">
                           ✓ Gmail gratuit
                         </div>
-                        <div className="px-2 py-1 bg-background/50 border border-border text-xs font-medium">
+                        <div className="px-2 py-1 bg-background/50 border border-border text-[10px] sm:text-xs font-medium whitespace-nowrap">
                           ✓ SendGrid professionnel
                         </div>
-                        <div className="px-2 py-1 bg-background/50 border border-border text-xs font-medium">
+                        <div className="px-2 py-1 bg-background/50 border border-border text-[10px] sm:text-xs font-medium whitespace-nowrap">
                           ✓ Mailgun, AWS SES, Brevo
                         </div>
                       </div>
-                      <p className="text-xs text-muted-foreground pt-1">
-                        📖 Consultez le fichier <code className="bg-background/50 px-1 py-0.5 font-mono">SMTP_SETUP_GUIDE.md</code> à la racine du projet pour un guide détaillé.
+                      <p className="text-[10px] sm:text-xs text-muted-foreground pt-1">
+                        📖 Consultez le fichier <code className="bg-background/50 px-1 py-0.5 font-mono text-[10px] sm:text-xs">SMTP_SETUP_GUIDE.md</code> à la racine du projet pour un guide détaillé.
                       </p>
                     </div>
                   </div>
