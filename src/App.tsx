@@ -5,13 +5,10 @@ import Login from '@/components/Login'
 import ClientDashboard from '@/components/ClientDashboard'
 import AdminDashboard from '@/components/AdminDashboard'
 import ChauffeurPrive from '@/components/ChauffeurPrive'
-import AirportTransfer from '@/components/AirportTransfer'
-import CorporateEvent from '@/components/CorporateEvent'
-import EmbassyDelegation from '@/components/EmbassyDelegation'
 import { useKV } from '@github/spark/hooks'
 import { Booking } from '@/types/booking'
 
-type View = 'home' | 'login' | 'client' | 'admin' | 'chauffeur-prive' | 'airport-transfer' | 'corporate-event' | 'embassy-delegation'
+type View = 'home' | 'login' | 'client' | 'admin' | 'chauffeur-prive'
 
 function App() {
   const [view, setView] = useState<View>('home')
@@ -58,15 +55,12 @@ function App() {
         <Home 
           onNavigateToLogin={handleNavigateToLogin}
           onNavigateToChauffeurPrive={() => setView('chauffeur-prive')}
-          onNavigateToAirportTransfer={() => setView('airport-transfer')}
-          onNavigateToCorporateEvent={() => setView('corporate-event')}
+          onNavigateToAirportTransfer={() => {}}
+          onNavigateToCorporateEvent={() => {}}
         />
       )}
-      {view === 'login' && <Login onLogin={handleLogin} onNavigateToHome={() => setView('home')} onNavigateToChauffeurPrive={() => setView('chauffeur-prive')} onNavigateToAirportTransfer={() => setView('airport-transfer')} onNavigateToCorporateEvent={() => setView('corporate-event')} isAdminMode={isAdminMode} />}
-      {view === 'chauffeur-prive' && <ChauffeurPrive onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} onNavigateToCorporateEvent={() => setView('corporate-event')} onNavigateToEmbassyDelegation={() => setView('embassy-delegation')} />}
-      {view === 'airport-transfer' && <AirportTransfer onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} onNavigateToCorporateEvent={() => setView('corporate-event')} onNavigateToEmbassyDelegation={() => setView('embassy-delegation')} />}
-      {view === 'corporate-event' && <CorporateEvent onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} onNavigateToCorporateEvent={() => setView('corporate-event')} onNavigateToEmbassyDelegation={() => setView('embassy-delegation')} />}
-      {view === 'embassy-delegation' && <EmbassyDelegation onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => setView('airport-transfer')} onNavigateToCorporateEvent={() => setView('corporate-event')} onNavigateToEmbassyDelegation={() => setView('embassy-delegation')} />}
+      {view === 'login' && <Login onLogin={handleLogin} onNavigateToHome={() => setView('home')} onNavigateToChauffeurPrive={() => setView('chauffeur-prive')} onNavigateToAirportTransfer={() => {}} onNavigateToCorporateEvent={() => {}} isAdminMode={isAdminMode} />}
+      {view === 'chauffeur-prive' && <ChauffeurPrive onBackToHome={() => setView('home')} onNavigateToAirportTransfer={() => {}} onNavigateToCorporateEvent={() => {}} onNavigateToEmbassyDelegation={() => {}} />}
       {view === 'client' && currentUser && (
         <ClientDashboard
           userEmail={currentUser.email}
@@ -74,8 +68,8 @@ function App() {
           onLogout={handleLogout}
           onNavigateToHome={() => setView('home')}
           onNavigateToChauffeurPrive={() => setView('chauffeur-prive')}
-          onNavigateToAirportTransfer={() => setView('airport-transfer')}
-          onNavigateToCorporateEvent={() => setView('corporate-event')}
+          onNavigateToAirportTransfer={() => {}}
+          onNavigateToCorporateEvent={() => {}}
         />
       )}
       {view === 'admin' && currentUser && (
@@ -87,8 +81,8 @@ function App() {
           onDeleteBooking={handleDeleteBooking}
           onNavigateToHome={() => setView('home')}
           onNavigateToChauffeurPrive={() => setView('chauffeur-prive')}
-          onNavigateToAirportTransfer={() => setView('airport-transfer')}
-          onNavigateToCorporateEvent={() => setView('corporate-event')}
+          onNavigateToAirportTransfer={() => {}}
+          onNavigateToCorporateEvent={() => {}}
         />
       )}
     </div>
