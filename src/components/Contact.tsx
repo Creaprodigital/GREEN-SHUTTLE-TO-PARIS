@@ -3,6 +3,7 @@ import Footer from './Footer'
 
 interface ContactProps {
   onNavigateToLogin?: (isAdmin: boolean) => void
+  onNavigateToClient?: () => void
   onNavigateToHome?: () => void
   onNavigateToServices?: () => void
   onNavigateToAbout?: () => void
@@ -14,6 +15,7 @@ interface ContactProps {
 
 export default function Contact({
   onNavigateToLogin,
+  onNavigateToClient,
   onNavigateToHome,
   onNavigateToServices,
   onNavigateToAbout,
@@ -26,6 +28,7 @@ export default function Contact({
     <div className="min-h-screen bg-background">
       <Header
         onNavigateToLogin={onNavigateToLogin}
+        onNavigateToClient={onNavigateToClient}
         onNavigateToHome={onNavigateToHome}
         onNavigateToServices={onNavigateToServices}
         onNavigateToAbout={onNavigateToAbout}

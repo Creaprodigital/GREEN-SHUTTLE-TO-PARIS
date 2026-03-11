@@ -9,12 +9,13 @@ interface HeaderProps {
   onNavigateToServices?: () => void
   onNavigateToAbout?: () => void
   onNavigateToContact?: () => void
+  onNavigateToClient?: () => void
   onLogout?: () => void
   userEmail?: string
   isAdmin?: boolean
 }
 
-export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact, onLogout, userEmail, isAdmin }: HeaderProps) {
+export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact, onNavigateToClient, onLogout, userEmail, isAdmin }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const menuItems = [
@@ -86,7 +87,7 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
             ) : (
               <div className="hidden sm:flex items-center gap-2">
                 <Button
-                  onClick={() => onNavigateToLogin?.(false)}
+                  onClick={() => onNavigateToClient?.()}
                   variant="outline"
                   className="border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
                 >
@@ -166,7 +167,7 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                   <Button
                     onClick={() => {
                       setMobileMenuOpen(false)
-                      onNavigateToLogin?.(false)
+                      onNavigateToClient?.()
                     }}
                     variant="outline"
                     className="w-full border-accent text-foreground hover:bg-accent hover:text-accent-foreground"

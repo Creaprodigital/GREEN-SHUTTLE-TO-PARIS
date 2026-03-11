@@ -35,6 +35,11 @@ function App() {
     }
   }
 
+  const handleNavigateToClient = () => {
+    setCurrentUser({ email: 'client@example.fr', isAdmin: false })
+    setView('client')
+  }
+
   const handleLogin = (email: string, isAdmin: boolean) => {
     setCurrentUser({ email, isAdmin })
     setView(isAdmin ? 'admin' : 'client')
@@ -63,6 +68,7 @@ function App() {
       {view === 'home' && (
         <Home 
           onNavigateToLogin={handleNavigateToLogin}
+          onNavigateToClient={handleNavigateToClient}
           onNavigateToServices={() => setView('services')}
           onNavigateToAbout={() => setView('about')}
           onNavigateToContact={() => setView('contact')}
@@ -81,6 +87,7 @@ function App() {
       {view === 'services' && (
         <Services
           onNavigateToLogin={handleNavigateToLogin}
+          onNavigateToClient={handleNavigateToClient}
           onNavigateToHome={() => setView('home')}
           onNavigateToServices={() => setView('services')}
           onNavigateToAbout={() => setView('about')}
@@ -93,6 +100,7 @@ function App() {
       {view === 'about' && (
         <About
           onNavigateToLogin={handleNavigateToLogin}
+          onNavigateToClient={handleNavigateToClient}
           onNavigateToHome={() => setView('home')}
           onNavigateToServices={() => setView('services')}
           onNavigateToAbout={() => setView('about')}
@@ -105,6 +113,7 @@ function App() {
       {view === 'contact' && (
         <Contact
           onNavigateToLogin={handleNavigateToLogin}
+          onNavigateToClient={handleNavigateToClient}
           onNavigateToHome={() => setView('home')}
           onNavigateToServices={() => setView('services')}
           onNavigateToAbout={() => setView('about')}

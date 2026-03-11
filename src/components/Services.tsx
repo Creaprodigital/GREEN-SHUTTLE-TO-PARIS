@@ -4,6 +4,7 @@ import { Car, Airplane, Users, Building } from '@phosphor-icons/react'
 
 interface ServicesProps {
   onNavigateToLogin?: (isAdmin: boolean) => void
+  onNavigateToClient?: () => void
   onNavigateToHome?: () => void
   onNavigateToServices?: () => void
   onNavigateToAbout?: () => void
@@ -15,6 +16,7 @@ interface ServicesProps {
 
 export default function Services({
   onNavigateToLogin,
+  onNavigateToClient,
   onNavigateToHome,
   onNavigateToServices,
   onNavigateToAbout,
@@ -74,6 +76,7 @@ export default function Services({
     <div className="min-h-screen bg-background">
       <Header
         onNavigateToLogin={onNavigateToLogin}
+        onNavigateToClient={onNavigateToClient}
         onNavigateToHome={onNavigateToHome}
         onNavigateToServices={onNavigateToServices}
         onNavigateToAbout={onNavigateToAbout}
