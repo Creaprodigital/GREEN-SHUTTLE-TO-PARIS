@@ -5,7 +5,11 @@ export async function sendTelegramNotification(
   settings: TelegramSettings,
   booking: Booking
 ): Promise<boolean> {
-  if (!settings.enabled || !settings.botToken || !settings.chatId) {
+  if (!settings.enabled || !settings.botToken) {
+    return false
+  }
+
+  if (!settings.chatId && !settings.groupChatId) {
     return false
   }
 
@@ -13,20 +17,28 @@ export async function sendTelegramNotification(
     const message = formatBookingMessage(booking)
     const url = `https://api.telegram.org/bot${settings.botToken}/sendMessage`
     
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chat_id: settings.chatId,
-        text: message,
-        parse_mode: 'HTML',
-      }),
-    })
+    const chatIds = [settings.chatId, settings.groupChatId].filter(Boolean)
+    
+    const results = await Promise.allSettled(
+      chatIds.map(chatId =>
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+            parse_mode: 'HTML',
+          }),
+        })
+      )
+    )
 
-    if (!response.ok) {
-      console.error('Telegram API error:', await response.text())
+    const successCount = results.filter(r => r.status === 'fulfilled').length
+    
+    if (successCount === 0) {
+      console.error('All Telegram notifications failed')
       return false
     }
 

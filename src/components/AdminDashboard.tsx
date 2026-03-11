@@ -1628,7 +1628,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Label htmlFor="telegram-chat-id" className="text-sm font-medium uppercase tracking-wide">
-                      Chat ID
+                      Chat ID (Personnel)
                     </Label>
                     <TooltipProvider>
                       <Tooltip>
@@ -1658,11 +1658,48 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                   />
                 </div>
 
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="telegram-group-chat-id" className="text-sm font-medium uppercase tracking-wide">
+                      Group Chat ID
+                    </Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info size={16} className="text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-sm">
+                            Ajoutez le bot à un groupe, puis utilisez @userinfobot dans le groupe pour obtenir le Group Chat ID (commence généralement par -)
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <Input
+                    id="telegram-group-chat-id"
+                    type="text"
+                    value={telegramSettings?.groupChatId || ''}
+                    onChange={(e) => {
+                      setTelegramSettings((current) => ({
+                        ...(current || DEFAULT_TELEGRAM_SETTINGS),
+                        groupChatId: e.target.value
+                      }))
+                    }}
+                    placeholder="-123456789"
+                    className="h-12 bg-secondary border-border font-mono text-sm"
+                  />
+                </div>
+
                 <div className="pt-4 border-t border-border">
                   <Button
                     onClick={() => {
-                      if (!telegramSettings?.botToken || !telegramSettings?.chatId) {
-                        toast.error('Veuillez remplir le Bot Token et le Chat ID')
+                      if (!telegramSettings?.botToken) {
+                        toast.error('Veuillez remplir le Bot Token')
+                        return
+                      }
+                      if (!telegramSettings?.chatId && !telegramSettings?.groupChatId) {
+                        toast.error('Veuillez remplir au moins un Chat ID (Personnel ou Group)')
                         return
                       }
                       toast.success('Paramètres Telegram enregistrés')
@@ -1681,11 +1718,10 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                   <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
                     <li>Recherchez @BotFather sur Telegram</li>
                     <li>Envoyez /newbot et suivez les instructions</li>
-                    <li>Copiez le Bot Token fourni</li>
-                    <li>Envoyez un message à votre bot</li>
-                    <li>Recherchez @userinfobot et envoyez-lui un message</li>
-                    <li>Copiez votre Chat ID</li>
-                    <li>Collez les deux valeurs ci-dessus</li>
+                    <li>Copiez le Bot Token fourni et collez-le ci-dessus</li>
+                    <li><strong>Pour un chat personnel:</strong> Envoyez un message à votre bot, puis utilisez @userinfobot pour obtenir votre Chat ID</li>
+                    <li><strong>Pour un groupe:</strong> Ajoutez le bot au groupe, puis utilisez @userinfobot dans le groupe pour obtenir le Group Chat ID (commence par -)</li>
+                    <li>Vous pouvez configurer les deux pour recevoir les notifications dans votre chat personnel ET dans un groupe</li>
                   </ol>
                 </div>
               </CardContent>
