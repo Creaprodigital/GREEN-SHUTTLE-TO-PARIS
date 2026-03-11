@@ -25,6 +25,8 @@ export interface ZoneForfait {
   toZoneId: string
   vehicleId: string
   fixedPrice: number
+  lowSeasonPrice?: number
+  highDemandPrice?: number
 }
 
 export default function ZoneForfaitManager() {
@@ -46,6 +48,8 @@ export default function ZoneForfaitManager() {
   const [forfaitToZone, setForfaitToZone] = useState('')
   const [forfaitVehicle, setForfaitVehicle] = useState('')
   const [forfaitPrice, setForfaitPrice] = useState('')
+  const [forfaitLowSeasonPrice, setForfaitLowSeasonPrice] = useState('')
+  const [forfaitHighDemandPrice, setForfaitHighDemandPrice] = useState('')
   
   const mapRef = useRef<google.maps.Map | null>(null)
   const drawingManagerRef = useRef<google.maps.drawing.DrawingManager | null>(null)
@@ -86,6 +90,8 @@ export default function ZoneForfaitManager() {
       setForfaitToZone(editingForfait.toZoneId)
       setForfaitVehicle(editingForfait.vehicleId)
       setForfaitPrice(editingForfait.fixedPrice.toString())
+      setForfaitLowSeasonPrice(editingForfait.lowSeasonPrice?.toString() || '')
+      setForfaitHighDemandPrice(editingForfait.highDemandPrice?.toString() || '')
     }
   }, [editingForfait])
 
@@ -306,13 +312,25 @@ export default function ZoneForfaitManager() {
 
   const handleSaveForfait = () => {
     if (!forfaitFromZone || !forfaitToZone || !forfaitVehicle || !forfaitPrice) {
-      toast.error('Veuillez remplir tous les champs')
+      toast.error('Veuillez remplir tous les champs obligatoires')
       return
     }
 
     const price = parseFloat(forfaitPrice)
     if (isNaN(price) || price <= 0) {
       toast.error('Le prix doit être un nombre positif')
+      return
+    }
+
+    const lowSeasonPrice = forfaitLowSeasonPrice ? parseFloat(forfaitLowSeasonPrice) : undefined
+    if (lowSeasonPrice !== undefined && (isNaN(lowSeasonPrice) || lowSeasonPrice <= 0)) {
+      toast.error('Le prix basse saison doit être un nombre positif')
+      return
+    }
+
+    const highDemandPrice = forfaitHighDemandPrice ? parseFloat(forfaitHighDemandPrice) : undefined
+    if (highDemandPrice !== undefined && (isNaN(highDemandPrice) || highDemandPrice <= 0)) {
+      toast.error('Le prix forte demande doit être un nombre positif')
       return
     }
 
@@ -325,7 +343,9 @@ export default function ZoneForfaitManager() {
                 fromZoneId: forfaitFromZone,
                 toZoneId: forfaitToZone,
                 vehicleId: forfaitVehicle,
-                fixedPrice: price
+                fixedPrice: price,
+                lowSeasonPrice: lowSeasonPrice,
+                highDemandPrice: highDemandPrice
               }
             : forfait
         )
@@ -338,6 +358,8 @@ export default function ZoneForfaitManager() {
         toZoneId: forfaitToZone,
         vehicleId: forfaitVehicle,
         fixedPrice: price,
+        lowSeasonPrice: lowSeasonPrice,
+        highDemandPrice: highDemandPrice
       }
       setForfaits((current) => [...(current || []), newForfait])
       toast.success('Forfait créé avec succès')
@@ -363,6 +385,8 @@ export default function ZoneForfaitManager() {
     setForfaitToZone('')
     setForfaitVehicle('')
     setForfaitPrice('')
+    setForfaitLowSeasonPrice('')
+    setForfaitHighDemandPrice('')
   }
 
   const getZoneName = (zoneId: string) => {
@@ -476,7 +500,9 @@ export default function ZoneForfaitManager() {
                   <TableHead>Zone départ</TableHead>
                   <TableHead>Zone arrivée</TableHead>
                   <TableHead>Véhicule</TableHead>
-                  <TableHead>Prix fixe</TableHead>
+                  <TableHead>Prix standard</TableHead>
+                  <TableHead>Basse saison</TableHead>
+                  <TableHead>Forte demande</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -487,6 +513,8 @@ export default function ZoneForfaitManager() {
                     <TableCell>{getZoneName(forfait.toZoneId)}</TableCell>
                     <TableCell>{getVehicleName(forfait.vehicleId)}</TableCell>
                     <TableCell>{forfait.fixedPrice.toFixed(2)} €</TableCell>
+                    <TableCell>{forfait.lowSeasonPrice ? `${forfait.lowSeasonPrice.toFixed(2)} €` : '-'}</TableCell>
+                    <TableCell>{forfait.highDemandPrice ? `${forfait.highDemandPrice.toFixed(2)} €` : '-'}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button
@@ -637,7 +665,7 @@ export default function ZoneForfaitManager() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="price">Prix fixe (€)</Label>
+              <Label htmlFor="price">Prix standard (€) *</Label>
               <Input
                 id="price"
                 type="number"
@@ -647,6 +675,32 @@ export default function ZoneForfaitManager() {
                 onChange={(e) => setForfaitPrice(e.target.value)}
                 placeholder="0.00"
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="low-season-price">Prix basse saison (€)</Label>
+              <Input
+                id="low-season-price"
+                type="number"
+                step="0.01"
+                min="0"
+                value={forfaitLowSeasonPrice}
+                onChange={(e) => setForfaitLowSeasonPrice(e.target.value)}
+                placeholder="0.00"
+              />
+              <p className="text-xs text-muted-foreground">Optionnel - Prix réduit pendant les périodes creuses</p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="high-demand-price">Prix forte demande (€)</Label>
+              <Input
+                id="high-demand-price"
+                type="number"
+                step="0.01"
+                min="0"
+                value={forfaitHighDemandPrice}
+                onChange={(e) => setForfaitHighDemandPrice(e.target.value)}
+                placeholder="0.00"
+              />
+              <p className="text-xs text-muted-foreground">Optionnel - Prix majoré pendant les périodes de forte demande</p>
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={handleCloseForfaitDialog}>
