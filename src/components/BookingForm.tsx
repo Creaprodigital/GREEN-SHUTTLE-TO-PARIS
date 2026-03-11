@@ -327,6 +327,20 @@ export default function BookingForm() {
     return vehiclePrices[vehicleId] || 0
   }
 
+  const calculateFinalPrice = (vehicleId: string): number => {
+    const basePrice = calculatePrice(vehicleId)
+    if (!appliedPromoCode) return basePrice
+
+    if (appliedPromoCode.type === 'percentage') {
+      const discount = (basePrice * appliedPromoCode.value) / 100
+      const discountedPrice = basePrice - discount
+      return Math.max(0, discountedPrice)
+    } else {
+      const discountedPrice = basePrice - appliedPromoCode.value
+      return Math.max(0, discountedPrice)
+    }
+  }
+
   useEffect(() => {
     if (serviceType !== 'transfer' || !pickupCoords || !destinationCoords) {
       setDistanceKm(0)
@@ -435,7 +449,7 @@ export default function BookingForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const calculatedPrice = calculatePrice(vehicleType)
+    const finalPrice = calculateFinalPrice(vehicleType)
 
     const newBooking: Booking = {
       id: `booking-${Date.now()}-${Math.random().toString(36).substring(7)}`,
@@ -463,7 +477,7 @@ export default function BookingForm() {
       paymentMethod,
       status: 'pending',
       createdAt: Date.now(),
-      price: calculatedPrice
+      price: finalPrice
     }
 
     setBookings((current) => [...(current || []), newBooking])
@@ -506,6 +520,9 @@ export default function BookingForm() {
     setEmail('')
     setNotes('')
     setPaymentMethod('card')
+    setPromoCodeInput('')
+    setAppliedPromoCode(null)
+    setPromoCodeError('')
   }
 
   const getStepTitle = () => {
@@ -1222,6 +1239,77 @@ export default function BookingForm() {
                     </RadioGroup>
                   </div>
 
+                  <div className="space-y-4 pb-5 border-b border-border">
+                    <Label className="text-sm font-medium uppercase tracking-wide">Code Promo</Label>
+                    <div className="flex gap-3">
+                      <div className="flex-1 relative">
+                        <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                        <Input
+                          id="promo-code"
+                          type="text"
+                          value={promoCodeInput}
+                          onChange={(e) => {
+                            setPromoCodeInput(e.target.value.toUpperCase())
+                            setPromoCodeError('')
+                          }}
+                          placeholder="Entrez votre code promo"
+                          className="pl-11 h-12 bg-secondary border-border uppercase"
+                          disabled={!!appliedPromoCode}
+                        />
+                      </div>
+                      {!appliedPromoCode ? (
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            const promo = promoCodes?.find(
+                              p => p.code === promoCodeInput && p.isActive
+                            )
+                            if (!promo) {
+                              setPromoCodeError('Code promo invalide ou expiré')
+                              toast.error('Code promo invalide ou expiré')
+                            } else {
+                              setAppliedPromoCode(promo)
+                              setPromoCodeError('')
+                              toast.success(`Code promo "${promo.code}" appliqué ! -${promo.value}${promo.type === 'percentage' ? '%' : '€'}`)
+                            }
+                          }}
+                          variant="outline"
+                          className="h-12 px-6 font-medium uppercase tracking-widest whitespace-nowrap"
+                        >
+                          Appliquer
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            setAppliedPromoCode(null)
+                            setPromoCodeInput('')
+                            toast.info('Code promo retiré')
+                          }}
+                          variant="outline"
+                          className="h-12 px-6 font-medium uppercase tracking-widest whitespace-nowrap"
+                        >
+                          Retirer
+                        </Button>
+                      )}
+                    </div>
+                    {promoCodeError && (
+                      <p className="text-xs text-destructive">{promoCodeError}</p>
+                    )}
+                    {appliedPromoCode && (
+                      <div className="bg-accent/20 border-2 border-accent rounded-lg p-3 flex items-center gap-3">
+                        <Tag size={20} weight="fill" className="text-accent" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm text-accent">Code promo appliqué !</div>
+                          <div className="text-xs text-muted-foreground">{appliedPromoCode.description}</div>
+                        </div>
+                        <div className="font-bold text-accent">
+                          -{appliedPromoCode.value}{appliedPromoCode.type === 'percentage' ? '%' : '€'}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="bg-accent/10 border-2 border-accent/30 rounded-lg p-4 space-y-2">
                     <h4 className="font-semibold uppercase tracking-wide text-sm">Récapitulatif</h4>
                     <div className="space-y-1 text-sm">
@@ -1316,13 +1404,38 @@ export default function BookingForm() {
                       )}
                       {vehicleType && (
                         <div className="border-t border-accent/20 pt-2 mt-2">
-                          <div className="flex justify-between items-center">
-                            <span className="font-semibold uppercase tracking-wide">Prix Total:</span>
-                            <span className="text-2xl font-bold text-accent flex items-center gap-1">
-                              <CurrencyEur size={20} weight="bold" />
-                              {calculatePrice(vehicleType).toFixed(2)}
-                            </span>
-                          </div>
+                          {appliedPromoCode ? (
+                            <>
+                              <div className="flex justify-between items-center text-sm">
+                                <span className="text-muted-foreground">Sous-total:</span>
+                                <span className="font-medium">{calculatePrice(vehicleType).toFixed(2)}€</span>
+                              </div>
+                              <div className="flex justify-between items-center text-sm text-accent">
+                                <span className="font-medium">Réduction ({appliedPromoCode.code}):</span>
+                                <span className="font-medium">
+                                  -{appliedPromoCode.type === 'percentage' 
+                                    ? `${((calculatePrice(vehicleType) * appliedPromoCode.value) / 100).toFixed(2)}€ (${appliedPromoCode.value}%)`
+                                    : `${appliedPromoCode.value.toFixed(2)}€`
+                                  }
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center pt-2 mt-2 border-t border-accent/20">
+                                <span className="font-semibold uppercase tracking-wide">Prix Total:</span>
+                                <span className="text-2xl font-bold text-accent flex items-center gap-1">
+                                  <CurrencyEur size={20} weight="bold" />
+                                  {calculateFinalPrice(vehicleType).toFixed(2)}
+                                </span>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="flex justify-between items-center">
+                              <span className="font-semibold uppercase tracking-wide">Prix Total:</span>
+                              <span className="text-2xl font-bold text-accent flex items-center gap-1">
+                                <CurrencyEur size={20} weight="bold" />
+                                {calculatePrice(vehicleType).toFixed(2)}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
