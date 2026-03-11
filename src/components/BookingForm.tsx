@@ -850,39 +850,49 @@ export default function BookingForm() {
                     </RadioGroup>
                   </div>
 
-                  {serviceOptions && serviceOptions.length > 0 && (
-                    <div className="space-y-4 pt-6 border-t border-border">
-                      <Label className="text-sm font-medium uppercase tracking-wide">Options Supplémentaires</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {serviceOptions.map((option) => (
-                          <div key={option.id} className="flex items-start space-x-3 p-4 border-2 border-border rounded-lg hover:border-accent/50 transition-colors">
-                            <Checkbox
-                              id={option.id}
-                              checked={selectedOptions.includes(option.id)}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  setSelectedOptions([...selectedOptions, option.id])
-                                } else {
-                                  setSelectedOptions(selectedOptions.filter(id => id !== option.id))
-                                }
-                              }}
-                              className="mt-1"
-                            />
-                            <div className="flex-1 cursor-pointer" onClick={() => {
-                              const checkbox = document.getElementById(option.id) as HTMLButtonElement
-                              if (checkbox) checkbox.click()
-                            }}>
-                              <Label htmlFor={option.id} className="font-semibold text-sm cursor-pointer">
-                                {option.name}
-                                {option.price > 0 && <span className="text-accent ml-2">+{option.price}€</span>}
-                              </Label>
-                              <p className="text-xs text-muted-foreground mt-1">{option.description}</p>
+                  {serviceOptions && serviceOptions.length > 0 && (() => {
+                    const fromZone = findZoneForPoint(pickupCoords)
+                    const toZone = findZoneForPoint(destinationCoords)
+                    const hasZonePricing = serviceType === 'transfer' && fromZone && toZone && vehicleType && findZonePricing(fromZone, toZone, vehicleType)
+                    
+                    if (hasZonePricing) {
+                      return null
+                    }
+                    
+                    return (
+                      <div className="space-y-4 pt-6 border-t border-border">
+                        <Label className="text-sm font-medium uppercase tracking-wide">Options Supplémentaires</Label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {serviceOptions.map((option) => (
+                            <div key={option.id} className="flex items-start space-x-3 p-4 border-2 border-border rounded-lg hover:border-accent/50 transition-colors">
+                              <Checkbox
+                                id={option.id}
+                                checked={selectedOptions.includes(option.id)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    setSelectedOptions([...selectedOptions, option.id])
+                                  } else {
+                                    setSelectedOptions(selectedOptions.filter(id => id !== option.id))
+                                  }
+                                }}
+                                className="mt-1"
+                              />
+                              <div className="flex-1 cursor-pointer" onClick={() => {
+                                const checkbox = document.getElementById(option.id) as HTMLButtonElement
+                                if (checkbox) checkbox.click()
+                              }}>
+                                <Label htmlFor={option.id} className="font-semibold text-sm cursor-pointer">
+                                  {option.name}
+                                  {option.price > 0 && <span className="text-accent ml-2">+{option.price}€</span>}
+                                </Label>
+                                <p className="text-xs text-muted-foreground mt-1">{option.description}</p>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )
+                  })()}
 
                   {vehicleType && (() => {
                     const fromZone = findZoneForPoint(pickupCoords)
@@ -1222,23 +1232,33 @@ export default function BookingForm() {
                         <span className="text-muted-foreground">Client:</span>
                         <span className="font-medium">{firstName} {lastName}</span>
                       </div>
-                      {selectedOptions.length > 0 && (
-                        <>
-                          <div className="border-t border-accent/20 pt-2 mt-2">
-                            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">Options:</div>
-                            {selectedOptions.map(optionId => {
-                              const option = serviceOptions?.find(o => o.id === optionId)
-                              if (!option) return null
-                              return (
-                                <div key={optionId} className="flex justify-between text-xs">
-                                  <span className="text-muted-foreground">{option.name}:</span>
-                                  <span className="font-medium">{option.price > 0 ? `+${option.price.toFixed(2)}€` : 'Inclus'}</span>
-                                </div>
-                              )
-                            })}
-                          </div>
-                        </>
-                      )}
+                      {selectedOptions.length > 0 && (() => {
+                        const fromZone = findZoneForPoint(pickupCoords)
+                        const toZone = findZoneForPoint(destinationCoords)
+                        const hasZonePricing = serviceType === 'transfer' && fromZone && toZone && vehicleType && findZonePricing(fromZone, toZone, vehicleType)
+                        
+                        if (hasZonePricing) {
+                          return null
+                        }
+                        
+                        return (
+                          <>
+                            <div className="border-t border-accent/20 pt-2 mt-2">
+                              <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">Options:</div>
+                              {selectedOptions.map(optionId => {
+                                const option = serviceOptions?.find(o => o.id === optionId)
+                                if (!option) return null
+                                return (
+                                  <div key={optionId} className="flex justify-between text-xs">
+                                    <span className="text-muted-foreground">{option.name}:</span>
+                                    <span className="font-medium">{option.price > 0 ? `+${option.price.toFixed(2)}€` : 'Inclus'}</span>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          </>
+                        )
+                      })()}
                       {vehicleType && (
                         <div className="border-t border-accent/20 pt-2 mt-2">
                           <div className="flex justify-between items-center">
