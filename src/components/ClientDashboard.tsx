@@ -313,6 +313,24 @@ interface BookingCardProps {
 }
 
 function BookingCard({ booking, index, fleet, onViewRoute, showRebook, onRebook }: BookingCardProps) {
+  const getServiceTypeLabel = (serviceType: string, transferType?: string) => {
+    if (serviceType === 'shared') return 'Transfert Partagé'
+    if (serviceType === 'transfer') {
+      if (transferType === 'roundtrip') return 'Transfert Aller-Retour'
+      return 'Transfert Simple'
+    }
+    if (serviceType === 'hourly') return 'Mise à Disposition'
+    if (serviceType === 'tour') return 'Circuit Touristique'
+    return 'Transfert'
+  }
+
+  const getServiceTypeIcon = (serviceType: string) => {
+    if (serviceType === 'shared') return <Users size={14} weight="fill" className="flex-shrink-0" />
+    if (serviceType === 'hourly') return <Clock size={14} weight="fill" className="flex-shrink-0" />
+    if (serviceType === 'tour') return <Map size={14} weight="fill" className="flex-shrink-0" />
+    return <Car size={14} className="flex-shrink-0" />
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -335,6 +353,13 @@ function BookingCard({ booking, index, fleet, onViewRoute, showRebook, onRebook 
               <Badge className={`${statusColors[booking.status]} border font-medium uppercase text-[10px] sm:text-xs whitespace-nowrap flex-shrink-0 px-2 py-1`}>
                 {booking.status}
               </Badge>
+            </div>
+            
+            <div className="flex items-center gap-1.5 bg-accent/10 border border-accent/30 rounded-lg px-2.5 py-1.5 w-fit">
+              {getServiceTypeIcon(booking.serviceType)}
+              <span className="text-xs sm:text-sm font-medium text-accent">
+                {getServiceTypeLabel(booking.serviceType, booking.transferType)}
+              </span>
             </div>
             
             <div className="flex flex-wrap gap-2 sm:gap-3 text-xs sm:text-sm">

@@ -1640,6 +1640,20 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                         </Button>
                       </div>
                       
+                      <div className="flex items-center gap-1.5 bg-accent/10 border border-accent/30 rounded-lg px-2.5 py-1.5 w-fit">
+                        {booking.serviceType === 'shared' && <Users size={14} weight="fill" className="flex-shrink-0" />}
+                        {booking.serviceType === 'hourly' && <Clock size={14} weight="fill" className="flex-shrink-0" />}
+                        {booking.serviceType === 'tour' && <MapPin size={14} weight="fill" className="flex-shrink-0" />}
+                        {booking.serviceType === 'transfer' && <Car size={14} className="flex-shrink-0" />}
+                        <span className="text-xs sm:text-sm font-medium text-accent">
+                          {booking.serviceType === 'shared' && 'Transfert Partagé'}
+                          {booking.serviceType === 'transfer' && booking.transferType === 'roundtrip' && 'Transfert Aller-Retour'}
+                          {booking.serviceType === 'transfer' && booking.transferType !== 'roundtrip' && 'Transfert Simple'}
+                          {booking.serviceType === 'hourly' && 'Mise à Disposition'}
+                          {booking.serviceType === 'tour' && 'Circuit Touristique'}
+                        </span>
+                      </div>
+                      
                       <div className="space-y-2">
                         <Label className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wide">Statut</Label>
                         <Select
