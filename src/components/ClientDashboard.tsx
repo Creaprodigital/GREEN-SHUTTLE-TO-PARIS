@@ -18,7 +18,6 @@ import { Progress } from '@/components/ui/progress'
 
 interface ClientDashboardProps {
   userEmail: string
-  bookings: Booking[]
   onLogout: () => void
   onNavigateToHome: () => void
   onNavigateToServices?: () => void
@@ -33,14 +32,15 @@ const statusColors = {
   cancelled: 'bg-red-500/20 text-red-500 border-red-500/30'
 }
 
-export default function ClientDashboard({ userEmail, bookings, onLogout, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact }: ClientDashboardProps) {
-  const userBookings = bookings.filter(b => b.userEmail === userEmail)
+export default function ClientDashboard({ userEmail, onLogout, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact }: ClientDashboardProps) {
+  const [bookings] = useKV<Booking[]>('bookings', [])
+  const userBookings = (bookings || []).filter(b => b.userEmail === userEmail)
   const [fleet] = useKV<VehicleClass[]>('fleet', [])
   const [selectedSharedRide, setSelectedSharedRide] = useState<string | null>(null)
   const [savedAddresses] = useKV<string[]>('saved-addresses-' + userEmail, [])
 
   useSharedRideNotifications({
-    bookings,
+    bookings: bookings || [],
     userEmail,
     enabled: true
   })
@@ -79,7 +79,7 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
           </DialogHeader>
           {selectedSharedRide && (
             <MultiPassengerRouteMap 
-              bookings={bookings}
+              bookings={bookings || []}
               sharedRideId={selectedSharedRide}
               height="600px"
               showDetails={true}

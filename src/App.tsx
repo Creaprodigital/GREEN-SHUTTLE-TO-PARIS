@@ -126,7 +126,6 @@ function App() {
       {view === 'client' && currentUser && (
         <ClientDashboard
           userEmail={currentUser.email}
-          bookings={bookings || []}
           onLogout={handleLogout}
           onNavigateToHome={() => setView('home')}
           onNavigateToServices={() => setView('services')}
@@ -137,7 +136,6 @@ function App() {
       {view === 'admin' && currentUser && (
         <AdminDashboard
           userEmail={currentUser.email}
-          bookings={bookings || []}
           onLogout={handleLogout}
           onUpdateBooking={handleUpdateBooking}
           onDeleteBooking={handleDeleteBooking}

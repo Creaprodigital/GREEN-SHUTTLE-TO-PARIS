@@ -36,7 +36,6 @@ interface AdminAccount {
 
 interface AdminDashboardProps {
   userEmail: string
-  bookings: Booking[]
   onLogout: () => void
   onUpdateBooking: (id: string, updates: Partial<Booking>) => void
   onDeleteBooking: (id: string) => void
@@ -55,7 +54,8 @@ const statusColors = {
 
 
 
-export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdateBooking, onDeleteBooking, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact }: AdminDashboardProps) {
+export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, onDeleteBooking, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact }: AdminDashboardProps) {
+  const [bookings] = useKV<Booking[]>('bookings', [])
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [adminAccounts, setAdminAccounts] = useKV<AdminAccount[]>('admin-accounts', [
@@ -140,7 +140,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     }
   }, [fleetData, pricingData, setPricingData])
 
-  const filteredBookings = bookings.filter(b => {
+  const filteredBookings = (bookings || []).filter(b => {
     const matchesStatus = filterStatus === 'all' || b.status === filterStatus
     const matchesSearch = !searchTerm || 
       b.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -150,15 +150,15 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   })
 
   const stats = {
-    total: bookings.length,
-    pending: bookings.filter(b => b.status === 'pending').length,
-    confirmed: bookings.filter(b => b.status === 'confirmed').length,
-    completed: bookings.filter(b => b.status === 'completed').length,
-    cancelled: bookings.filter(b => b.status === 'cancelled').length
+    total: (bookings || []).length,
+    pending: (bookings || []).filter(b => b.status === 'pending').length,
+    confirmed: (bookings || []).filter(b => b.status === 'confirmed').length,
+    completed: (bookings || []).filter(b => b.status === 'completed').length,
+    cancelled: (bookings || []).filter(b => b.status === 'cancelled').length
   }
 
   const handleStatusChange = async (bookingId: string, newStatus: Booking['status']) => {
-    const booking = bookings.find(b => b.id === bookingId)
+    const booking = (bookings || []).find(b => b.id === bookingId)
     const previousStatus = booking?.status
     
     onUpdateBooking(bookingId, { status: newStatus })
@@ -1522,7 +1522,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
               </p>
             </div>
 
-            <SharedRideManager bookings={bookings} onUpdateBooking={onUpdateBooking} />
+            <SharedRideManager bookings={bookings || []} onUpdateBooking={onUpdateBooking} />
           </TabsContent>
 
           <TabsContent value="bookings" className="space-y-6">
