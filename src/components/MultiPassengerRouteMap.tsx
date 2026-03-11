@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { MapPin, Navigation, Clock, ArrowRigh
 import { Button } from '@/components/ui/button'
-import { MapPin, Navigation, Clock, ArrowRight, User } from '@phosphor-icons/react'
-import { Booking } from '@/types/booking'
+  id: string
+  address: string
 
-interface Waypoint {
+  passengerCount: nu
   id: string
   location: { lat: number; lng: number }
   address: string
@@ -16,241 +16,241 @@ interface Waypoint {
   order: number
 }
 
-interface MultiPassengerRouteMapProps {
+  const [optimizedWaypoints, setOptimiz
   bookings: Booking[]
   sharedRideId?: string
   height?: string
-  showDetails?: boolean
+  const [isOptimizing, 
   onOptimize?: (optimizedWaypoints: Waypoint[]) => void
-}
+ 
 
 export default function MultiPassengerRouteMap({ 
   bookings, 
-  sharedRideId,
+      mapTypeCo
   height = '500px',
   showDetails = true,
   onOptimize
-}: MultiPassengerRouteMapProps) {
-  const mapRef = useRef<HTMLDivElement>(null)
-  const [map, setMap] = useState<google.maps.Map | null>(null)
-  const [waypoints, setWaypoints] = useState<Waypoint[]>([])
-  const [optimizedWaypoints, setOptimizedWaypoints] = useState<Waypoint[]>([])
-  const [routeInfo, setRouteInfo] = useState<{
-    totalDistance: number
-    totalDuration: number
-    detourPercentage: number
-  } | null>(null)
-  const [directionsRenderer, setDirectionsRenderer] = useState<google.maps.DirectionsRenderer | null>(null)
-  const [markers, setMarkers] = useState<google.maps.Marker[]>([])
-  const [isOptimizing, setIsOptimizing] = useState(false)
-
-  const relevantBookings = sharedRideId 
-    ? bookings.filter(b => b.sharedRideId === sharedRideId)
-    : bookings.filter(b => b.serviceType === 'shared')
-
-  useEffect(() => {
-    if (!mapRef.current || !window.google) return
-
-    const newMap = new google.maps.Map(mapRef.current, {
-      zoom: 12,
-      center: { lat: 48.8566, lng: 2.3522 },
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: false,
-      styles: [
         {
-          elementType: 'geometry',
-          stylers: [{ color: '#f5f5f5' }]
-        },
-        {
-          elementType: 'labels.icon',
           stylers: [{ visibility: 'off' }]
-        },
         {
-          elementType: 'labels.text.fill',
           stylers: [{ color: '#616161' }]
-        },
         {
-          elementType: 'labels.text.stroke',
           stylers: [{ color: '#f5f5f5' }]
-        },
         {
-          featureType: 'road',
-          elementType: 'geometry',
-          stylers: [{ color: '#ffffff' }]
+          elementType: 'g
         },
-        {
-          featureType: 'road.highway',
-          elementType: 'geometry',
+          feature
           stylers: [{ color: '#dadada' }]
-        },
         {
-          featureType: 'water',
           elementType: 'geometry',
-          stylers: [{ color: '#c9c9c9' }]
-        }
-      ]
+
+    })
+    const renderer = new google.maps.DirectionsRenderer({
+      suppressMarkers: true,
+
+        strokeOpaci
+    })
+
+  }, [])
+  useEffect(() 
+
+    const newWaypoints: Wayp
+    const totalGeocodes = relev
+    const geocodePromises = rel
+
+        {
+            geocoder.geocode({ add
+                newWaypoints.push({
+          
+        {
+                  address: booking.pi
+          stylers: [{ visibility: 'off' }]
+          
+        {
+              geocodeCount++
+          stylers: [{ color: '#616161' }]
+          
+        {
+      }
+          stylers: [{ color: '#f5f5f5' }]
+          
+        {
+                  id: `dropoff
+                    lat: results[0
+                  },
+        },
+         
+                  order: 0
+              }
+          stylers: [{ color: '#dadada' }]
+          
+        {
+        )
+          elementType: 'geometry',
+    })
+    Promi
+
     })
 
     const renderer = new google.maps.DirectionsRenderer({
-      map: newMap,
+      const dropof
       suppressMarkers: true,
-      polylineOptions: {
-        strokeColor: '#75E14B',
-        strokeWeight: 5,
-        strokeOpacity: 0.8
-      }
+        return
+
+      const destination 
+      const intermediateWa
+       
     })
 
-    setMap(newMap)
-    setDirectionsRenderer(renderer)
+      const direct
+      const request: google.maps.Di
   }, [])
 
-  useEffect(() => {
-    if (!map || relevantBookings.length === 0) return
+      }
+      directionsService.route(request, (result, statu
 
-    const geocoder = new google.maps.Geocoder()
-    const newWaypoints: Waypoint[] = []
-    let geocodeCount = 0
-    const totalGeocodes = relevantBookings.length * 2
+          const route = result.routes[0]
+          let totalDuration = 0
+          route.legs.for
+            if (leg.duration) totalDuration += leg.du
 
-    const geocodePromises = relevantBookings.flatMap((booking, idx) => {
-      const promises = []
+          const reorderedWaypoints: Waypoint[] = []
+          reorderedWaypoi
 
-      if (booking.pickup) {
-        promises.push(
-          new Promise<void>((resolve) => {
-            geocoder.geocode({ address: booking.pickup }, (results, status) => {
-              if (status === 'OK' && results && results[0]) {
-                newWaypoints.push({
-                  id: `pickup-${booking.id}`,
-                  location: {
-                    lat: results[0].geometry.location.lat(),
-                    lng: results[0].geometry.location.lng()
-                  },
-                  address: booking.pickup,
-                  type: 'pickup',
-                  bookingId: booking.id,
-                  passengerName: `${booking.firstName} ${booking.lastName}`,
-                  passengerCount: parseInt(booking.passengers || '1'),
-                  order: 0
-                })
-              }
-              geocodeCount++
-              if (geocodeCount === totalGeocodes) {
-                setWaypoints(newWaypoints)
-              }
-              resolve()
-            })
+            const originalW
           })
-        )
+          if (dropoffs.length > 0) {
+              ...dropoffs[dropoffs.length - 1], 
+            })
+                newWaypoints.push({
+
+          const detourPercent
+          setRouteInfo({
+            totalDuration: totalDuration / 60,
+          })
+          createMarkers(reorderedWaypoints
+          if (onOptimize) {
+                  bookingId: booking.id,
+          const bounds = new google.maps.LatLngBounds()
+            bounds.extend(new google.maps.LatLng(wp.location.lat, wp.l
+          map.fitBounds(bo
+        setIsOptim
+    } catch (er
+              geocodeCount++
+  }
+  const createMarkers = (orderedWaypoints:
+
+
+      const is
+      const 
+        m
       }
 
       if (booking.destination) {
-        promises.push(
-          new Promise<void>((resolve) => {
-            geocoder.geocode({ address: booking.destination || '' }, (results, status) => {
-              if (status === 'OK' && results && results[0]) {
-                newWaypoints.push({
-                  id: `dropoff-${booking.id}`,
-                  location: {
-                    lat: results[0].geometry.location.lat(),
-                    lng: results[0].geometry.location.lng()
+          path: google
+          fillOpacity: 1,
+          strokeWeight: 3,
+        },
+      })
+      const infoWindow = new google.maps.InfoW
+          <div style="padding
+              ${isPickup ? '📍 Prise en charge' : '🎯 Dépose
+            <div style="margin-bottom: 4px;">
                   },
-                  address: booking.destination || '',
-                  type: 'dropoff',
-                  bookingId: booking.id,
-                  passengerName: `${booking.firstName} ${booking.lastName}`,
-                  passengerCount: parseInt(booking.passengers || '1'),
-                  order: 0
-                })
-              }
-              geocodeCount++
-              if (geocodeCount === totalGeocodes) {
-                setWaypoints(newWaypoints)
-              }
-              resolve()
-            })
-          })
-        )
-      }
+              ${waypoint.passengerCount} passager${wa
+            <div style="font-size:
+            </div>
+        `
 
-      return promises
+                  order: 0
+
+              }
+    setMarkers(newMarkers)
+
+    if (waypoints.length >= 2) {
+    }
+
+    <div class
+        <div
+        )
+       
+
+                  <di
     })
 
-    Promise.all(geocodePromises)
-  }, [relevantBookings, map])
 
-  const optimizeRoute = async () => {
-    if (!map || !directionsRenderer || waypoints.length < 2) return
+            <CardContent clas
 
-    setIsOptimizing(true)
+                </div>
+                  <div className="text-2xl font-bold">{Math.round(r
+
+            </CardContent
 
     try {
-      const pickups = waypoints.filter(w => w.type === 'pickup')
-      const dropoffs = waypoints.filter(w => w.type === 'dropoff')
+                <div className="p-2 rounded-lg bg-accent/20">
+                </div>
 
-      if (pickups.length === 0) {
-        setIsOptimizing(false)
+                </div>
+            </CardContent>
         return
       }
 
-      const origin = pickups[0].location
-      const destination = dropoffs[dropoffs.length - 1]?.location || pickups[pickups.length - 1].location
+            <div>
+                <MapPin size={20} weight="fill" />
 
-      const intermediateWaypoints = [
-        ...pickups.slice(1),
-        ...dropoffs.slice(0, -1)
-      ].map(wp => ({
-        location: new google.maps.LatLng(wp.location.lat, wp.location.lng),
-        stopover: true
-      }))
+                {optimizedWaypoints.l
+            </div>
+              onClick={optimizeR
+              size="
+              {isOptimizing ? 'Optimisation...' : 'Réoptimiser'}
+          </div>
+        <
 
-      const directionsService = new google.maps.DirectionsService()
+            className="rounded-lg border border-border overflow-hid
 
-      const request: google.maps.DirectionsRequest = {
-        origin: new google.maps.LatLng(origin.lat, origin.lng),
-        destination: new google.maps.LatLng(destination.lat, destination.lng),
-        waypoints: intermediateWaypoints,
-        optimizeWaypoints: true,
-        travelMode: google.maps.TravelMode.DRIVING
-      }
 
-      directionsService.route(request, (result, status) => {
-        if (status === 'OK' && result) {
-          directionsRenderer.setDirections(result)
+        <Card>
+            <CardTitle className="text-base">Séquence de Prise en Charge</Card
+          </CardHeader>
+            <div className="spac
+                <div 
+       
+
+                  }`}>
+                  </div>
+                    <div className="flex items-cen
 
           const route = result.routes[0]
-          let totalDistance = 0
+                        {waypoi
           let totalDuration = 0
 
-          route.legs.forEach(leg => {
-            if (leg.distance) totalDistance += leg.distance.value
-            if (leg.duration) totalDuration += leg.duration.value
-          })
+                      <span>{waypoint
+                    <div className="text-xs text-muted-foreground
+                    </div>
+            
 
-          const optimizedOrder = result.routes[0].waypoint_order || []
+                  )}
           const reorderedWaypoints: Waypoint[] = []
           
-          reorderedWaypoints.push({ ...pickups[0], order: 0 })
-          
-          optimizedOrder.forEach((index, newIndex) => {
-            const waypoint = intermediateWaypoints[index]
-            const originalWaypoint = [...pickups.slice(1), ...dropoffs.slice(0, -1)][index]
-            reorderedWaypoints.push({ ...originalWaypoint, order: newIndex + 1 })
+      )}
+  )
+
+
+
+
           })
 
           if (dropoffs.length > 0) {
-            reorderedWaypoints.push({ 
+
               ...dropoffs[dropoffs.length - 1], 
-              order: reorderedWaypoints.length 
+
             })
-          }
 
-          setOptimizedWaypoints(reorderedWaypoints)
 
-          const directDistance = totalDistance / 1.3
-          const detourPercentage = ((totalDistance - directDistance) / directDistance) * 100
+
+
+
+
 
           setRouteInfo({
             totalDistance: totalDistance / 1000,
