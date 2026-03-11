@@ -98,39 +98,39 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
         isAdmin={false}
       />
       <div className="min-h-screen bg-background pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>
               Espace Client
             </h2>
-            <p className="text-foreground/70">
+            <p className="text-sm sm:text-base text-foreground/70">
               Bienvenue {userEmail}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
             <Card className="border-2 border-accent/20 bg-gradient-to-br from-accent/5 to-transparent">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground flex items-center gap-2">
-                  <TrendUp size={18} />
+                <CardTitle className="text-xs sm:text-sm font-medium uppercase tracking-wide text-muted-foreground flex items-center gap-2">
+                  <TrendUp size={16} className="sm:w-[18px] sm:h-[18px]" />
                   Total Dépensé
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-accent">{totalSpent.toFixed(2)}€</div>
+                <div className="text-2xl sm:text-3xl font-bold text-accent">{totalSpent.toFixed(2)}€</div>
                 <p className="text-xs text-muted-foreground mt-1">{userBookings.filter(b => b.status === 'completed').length} trajets complétés</p>
               </CardContent>
             </Card>
 
             <Card className="border-2 border-accent/20 bg-gradient-to-br from-accent/5 to-transparent">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground flex items-center gap-2">
-                  <Star size={18} weight="fill" />
+                <CardTitle className="text-xs sm:text-sm font-medium uppercase tracking-wide text-muted-foreground flex items-center gap-2">
+                  <Star size={16} weight="fill" className="sm:w-[18px] sm:h-[18px]" />
                   Points Fidélité
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-accent">{loyaltyPoints}</div>
+                <div className="text-2xl sm:text-3xl font-bold text-accent">{loyaltyPoints}</div>
                 <div className="mt-3">
                   <div className="flex justify-between text-xs text-muted-foreground mb-1">
                     <span>Prochain palier</span>
@@ -141,15 +141,15 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-accent/20 bg-gradient-to-br from-accent/5 to-transparent">
+            <Card className="border-2 border-accent/20 bg-gradient-to-br from-accent/5 to-transparent sm:col-span-2 lg:col-span-1">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground flex items-center gap-2">
-                  <Calendar size={18} />
+                <CardTitle className="text-xs sm:text-sm font-medium uppercase tracking-wide text-muted-foreground flex items-center gap-2">
+                  <Calendar size={16} className="sm:w-[18px] sm:h-[18px]" />
                   Prochains Trajets
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-accent">{upcomingBookings.length}</div>
+                <div className="text-2xl sm:text-3xl font-bold text-accent">{upcomingBookings.length}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   {upcomingBookings.length > 0 
                     ? `Prochain: ${new Date(upcomingBookings[0].date).toLocaleDateString('fr-FR')}`
@@ -159,20 +159,24 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <div className="lg:col-span-2">
               <Tabs defaultValue="upcoming" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6">
-                  <TabsTrigger value="upcoming">Trajets à Venir ({upcomingBookings.length})</TabsTrigger>
-                  <TabsTrigger value="past">Historique ({pastBookings.length})</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6 h-auto">
+                  <TabsTrigger value="upcoming" className="text-xs sm:text-sm py-2 sm:py-2.5">
+                    Trajets à Venir ({upcomingBookings.length})
+                  </TabsTrigger>
+                  <TabsTrigger value="past" className="text-xs sm:text-sm py-2 sm:py-2.5">
+                    Historique ({pastBookings.length})
+                  </TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="upcoming" className="space-y-6">
+                <TabsContent value="upcoming" className="space-y-4 sm:space-y-6">
                   {upcomingBookings.length === 0 ? (
                     <Card className="border-2 border-accent/20">
-                      <CardContent className="py-16 text-center">
-                        <Car size={64} className="mx-auto text-muted-foreground mb-4" weight="thin" />
-                        <p className="text-lg text-muted-foreground">Aucun trajet prévu</p>
+                      <CardContent className="py-12 sm:py-16 text-center px-4">
+                        <Car size={48} className="sm:w-16 sm:h-16 mx-auto text-muted-foreground mb-4" weight="thin" />
+                        <p className="text-base sm:text-lg text-muted-foreground">Aucun trajet prévu</p>
                         <p className="text-sm text-muted-foreground mt-2">Réservez votre prochain transfert</p>
                         <Button 
                           onClick={onNavigateToHome}
@@ -197,12 +201,12 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
                   )}
                 </TabsContent>
 
-                <TabsContent value="past" className="space-y-6">
+                <TabsContent value="past" className="space-y-4 sm:space-y-6">
                   {pastBookings.length === 0 ? (
                     <Card className="border-2 border-accent/20">
-                      <CardContent className="py-16 text-center">
-                        <Clock size={64} className="mx-auto text-muted-foreground mb-4" weight="thin" />
-                        <p className="text-lg text-muted-foreground">Aucun historique</p>
+                      <CardContent className="py-12 sm:py-16 text-center px-4">
+                        <Clock size={48} className="sm:w-16 sm:h-16 mx-auto text-muted-foreground mb-4" weight="thin" />
+                        <p className="text-base sm:text-lg text-muted-foreground">Aucun historique</p>
                         <p className="text-sm text-muted-foreground mt-2">Vos trajets passés apparaîtront ici</p>
                       </CardContent>
                     </Card>
@@ -223,16 +227,16 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
               </Tabs>
             </div>
 
-            <div className="lg:col-span-1 space-y-6">
+            <div className="lg:col-span-1 space-y-4 sm:space-y-6">
               {hasSharedRideBookings && <NotificationCenter userEmail={userEmail} />}
               
               <Card className="border-2 border-accent/20">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <BookmarkSimple size={20} weight="fill" />
+                  <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                    <BookmarkSimple size={18} weight="fill" className="sm:w-5 sm:h-5" />
                     Adresses Favorites
                   </CardTitle>
-                  <CardDescription>Accès rapide à vos destinations</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">Accès rapide à vos destinations</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {(!savedAddresses || savedAddresses.length === 0) ? (
@@ -260,11 +264,11 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
 
               <Card className="border-2 border-accent/20">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <CreditCard size={20} />
+                  <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                    <CreditCard size={18} className="sm:w-5 sm:h-5" />
                     Moyens de Paiement
                   </CardTitle>
-                  <CardDescription>Gestion de vos paiements</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">Gestion de vos paiements</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -305,24 +309,24 @@ function BookingCard({ booking, index, fleet, onViewRoute, showRebook, onRebook 
       transition={{ duration: 0.3, delay: index * 0.1 }}
     >
       <Card className="border-2 border-accent/20 hover:border-accent/40 transition-colors">
-        <CardHeader className="border-b border-border">
-          <div className="flex items-start justify-between">
-            <div>
-              <CardTitle className="text-xl font-semibold uppercase tracking-wide">
+        <CardHeader className="border-b border-border pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+            <div className="flex-1">
+              <CardTitle className="text-lg sm:text-xl font-semibold uppercase tracking-wide">
                 {fleet?.find(v => v.id === booking.vehicleType)?.title || booking.vehicleType || 'Réservation'}
               </CardTitle>
-              <CardDescription className="mt-1 flex items-center gap-2">
-                <UserIcon size={16} />
+              <CardDescription className="mt-1 flex items-center gap-2 text-sm">
+                <UserIcon size={14} className="sm:w-4 sm:h-4" />
                 {booking.passengers} {booking.passengers === '1' ? 'passager' : 'passagers'}
               </CardDescription>
             </div>
-            <Badge className={`${statusColors[booking.status]} border font-medium uppercase text-xs`}>
+            <Badge className={`${statusColors[booking.status]} border font-medium uppercase text-xs whitespace-nowrap self-start`}>
               {booking.status}
             </Badge>
           </div>
         </CardHeader>
-        <CardContent className="pt-6">
-          <div className="grid md:grid-cols-2 gap-6">
+        <CardContent className="pt-4 sm:pt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-4">
               <div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">

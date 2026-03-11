@@ -577,7 +577,7 @@ export default function BookingForm() {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="relative -mt-24 z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
+      className="relative -mt-16 sm:-mt-24 z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
     >
       <Dialog open={showPromoPreview} onOpenChange={setShowPromoPreview}>
         <DialogContent className="sm:max-w-md">
@@ -743,30 +743,30 @@ export default function BookingForm() {
       </Dialog>
 
       <Card className="shadow-2xl border-2 border-accent/20 bg-card">
-        <CardHeader className="pb-4 border-b border-border">
-          <div className="flex items-center justify-center gap-2 mb-4">
+        <CardHeader className="pb-4 border-b border-border px-4 sm:px-6">
+          <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-4 overflow-x-auto">
             {[1, 2, 3, 4].map((step) => (
-              <div key={step} className="flex items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm ${
+              <div key={step} className="flex items-center flex-shrink-0">
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold text-xs sm:text-sm ${
                   step === currentStep 
                     ? 'bg-accent text-accent-foreground' 
                     : step < currentStep 
                     ? 'bg-accent/50 text-accent-foreground' 
                     : 'bg-secondary text-muted-foreground'
                 }`}>
-                  {step < currentStep ? <Check size={20} weight="bold" /> : step}
+                  {step < currentStep ? <Check size={16} weight="bold" className="sm:w-5 sm:h-5" /> : step}
                 </div>
                 {step < 4 && (
-                  <div className={`w-12 h-1 ${step < currentStep ? 'bg-accent/50' : 'bg-secondary'}`} />
+                  <div className={`w-8 sm:w-12 h-1 ${step < currentStep ? 'bg-accent/50' : 'bg-secondary'}`} />
                 )}
               </div>
             ))}
           </div>
-          <CardTitle className="text-2xl font-semibold text-center uppercase tracking-widest" style={{ fontFamily: 'var(--font-body)' }}>
+          <CardTitle className="text-lg sm:text-2xl font-semibold text-center uppercase tracking-widest" style={{ fontFamily: 'var(--font-body)' }}>
             {getStepTitle()}
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-6">
+        <CardContent className="pt-6 px-4 sm:px-6">
           <form onSubmit={handleSubmit}>
             <AnimatePresence mode="wait">
               {currentStep === 1 && (
@@ -1088,9 +1088,9 @@ export default function BookingForm() {
                   )}
 
                   <div className="flex justify-end pt-4">
-                    <Button type="button" onClick={handleNext} className="w-full md:w-auto h-12 px-8 text-base bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-widest">
+                    <Button type="button" onClick={handleNext} className="w-full sm:w-auto h-12 px-6 sm:px-8 text-sm sm:text-base bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-widest">
                       Continuer
-                      <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+                      <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
                     </Button>
                   </div>
                 </motion.div>
@@ -1254,14 +1254,14 @@ export default function BookingForm() {
                     </div>
                   )}
 
-                  <div className="flex justify-between pt-4">
-                    <Button type="button" onClick={handleBack} variant="outline" className="h-12 px-8 text-base font-medium uppercase tracking-widest">
-                      <ArrowLeft className="mr-2" size={20} />
+                  <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4">
+                    <Button type="button" onClick={handleBack} variant="outline" className="w-full sm:w-auto h-12 px-6 sm:px-8 text-sm sm:text-base font-medium uppercase tracking-widest order-2 sm:order-1">
+                      <ArrowLeft className="mr-2" size={18} />
                       Retour
                     </Button>
-                    <Button type="button" onClick={handleNext} className="h-12 px-8 text-base bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-widest">
+                    <Button type="button" onClick={handleNext} className="w-full sm:w-auto h-12 px-6 sm:px-8 text-sm sm:text-base bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-widest order-1 sm:order-2">
                       Continuer
-                      <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+                      <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
                     </Button>
                   </div>
                 </motion.div>
@@ -1349,14 +1349,14 @@ export default function BookingForm() {
                     </div>
                   </div>
 
-                  <div className="flex justify-between pt-4">
-                    <Button type="button" onClick={handleBack} variant="outline" className="h-12 px-8 text-base font-medium uppercase tracking-widest">
-                      <ArrowLeft className="mr-2" size={20} />
+                  <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4">
+                    <Button type="button" onClick={handleBack} variant="outline" className="w-full sm:w-auto h-12 px-6 sm:px-8 text-sm sm:text-base font-medium uppercase tracking-widest order-2 sm:order-1">
+                      <ArrowLeft className="mr-2" size={18} />
                       Retour
                     </Button>
-                    <Button type="button" onClick={handleNext} className="h-12 px-8 text-base bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-widest">
+                    <Button type="button" onClick={handleNext} className="w-full sm:w-auto h-12 px-6 sm:px-8 text-sm sm:text-base bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-widest order-1 sm:order-2">
                       Continuer
-                      <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+                      <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
                     </Button>
                   </div>
                 </motion.div>
@@ -1653,14 +1653,14 @@ export default function BookingForm() {
                     </div>
                   </div>
 
-                  <div className="flex justify-between pt-4">
-                    <Button type="button" onClick={handleBack} variant="outline" className="h-12 px-8 text-base font-medium uppercase tracking-widest">
-                      <ArrowLeft className="mr-2" size={20} />
+                  <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4">
+                    <Button type="button" onClick={handleBack} variant="outline" className="w-full sm:w-auto h-12 px-6 sm:px-8 text-sm sm:text-base font-medium uppercase tracking-widest order-2 sm:order-1">
+                      <ArrowLeft className="mr-2" size={18} />
                       Retour
                     </Button>
-                    <Button type="submit" className="h-12 px-8 text-base bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-widest">
+                    <Button type="submit" className="w-full sm:w-auto h-12 px-6 sm:px-8 text-sm sm:text-base bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-widest order-1 sm:order-2">
                       Confirmer
-                      <Check className="ml-2 group-hover:scale-110 transition-transform" size={20} weight="bold" />
+                      <Check className="ml-2 group-hover:scale-110 transition-transform" size={18} weight="bold" />
                     </Button>
                   </div>
                 </motion.div>
