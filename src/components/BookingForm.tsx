@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
-import { MapPin, Calendar, Clock, Users, ArrowRight, ArrowLeft, User, Phone, EnvelopeSimple, CreditCard, Money, Bank, Check, Suitcase, CurrencyEur } from '@phosphor-icons/react'
+import { MapPin, Calendar, Clock, Users, ArrowRight, ArrowLeft, User, Phone, EnvelopeSimple, CreditCard, Money, Bank, Check, Suitcase, CurrencyEur, Tag } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
@@ -149,8 +149,11 @@ export default function BookingForm() {
     return forfait || null
   }
 
+  const [appliedForfaits, setAppliedForfaits] = useState<Record<string, boolean>>({})
+
   const vehiclePrices = useMemo(() => {
     const prices: Record<string, number> = {}
+    const forfaitFlags: Record<string, boolean> = {}
     
     console.log('=== RECALCUL DES PRIX ===')
     console.log('Fleet:', fleet?.length, 'véhicules')
@@ -197,6 +200,7 @@ export default function BookingForm() {
         if (forfait) {
           basePrice = forfait.fixedPrice
           usedForfait = true
+          forfaitFlags[vehicle.id] = true
           const fromZone = findZoneForPoint(pickupCoords)
           const toZone = findZoneForPoint(destinationCoords)
           console.log(`💎 FORFAIT TROUVÉ ET APPLIQUÉ: ${fromZone?.name} → ${toZone?.name} = ${basePrice}€`)
@@ -232,7 +236,10 @@ export default function BookingForm() {
           return
         } else {
           console.log(`⚠️ Aucun forfait trouvé - Passage au calcul km/minute`)
+          forfaitFlags[vehicle.id] = false
         }
+      } else {
+        forfaitFlags[vehicle.id] = false
       }
       
       if (serviceType === 'hourly') {
@@ -303,6 +310,8 @@ export default function BookingForm() {
     })
 
     console.log('📋 Prix finaux calculés:', prices)
+    console.log('🏷️ Forfaits appliqués:', forfaitFlags)
+    setAppliedForfaits(forfaitFlags)
     return prices
   }, [fleet, pricing, serviceType, hourlyDuration, activePricingMode, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions, pickup, destination, pricingSettings, pickupCoords, destinationCoords, selectedCircuitId, circuits, zoneForfaits, pricingZones])
 
@@ -893,8 +902,13 @@ export default function BookingForm() {
                                         <div className="flex items-center justify-center gap-1 text-accent font-bold text-lg">
                                           <CurrencyEur size={20} weight="bold" />
                                           <span>{vehiclePrice.toFixed(2)}</span>
+                                          {appliedForfaits[vehicle.id] && (
+                                            <Tag size={18} weight="fill" className="text-accent ml-1" />
+                                          )}
                                         </div>
-                                        <div className="text-[10px] text-muted-foreground mt-1">Véhicule avec Chauffeur</div>
+                                        <div className="text-[10px] text-muted-foreground mt-1">
+                                          {appliedForfaits[vehicle.id] ? 'Forfait Zone à Zone' : 'Véhicule avec Chauffeur'}
+                                        </div>
                                       </div>
                                     )}
                                   </div>
