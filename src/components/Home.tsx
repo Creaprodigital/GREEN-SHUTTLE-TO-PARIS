@@ -1,5 +1,6 @@
 import Header from '@/components/Header'
 import Hero from '@/components/Hero'
+import BookingForm from '@/components/BookingForm'
 import ServiceCards from '@/components/ServiceCards'
 import Footer from '@/components/Footer'
 
@@ -21,6 +22,7 @@ export default function Home({ onNavigateToLogin, onNavigateToChauffeurPrive, on
       />
       <div id="accueil">
         <Hero />
+        <BookingForm />
       </div>
       <div id="services">
         <ServiceCards />
