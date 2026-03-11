@@ -1962,15 +1962,69 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
             <Card className="border-2 border-accent/20">
               <CardHeader className="border-b border-border">
-                <CardTitle className="text-xl font-semibold uppercase tracking-wide flex items-center gap-2">
-                  <EnvelopeSimple size={24} className="text-accent" />
-                  Notifications Email
-                </CardTitle>
-                <CardDescription>
-                  Envoyez des confirmations et mises à jour de réservation par email
-                </CardDescription>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-xl font-semibold uppercase tracking-wide flex items-center gap-2">
+                      <EnvelopeSimple size={24} className="text-accent" />
+                      Notifications Email
+                    </CardTitle>
+                    <CardDescription>
+                      Envoyez des confirmations et mises à jour de réservation par email
+                    </CardDescription>
+                  </div>
+                  <div className="flex flex-col gap-2 items-end">
+                    {emailSettings?.smtpHost && emailSettings?.smtpPort && emailSettings?.smtpUser && emailSettings?.smtpPassword ? (
+                      <div className="px-3 py-1 bg-green-500/20 border border-green-500/30 text-green-500 text-xs font-medium uppercase tracking-wide flex items-center gap-1.5">
+                        <Check size={14} weight="bold" />
+                        SMTP Configuré
+                      </div>
+                    ) : (
+                      <div className="px-3 py-1 bg-yellow-500/20 border border-yellow-500/30 text-yellow-500 text-xs font-medium uppercase tracking-wide flex items-center gap-1.5">
+                        <Info size={14} weight="bold" />
+                        SMTP Non configuré
+                      </div>
+                    )}
+                    {emailSettings?.enabled ? (
+                      <div className="px-3 py-1 bg-accent/20 border border-accent/30 text-accent text-xs font-medium uppercase tracking-wide">
+                        Activé
+                      </div>
+                    ) : (
+                      <div className="px-3 py-1 bg-muted border border-border text-muted-foreground text-xs font-medium uppercase tracking-wide">
+                        Désactivé
+                      </div>
+                    )}
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="pt-6 space-y-6">
+                <div className="bg-accent/10 border-2 border-accent/30 p-4 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <Info size={24} className="text-accent flex-shrink-0 mt-0.5" weight="fill" />
+                    <div className="flex-1 space-y-2">
+                      <p className="text-sm font-semibold text-accent uppercase tracking-wide">
+                        Guide de Configuration SMTP
+                      </p>
+                      <p className="text-sm text-foreground/80">
+                        Configurez vos paramètres SMTP pour envoyer des emails automatiques de confirmation, notification et mise à jour à vos clients et administrateurs.
+                      </p>
+                      <div className="flex flex-wrap gap-2 pt-2">
+                        <div className="px-2 py-1 bg-background/50 border border-border text-xs font-medium">
+                          ✓ Gmail gratuit
+                        </div>
+                        <div className="px-2 py-1 bg-background/50 border border-border text-xs font-medium">
+                          ✓ SendGrid professionnel
+                        </div>
+                        <div className="px-2 py-1 bg-background/50 border border-border text-xs font-medium">
+                          ✓ Mailgun, AWS SES, Brevo
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground pt-1">
+                        📖 Consultez le fichier <code className="bg-background/50 px-1 py-0.5 font-mono">SMTP_SETUP_GUIDE.md</code> à la racine du projet pour un guide détaillé.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
                 <div className="flex items-center justify-between p-4 bg-secondary/50 border border-border">
                   <div className="space-y-1">
                     <Label htmlFor="email-enabled" className="text-sm font-medium uppercase tracking-wide">
@@ -1995,9 +2049,23 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="email-admin" className="text-sm font-medium uppercase tracking-wide">
-                      Email Admin
-                    </Label>
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="email-admin" className="text-sm font-medium uppercase tracking-wide">
+                        Email Admin
+                      </Label>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Info size={16} className="text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p className="text-sm">
+                              L'adresse email où vous recevrez les notifications de nouvelles réservations
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                     <Input
                       id="email-admin"
                       type="email"
@@ -2014,9 +2082,23 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email-from" className="text-sm font-medium uppercase tracking-wide">
-                      Email Expéditeur
-                    </Label>
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="email-from" className="text-sm font-medium uppercase tracking-wide">
+                        Email Expéditeur
+                      </Label>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Info size={16} className="text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p className="text-sm">
+                              L'adresse email qui apparaîtra comme expéditeur dans les emails envoyés aux clients
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                     <Input
                       id="email-from"
                       type="email"
@@ -2053,13 +2135,41 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                 </div>
 
                 <div className="border-t border-border pt-6 space-y-4">
-                  <p className="text-sm font-medium uppercase tracking-wide">Paramètres SMTP</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium uppercase tracking-wide">Paramètres SMTP</p>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info size={18} className="text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-sm">
+                          <p className="text-sm">
+                            Configurez votre serveur SMTP pour l'envoi d'emails. Ces paramètres sont stockés de manière sécurisée et seront utilisés pour envoyer des emails automatiques.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="smtp-host" className="text-sm font-medium uppercase tracking-wide">
-                        Serveur SMTP
-                      </Label>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="smtp-host" className="text-sm font-medium uppercase tracking-wide">
+                          Serveur SMTP
+                        </Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info size={16} className="text-muted-foreground" />
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              <p className="text-sm">
+                                L'adresse du serveur SMTP de votre fournisseur d'email (ex: smtp.gmail.com, smtp.sendgrid.net)
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                       <Input
                         id="smtp-host"
                         type="text"
@@ -2076,9 +2186,23 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="smtp-port" className="text-sm font-medium uppercase tracking-wide">
-                        Port SMTP
-                      </Label>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="smtp-port" className="text-sm font-medium uppercase tracking-wide">
+                          Port SMTP
+                        </Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info size={16} className="text-muted-foreground" />
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              <p className="text-sm">
+                                Port du serveur SMTP. 587 (TLS) est recommandé, 465 (SSL) est aussi courant
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                       <Input
                         id="smtp-port"
                         type="text"
@@ -2097,9 +2221,23 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
 
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="smtp-user" className="text-sm font-medium uppercase tracking-wide">
-                        Nom d'utilisateur SMTP
-                      </Label>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="smtp-user" className="text-sm font-medium uppercase tracking-wide">
+                          Nom d'utilisateur SMTP
+                        </Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info size={16} className="text-muted-foreground" />
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              <p className="text-sm">
+                                Votre adresse email complète ou nom d'utilisateur fourni par votre service SMTP
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                       <Input
                         id="smtp-user"
                         type="text"
@@ -2116,9 +2254,23 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="smtp-password" className="text-sm font-medium uppercase tracking-wide">
-                        Mot de passe SMTP
-                      </Label>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="smtp-password" className="text-sm font-medium uppercase tracking-wide">
+                          Mot de passe SMTP
+                        </Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info size={16} className="text-muted-foreground" />
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              <p className="text-sm">
+                                Pour Gmail, utilisez un "Mot de passe d'application" plutôt que votre mot de passe normal. Pour d'autres services, utilisez votre clé API ou mot de passe SMTP.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                       <Input
                         id="smtp-password"
                         type="password"
@@ -2212,7 +2364,29 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                         toast.error('Veuillez remplir l\'email admin')
                         return
                       }
-                      toast.success('Paramètres email enregistrés')
+                      if (!emailSettings?.fromEmail) {
+                        toast.error('Veuillez remplir l\'email expéditeur')
+                        return
+                      }
+                      if (!emailSettings?.fromName) {
+                        toast.error('Veuillez remplir le nom de l\'expéditeur')
+                        return
+                      }
+                      
+                      const smtpConfigured = emailSettings?.smtpHost && 
+                                            emailSettings?.smtpPort && 
+                                            emailSettings?.smtpUser && 
+                                            emailSettings?.smtpPassword
+                      
+                      if (smtpConfigured) {
+                        toast.success('✅ Paramètres email et SMTP enregistrés', {
+                          description: 'Configuration complète pour l\'envoi d\'emails'
+                        })
+                      } else {
+                        toast.success('⚠️ Paramètres email enregistrés', {
+                          description: 'Configurez les paramètres SMTP pour l\'envoi réel d\'emails'
+                        })
+                      }
                     }}
                     className="flex-1 md:flex-initial h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
                   >
@@ -2278,19 +2452,63 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                   </Button>
                 </div>
 
-                <div className="mt-6 p-4 bg-muted/30 border border-border space-y-2">
+                <div className="mt-6 p-4 bg-muted/30 border border-border space-y-3">
                   <p className="text-sm font-medium uppercase tracking-wide text-foreground">
-                    ℹ️ Configuration email
+                    ℹ️ Configuration SMTP - Guide
                   </p>
-                  <div className="text-sm text-muted-foreground space-y-1">
-                    <p>Cette fonctionnalité fonctionne en mode simulation dans le navigateur.</p>
-                    <p>Pour l'envoi réel d'emails, configurez les paramètres SMTP de votre service email (Gmail, SendGrid, Mailgun, etc.).</p>
-                    <p className="pt-2 font-medium">Les emails incluront:</p>
-                    <ul className="list-disc list-inside space-y-1 pl-2">
-                      <li>Confirmation de réservation pour le client</li>
-                      <li>Notification de nouvelle réservation pour l'admin</li>
-                      <li>Mises à jour lors des changements de statut</li>
-                    </ul>
+                  <div className="text-sm text-muted-foreground space-y-2">
+                    <p className="font-medium text-foreground">Mode actuel : Simulation (navigateur)</p>
+                    <p>Cette application stocke vos paramètres SMTP mais fonctionne en mode simulation car les navigateurs ne peuvent pas envoyer d'emails directement.</p>
+                    
+                    <div className="pt-3 space-y-2">
+                      <p className="font-medium text-foreground">✉️ Services SMTP recommandés :</p>
+                      <ul className="space-y-1.5 pl-2">
+                        <li className="flex items-start gap-2">
+                          <span className="text-accent mt-0.5">•</span>
+                          <div>
+                            <strong className="text-foreground">Gmail SMTP</strong>
+                            <div className="text-xs mt-0.5">Host: smtp.gmail.com | Port: 587 | Utilisez un mot de passe d'application</div>
+                          </div>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-accent mt-0.5">•</span>
+                          <div>
+                            <strong className="text-foreground">SendGrid</strong>
+                            <div className="text-xs mt-0.5">Host: smtp.sendgrid.net | Port: 587 | Clé API comme mot de passe</div>
+                          </div>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-accent mt-0.5">•</span>
+                          <div>
+                            <strong className="text-foreground">Mailgun</strong>
+                            <div className="text-xs mt-0.5">Host: smtp.mailgun.org | Port: 587 | Utilisez vos identifiants Mailgun</div>
+                          </div>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-accent mt-0.5">•</span>
+                          <div>
+                            <strong className="text-foreground">AWS SES</strong>
+                            <div className="text-xs mt-0.5">Host: email-smtp.{'{'}region{'}'}.amazonaws.com | Port: 587</div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="pt-3 space-y-1.5">
+                      <p className="font-medium text-foreground">📧 Emails automatiques :</p>
+                      <ul className="list-disc list-inside space-y-1 pl-2">
+                        <li>Confirmation de réservation envoyée au client</li>
+                        <li>Notification de nouvelle réservation à l'administrateur</li>
+                        <li>Mises à jour automatiques lors des changements de statut</li>
+                        <li>Notifications pour trajets partagés</li>
+                      </ul>
+                    </div>
+
+                    <div className="pt-3 bg-accent/10 -mx-4 -mb-4 px-4 py-3 border-t border-accent/20">
+                      <p className="text-xs text-foreground/80">
+                        <strong>Note :</strong> Pour activer l'envoi réel d'emails en production, vous devrez intégrer un service backend qui utilisera ces paramètres SMTP pour envoyer les emails via votre serveur.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </CardContent>
