@@ -1,12 +1,16 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Car, MapPin, Calendar, Clock, User as UserIcon } from '@phosphor-icons/react'
+import { Button } from '@/components/ui/button'
+import { Car, MapPin, Calendar, Clock, User as UserIcon, Users, Map } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { VehicleClass } from '@/types/fleet'
 import { motion } from 'framer-motion'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { useKV } from '@github/spark/hooks'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import MultiPassengerRouteMap from '@/components/MultiPassengerRouteMap'
+import { useState } from 'react'
 
 interface ClientDashboardProps {
   userEmail: string
@@ -28,9 +32,32 @@ const statusColors = {
 export default function ClientDashboard({ userEmail, bookings, onLogout, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact }: ClientDashboardProps) {
   const userBookings = bookings.filter(b => b.userEmail === userEmail)
   const [fleet] = useKV<VehicleClass[]>('fleet', [])
+  const [selectedSharedRide, setSelectedSharedRide] = useState<string | null>(null)
 
   return (
     <>
+      <Dialog open={!!selectedSharedRide} onOpenChange={(open) => !open && setSelectedSharedRide(null)}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Map size={24} weight="fill" />
+              Itinéraire de Votre Trajet Partagé
+            </DialogTitle>
+            <DialogDescription>
+              Visualisation de l'itinéraire avec les autres passagers
+            </DialogDescription>
+          </DialogHeader>
+          {selectedSharedRide && (
+            <MultiPassengerRouteMap 
+              bookings={bookings}
+              sharedRideId={selectedSharedRide}
+              height="600px"
+              showDetails={true}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Header 
         onNavigateToHome={onNavigateToHome}
         onNavigateToServices={onNavigateToServices}
@@ -126,6 +153,27 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
                         </div>
                       </div>
                     </div>
+                    {booking.serviceType === 'shared' && booking.sharedRideId && (
+                      <div className="mt-6 pt-6 border-t border-border">
+                        <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4 mb-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Users size={20} weight="fill" className="text-accent" />
+                            <span className="font-semibold text-sm uppercase tracking-wide">Transfert Partagé</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            Ce trajet est partagé avec {booking.sharedPassengers || 1} autre{(booking.sharedPassengers || 1) > 1 ? 's' : ''} passager{(booking.sharedPassengers || 1) > 1 ? 's' : ''}
+                          </p>
+                        </div>
+                        <Button
+                          onClick={() => setSelectedSharedRide(booking.sharedRideId || null)}
+                          variant="outline"
+                          className="w-full gap-2 border-2 border-accent/30 hover:border-accent hover:bg-accent/10 text-accent"
+                        >
+                          <Map size={18} />
+                          Voir l'itinéraire complet
+                        </Button>
+                      </div>
+                    )}
                     {booking.price && (
                       <div className="mt-6 pt-6 border-t border-border">
                         <div className="flex items-center justify-between">

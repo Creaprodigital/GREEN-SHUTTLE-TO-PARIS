@@ -7,13 +7,15 @@ import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Users, MapPin, Clock, CurrencyEur, ArrowRight, Info, Check, X, Sparkle, Lightning, TrendUp } from '@phosphor-icons/react'
+import { Users, MapPin, Clock, CurrencyEur, ArrowRight, Info, Check, X, Sparkle, Lightning, TrendUp, Map } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
 import { Booking } from '@/types/booking'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { autoMatchSharedRides, findPotentialMatches } from '@/lib/sharedRideMatching'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import MultiPassengerRouteMap from '@/components/MultiPassengerRouteMap'
 
 export interface SharedRideSettings {
   enabled: boolean
@@ -67,6 +69,7 @@ export default function SharedRideManager({ bookings, onUpdateBooking }: SharedR
   const [settings, setSettings] = useKV<SharedRideSettings>('shared-ride-settings', DEFAULT_SHARED_RIDE_SETTINGS)
   const [isMatching, setIsMatching] = useState(false)
   const [lastMatchTime, setLastMatchTime] = useState<number | null>(null)
+  const [selectedGroupForMap, setSelectedGroupForMap] = useState<string | null>(null)
 
   const sharedBookings = useMemo(() => {
     return bookings.filter(b => b.serviceType === 'shared' && b.status !== 'cancelled')
@@ -215,8 +218,43 @@ export default function SharedRideManager({ bookings, onUpdateBooking }: SharedR
     return <Badge className={`${config.className} border`}>{config.label}</Badge>
   }
 
+  const selectedGroup = selectedGroupForMap ? activeGroups.find(g => g.id === selectedGroupForMap) : null
+
   return (
     <div className="space-y-6">
+      <Dialog open={!!selectedGroupForMap} onOpenChange={(open) => !open && setSelectedGroupForMap(null)}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Map size={24} weight="fill" />
+              Itinéraire Multi-Passagers
+            </DialogTitle>
+            <DialogDescription>
+              Visualisation de l'itinéraire optimisé avec les points de prise en charge intermédiaires
+            </DialogDescription>
+          </DialogHeader>
+          {selectedGroup && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-sm text-muted-foreground mb-1">Groupe</div>
+                  <div className="font-semibold">{selectedGroup.bookings.length} réservation{selectedGroup.bookings.length > 1 ? 's' : ''}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground mb-1">Total Passagers</div>
+                  <div className="font-semibold">{selectedGroup.totalPassengers} passager{selectedGroup.totalPassengers > 1 ? 's' : ''}</div>
+                </div>
+              </div>
+              <MultiPassengerRouteMap 
+                bookings={bookings}
+                sharedRideId={selectedGroup.id}
+                height="600px"
+                showDetails={true}
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card>
           <CardHeader className="pb-3">
@@ -694,6 +732,19 @@ export default function SharedRideManager({ bookings, onUpdateBooking }: SharedR
                           </div>
                         ))}
                       </div>
+                      {group.bookings.length > 1 && (
+                        <div className="border-t border-border/50 pt-3 mt-3">
+                          <Button 
+                            onClick={() => setSelectedGroupForMap(group.id)}
+                            variant="outline"
+                            size="sm"
+                            className="w-full gap-2"
+                          >
+                            <Map size={16} />
+                            Voir l'itinéraire optimisé
+                          </Button>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 ))}

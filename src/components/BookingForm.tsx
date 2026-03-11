@@ -16,6 +16,7 @@ import { useKV } from '@github/spark/hooks'
 import PlacesAutocomplete from '@/components/PlacesAutocomplete'
 import CircuitMap from '@/components/CircuitMap'
 import RoutePreviewMap from '@/components/RoutePreviewMap'
+import MultiPassengerRouteMap from '@/components/MultiPassengerRouteMap'
 import { Booking } from '@/types/booking'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { ServiceOption, VehiclePricing, DEFAULT_PRICING, DEFAULT_OPTIONS, PricingSettings } from '@/types/pricing'
@@ -647,6 +648,85 @@ export default function BookingForm() {
               </Button>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showRoutePreview} onOpenChange={setShowRoutePreview}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3 text-2xl font-bold uppercase tracking-wide">
+              <div className="p-3 bg-accent/20 rounded-full">
+                <MapPin size={32} weight="fill" className="text-accent" />
+              </div>
+              Aperçu de l'Itinéraire Partagé
+            </DialogTitle>
+            <DialogDescription className="text-base pt-2">
+              Visualisez l'itinéraire optimisé avec les points de prise en charge potentiels d'autres passagers
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-5 space-y-3">
+              <h4 className="font-semibold uppercase tracking-wide text-sm flex items-center gap-2">
+                <Users size={18} weight="fill" className="text-accent" />
+                Itinéraire Multi-Passagers
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                Cet itinéraire montre comment votre trajet pourrait être optimisé avec d'autres passagers allant dans la même direction. 
+                Les points numérotés représentent l'ordre des prises en charge et dépose.
+              </p>
+            </div>
+
+            {bookings && bookings.length > 0 && (
+              <MultiPassengerRouteMap 
+                bookings={[
+                  ...bookings.filter(b => b.serviceType === 'shared' && b.status !== 'cancelled'),
+                  {
+                    id: 'preview-booking',
+                    userId: 'preview',
+                    userEmail: email || 'preview@example.com',
+                    serviceType: 'shared',
+                    pickup: pickup,
+                    destination: destination,
+                    date: date,
+                    time: time,
+                    passengers: passengers,
+                    vehicleType: vehicleType || fleet?.[0]?.id || 'eco',
+                    firstName: firstName || 'Vous',
+                    lastName: lastName || '',
+                    phone: phone || '',
+                    email: email || '',
+                    paymentMethod: 'card',
+                    status: 'pending',
+                    createdAt: Date.now()
+                  } as Booking
+                ]}
+                height="500px"
+                showDetails={true}
+              />
+            )}
+
+            <div className="bg-green-500/5 border-2 border-green-500/20 rounded-lg p-5">
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <div className="text-3xl font-bold text-green-600 mb-1">30-70%</div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">Économie Moyenne</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-green-600 mb-1">+15min</div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">Temps Supplémentaire Max</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <Button
+            onClick={() => setShowRoutePreview(false)}
+            className="w-full h-12 text-base bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+          >
+            <Check size={20} weight="bold" className="mr-2" />
+            Compris
+          </Button>
         </DialogContent>
       </Dialog>
 
