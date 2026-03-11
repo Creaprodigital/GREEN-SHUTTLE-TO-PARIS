@@ -21,6 +21,7 @@ import { Circuit } from '@/types/circuit'
 import { PricingZone, ZoneForfait } from '@/components/ZoneForfaitManager'
 import { TelegramSettings, DEFAULT_TELEGRAM_SETTINGS } from '@/types/telegram'
 import { sendTelegramNotification } from '@/lib/telegram'
+import { PromoCode, DEFAULT_PROMO_CODES } from '@/types/promo'
 
 export default function BookingForm() {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
@@ -33,6 +34,7 @@ export default function BookingForm() {
   const [pricingSettings] = useKV<PricingSettings>('pricing-settings', { roundToWholeEuro: false })
   const [pricingZones] = useKV<PricingZone[]>('pricing-zones', [])
   const [zoneForfaits] = useKV<ZoneForfait[]>('zone-forfaits', [])
+  const [promoCodes] = useKV<PromoCode[]>('promo-codes', DEFAULT_PROMO_CODES)
   const [currentStep, setCurrentStep] = useState(1)
   
   const [serviceType, setServiceType] = useState<'transfer' | 'tour'>('transfer')
@@ -63,6 +65,9 @@ export default function BookingForm() {
   const [notes, setNotes] = useState('')
   
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'cash' | 'transfer'>('card')
+  const [promoCodeInput, setPromoCodeInput] = useState('')
+  const [appliedPromoCode, setAppliedPromoCode] = useState<PromoCode | null>(null)
+  const [promoCodeError, setPromoCodeError] = useState('')
 
   const isPointInPolygon = (point: { lat: number; lng: number }, polygon: { lat: number; lng: number }[]): boolean => {
     if (!polygon || polygon.length < 3) {

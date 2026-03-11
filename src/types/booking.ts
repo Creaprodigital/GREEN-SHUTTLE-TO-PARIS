@@ -25,6 +25,9 @@ export interface Booking {
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
   createdAt: number
   price?: number
+  promoCode?: string
+  discount?: number
+  originalPrice?: number
 }
 
 export interface User {
