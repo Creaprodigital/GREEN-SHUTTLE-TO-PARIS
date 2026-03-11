@@ -9,6 +9,7 @@ import About from '@/components/About'
 import Contact from '@/components/Contact'
 import { useKV } from '@github/spark/hooks'
 import { Booking } from '@/types/booking'
+import { useSharedRideNotifications } from '@/hooks/useSharedRideNotifications'
 
 type View = 'home' | 'login' | 'client' | 'admin' | 'services' | 'about' | 'contact'
 
@@ -17,6 +18,12 @@ function App() {
   const [currentUser, setCurrentUser] = useState<{ email: string; isAdmin: boolean } | null>(null)
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [])
   const [isAdminMode, setIsAdminMode] = useState(false)
+
+  useSharedRideNotifications({
+    bookings: bookings || [],
+    userEmail: currentUser?.email,
+    enabled: !!currentUser && !currentUser.isAdmin
+  })
 
   const handleNavigateToLogin = (isAdmin: boolean) => {
     if (isAdmin) {

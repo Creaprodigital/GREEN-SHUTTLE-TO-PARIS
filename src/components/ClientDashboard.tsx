@@ -11,6 +11,8 @@ import { useKV } from '@github/spark/hooks'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import MultiPassengerRouteMap from '@/components/MultiPassengerRouteMap'
 import { useState } from 'react'
+import { useSharedRideNotifications } from '@/hooks/useSharedRideNotifications'
+import NotificationCenter from '@/components/NotificationCenter'
 
 interface ClientDashboardProps {
   userEmail: string
@@ -33,6 +35,14 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
   const userBookings = bookings.filter(b => b.userEmail === userEmail)
   const [fleet] = useKV<VehicleClass[]>('fleet', [])
   const [selectedSharedRide, setSelectedSharedRide] = useState<string | null>(null)
+
+  useSharedRideNotifications({
+    bookings,
+    userEmail,
+    enabled: true
+  })
+
+  const hasSharedRideBookings = userBookings.some(b => b.serviceType === 'shared')
 
   return (
     <>
@@ -79,17 +89,18 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
           </p>
         </div>
 
-        {userBookings.length === 0 ? (
-          <Card className="border-2 border-accent/20">
-            <CardContent className="py-16 text-center">
-              <Car size={64} className="mx-auto text-muted-foreground mb-4" weight="thin" />
-              <p className="text-lg text-muted-foreground">No bookings yet</p>
-              <p className="text-sm text-muted-foreground mt-2">Your reservations will appear here</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-6">
-            {userBookings.map((booking, index) => (
+        <div className={hasSharedRideBookings ? "grid grid-cols-1 lg:grid-cols-3 gap-6" : ""}>
+          <div className={hasSharedRideBookings ? "lg:col-span-2" : ""}>
+            {userBookings.length === 0 ? (
+              <Card className="border-2 border-accent/20">
+                <CardContent className="py-16 text-center">
+                  <Car size={64} className="mx-auto text-muted-foreground mb-4" weight="thin" />
+                  <p className="text-lg text-muted-foreground">No bookings yet</p>
+                  <p className="text-sm text-muted-foreground mt-2">Your reservations will appear here</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-6">{userBookings.map((booking, index) => (
               <motion.div
                 key={booking.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -186,8 +197,16 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
                 </Card>
               </motion.div>
             ))}
+              </div>
+            )}
           </div>
-        )}
+
+          {hasSharedRideBookings && (
+            <div className="lg:col-span-1">
+              <NotificationCenter userEmail={userEmail} />
+            </div>
+          )}
+        </div>
       </div>
       </div>
       <Footer />
