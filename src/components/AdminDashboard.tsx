@@ -624,19 +624,21 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
         </DialogContent>
       </Dialog>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
         <Tabs defaultValue="bookings" className="w-full">
-          <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-3 md:grid-cols-5 lg:grid-cols-9 mb-8 gap-1 h-auto p-1">
-            <TabsTrigger value="bookings" className="text-xs sm:text-sm px-2 py-2.5">Réservations</TabsTrigger>
-            <TabsTrigger value="shared-rides" className="text-xs sm:text-sm px-2 py-2.5">Partagés</TabsTrigger>
-            <TabsTrigger value="fleet" className="text-xs sm:text-sm px-2 py-2.5">Véhicules</TabsTrigger>
-            <TabsTrigger value="pricing" className="text-xs sm:text-sm px-2 py-2.5">Tarifs</TabsTrigger>
-            <TabsTrigger value="options" className="text-xs sm:text-sm px-2 py-2.5">Options</TabsTrigger>
-            <TabsTrigger value="circuits" className="text-xs sm:text-sm px-2 py-2.5">Circuits</TabsTrigger>
-            <TabsTrigger value="promos" className="text-xs sm:text-sm px-2 py-2.5">Promos</TabsTrigger>
-            <TabsTrigger value="admins" className="text-xs sm:text-sm px-2 py-2.5">Admins</TabsTrigger>
-            <TabsTrigger value="settings" className="text-xs sm:text-sm px-2 py-2.5">Paramètres</TabsTrigger>
-          </TabsList>
+          <div className="w-full overflow-x-auto mb-6 sm:mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:max-w-6xl sm:mx-auto sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-1 h-auto p-1">
+              <TabsTrigger value="bookings" className="text-xs sm:text-sm px-3 sm:px-2 py-2.5 whitespace-nowrap">Réservations</TabsTrigger>
+              <TabsTrigger value="shared-rides" className="text-xs sm:text-sm px-3 sm:px-2 py-2.5 whitespace-nowrap">Partagés</TabsTrigger>
+              <TabsTrigger value="fleet" className="text-xs sm:text-sm px-3 sm:px-2 py-2.5 whitespace-nowrap">Véhicules</TabsTrigger>
+              <TabsTrigger value="pricing" className="text-xs sm:text-sm px-3 sm:px-2 py-2.5 whitespace-nowrap">Tarifs</TabsTrigger>
+              <TabsTrigger value="options" className="text-xs sm:text-sm px-3 sm:px-2 py-2.5 whitespace-nowrap">Options</TabsTrigger>
+              <TabsTrigger value="circuits" className="text-xs sm:text-sm px-3 sm:px-2 py-2.5 whitespace-nowrap">Circuits</TabsTrigger>
+              <TabsTrigger value="promos" className="text-xs sm:text-sm px-3 sm:px-2 py-2.5 whitespace-nowrap">Promos</TabsTrigger>
+              <TabsTrigger value="admins" className="text-xs sm:text-sm px-3 sm:px-2 py-2.5 whitespace-nowrap">Admins</TabsTrigger>
+              <TabsTrigger value="settings" className="text-xs sm:text-sm px-3 sm:px-2 py-2.5 whitespace-nowrap">Paramètres</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="admins" className="space-y-6">
             <div className="mb-6">
@@ -1608,7 +1610,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6">
+          <div className="grid gap-4 sm:gap-6">
             {filteredBookings.map((booking, index) => (
               <motion.div
                 key={booking.id}
@@ -1616,23 +1618,35 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
               >
-                <Card className="border-2 border-accent/20">
-                  <CardHeader className="border-b border-border">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-xl font-semibold uppercase tracking-wide">
-                          {fleetData?.find(v => v.id === booking.vehicleType)?.title || booking.vehicleType || 'Réservation'}
-                        </CardTitle>
-                        <CardDescription className="mt-1">
-                          Client: {booking.userEmail}
-                        </CardDescription>
+                <Card className="border-2 border-accent/20 overflow-hidden">
+                  <CardHeader className="border-b border-border pb-3 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-base sm:text-lg md:text-xl font-semibold uppercase tracking-wide truncate">
+                            {fleetData?.find(v => v.id === booking.vehicleType)?.title || booking.vehicleType || 'Réservation'}
+                          </CardTitle>
+                          <CardDescription className="mt-1 text-xs sm:text-sm truncate">
+                            Client: {booking.userEmail}
+                          </CardDescription>
+                        </div>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => handleDelete(booking.id)}
+                          className="text-red-500 hover:text-red-600 hover:bg-red-500/10 flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10"
+                        >
+                          <Trash size={18} className="sm:w-5 sm:h-5" />
+                        </Button>
                       </div>
-                      <div className="flex items-center gap-2">
+                      
+                      <div className="space-y-2">
+                        <Label className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wide">Statut</Label>
                         <Select
                           value={booking.status}
                           onValueChange={(value) => handleStatusChange(booking.id, value as Booking['status'])}
                         >
-                          <SelectTrigger className={`w-[140px] ${statusColors[booking.status]} border font-medium uppercase text-xs`}>
+                          <SelectTrigger className={`w-full h-9 sm:h-10 ${statusColors[booking.status]} border font-medium uppercase text-xs`}>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -1642,72 +1656,72 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                             <SelectItem value="cancelled">Cancelled</SelectItem>
                           </SelectContent>
                         </Select>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => handleDelete(booking.id)}
-                          className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
-                        >
-                          <Trash size={20} />
-                        </Button>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="pt-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                            <MapPin size={16} />
-                            <span className="uppercase tracking-wide font-medium">Pickup</span>
+                  <CardContent className="pt-3 sm:pt-4 px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="space-y-3 sm:space-y-4">
+                      <div className="space-y-2.5">
+                        <div className="flex gap-2 sm:gap-3">
+                          <div className="flex-shrink-0 mt-0.5">
+                            <div className="w-2 h-2 rounded-full bg-accent" />
                           </div>
-                          <p className="text-foreground pl-6">{booking.pickup}</p>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wide font-medium mb-0.5">Pickup</div>
+                            <p className="text-xs sm:text-sm text-foreground break-words">{booking.pickup}</p>
+                          </div>
                         </div>
-                        <div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                            <MapPin size={16} weight="fill" />
-                            <span className="uppercase tracking-wide font-medium">Destination</span>
+                        
+                        <div className="flex gap-2 sm:gap-3">
+                          <div className="flex-shrink-0 mt-0.5">
+                            <div className="w-2 h-2 rounded-full bg-accent/60" />
                           </div>
-                          <p className="text-foreground pl-6">{booking.destination}</p>
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                            <UserIcon size={16} />
-                            <span className="uppercase tracking-wide font-medium">Passengers</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wide font-medium mb-0.5">Destination</div>
+                            <p className="text-xs sm:text-sm text-foreground break-words">{booking.destination}</p>
                           </div>
-                          <p className="text-foreground pl-6">{booking.passengers}</p>
                         </div>
                       </div>
-                      <div className="space-y-4">
+
+                      <div className="grid grid-cols-2 gap-3 sm:gap-4 pt-2 border-t border-border">
                         <div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                            <Calendar size={16} />
+                          <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-muted-foreground mb-1">
+                            <Calendar size={14} className="flex-shrink-0" />
                             <span className="uppercase tracking-wide font-medium">Date</span>
                           </div>
-                          <p className="text-foreground pl-6">{new Date(booking.date).toLocaleDateString('fr-FR', { 
-                            weekday: 'long', 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
+                          <p className="text-xs sm:text-sm text-foreground">{new Date(booking.date).toLocaleDateString('fr-FR', { 
+                            day: 'numeric', 
+                            month: 'short',
+                            year: 'numeric'
                           })}</p>
                         </div>
                         <div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                            <Clock size={16} />
-                            <span className="uppercase tracking-wide font-medium">Time</span>
+                          <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-muted-foreground mb-1">
+                            <Clock size={14} className="flex-shrink-0" />
+                            <span className="uppercase tracking-wide font-medium">Heure</span>
                           </div>
-                          <p className="text-foreground pl-6">{booking.time}</p>
+                          <p className="text-xs sm:text-sm text-foreground">{booking.time}</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                        <div>
+                          <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-muted-foreground mb-1">
+                            <UserIcon size={14} className="flex-shrink-0" />
+                            <span className="uppercase tracking-wide font-medium">Passagers</span>
+                          </div>
+                          <p className="text-xs sm:text-sm text-foreground">{booking.passengers}</p>
                         </div>
                         <div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                            <span className="uppercase tracking-wide font-medium">Price (€)</span>
+                          <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wide font-medium mb-1">
+                            Prix (€)
                           </div>
                           <Input
                             type="number"
                             defaultValue={booking.price || ''}
                             onBlur={(e) => handlePriceChange(booking.id, e.target.value)}
-                            placeholder="Set price..."
-                            className="h-10 bg-secondary border-border"
+                            placeholder="Prix..."
+                            className="h-8 sm:h-10 bg-secondary border-border text-xs sm:text-sm"
                           />
                         </div>
                       </div>

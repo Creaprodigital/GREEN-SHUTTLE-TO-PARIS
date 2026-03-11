@@ -308,104 +308,112 @@ function BookingCard({ booking, index, fleet, onViewRoute, showRebook, onRebook 
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.1 }}
     >
-      <Card className="border-2 border-accent/20 hover:border-accent/40 transition-colors">
-        <CardHeader className="border-b border-border pb-4">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-            <div className="flex-1">
-              <CardTitle className="text-lg sm:text-xl font-semibold uppercase tracking-wide">
-                {fleet?.find(v => v.id === booking.vehicleType)?.title || booking.vehicleType || 'Réservation'}
-              </CardTitle>
-              <CardDescription className="mt-1 flex items-center gap-2 text-sm">
-                <UserIcon size={14} className="sm:w-4 sm:h-4" />
-                {booking.passengers} {booking.passengers === '1' ? 'passager' : 'passagers'}
-              </CardDescription>
+      <Card className="border-2 border-accent/20 hover:border-accent/40 transition-colors overflow-hidden">
+        <CardHeader className="border-b border-border pb-3 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+          <div className="flex flex-col gap-2 sm:gap-3">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <CardTitle className="text-base sm:text-lg md:text-xl font-semibold uppercase tracking-wide truncate">
+                  {fleet?.find(v => v.id === booking.vehicleType)?.title || booking.vehicleType || 'Réservation'}
+                </CardTitle>
+                <CardDescription className="mt-1 flex items-center gap-1.5 text-xs sm:text-sm">
+                  <UserIcon size={14} className="flex-shrink-0" />
+                  {booking.passengers} {booking.passengers === '1' ? 'passager' : 'passagers'}
+                </CardDescription>
+              </div>
+              <Badge className={`${statusColors[booking.status]} border font-medium uppercase text-[10px] sm:text-xs whitespace-nowrap flex-shrink-0 px-2 py-1`}>
+                {booking.status}
+              </Badge>
             </div>
-            <Badge className={`${statusColors[booking.status]} border font-medium uppercase text-xs whitespace-nowrap self-start`}>
-              {booking.status}
-            </Badge>
+            
+            <div className="flex flex-wrap gap-2 sm:gap-3 text-xs sm:text-sm">
+              <div className="flex items-center gap-1.5 text-muted-foreground">
+                <Calendar size={14} className="flex-shrink-0" />
+                <span className="truncate">{new Date(booking.date).toLocaleDateString('fr-FR', { 
+                  day: 'numeric', 
+                  month: 'short',
+                  year: 'numeric'
+                })}</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-muted-foreground">
+                <Clock size={14} className="flex-shrink-0" />
+                <span>{booking.time}</span>
+              </div>
+            </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-4 sm:pt-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="space-y-4">
-              <div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                  <MapPin size={16} />
-                  <span className="uppercase tracking-wide font-medium">Départ</span>
+        
+        <CardContent className="pt-3 sm:pt-4 px-3 sm:px-6 pb-3 sm:pb-6">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-2.5">
+              <div className="flex gap-2 sm:gap-3">
+                <div className="flex-shrink-0 mt-0.5">
+                  <div className="w-2 h-2 rounded-full bg-accent" />
                 </div>
-                <p className="text-foreground pl-6">{booking.pickup}</p>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wide font-medium mb-0.5">Départ</div>
+                  <p className="text-xs sm:text-sm text-foreground break-words">{booking.pickup}</p>
+                </div>
               </div>
-              <div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                  <MapPin size={16} weight="fill" />
-                  <span className="uppercase tracking-wide font-medium">Arrivée</span>
+              
+              <div className="flex gap-2 sm:gap-3">
+                <div className="flex-shrink-0 mt-0.5">
+                  <div className="w-2 h-2 rounded-full bg-accent/60" />
                 </div>
-                <p className="text-foreground pl-6">{booking.destination}</p>
-              </div>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                  <Calendar size={16} />
-                  <span className="uppercase tracking-wide font-medium">Date</span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wide font-medium mb-0.5">Arrivée</div>
+                  <p className="text-xs sm:text-sm text-foreground break-words">{booking.destination}</p>
                 </div>
-                <p className="text-foreground pl-6">{new Date(booking.date).toLocaleDateString('fr-FR', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}</p>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                  <Clock size={16} />
-                  <span className="uppercase tracking-wide font-medium">Heure</span>
-                </div>
-                <p className="text-foreground pl-6">{booking.time}</p>
               </div>
             </div>
+
+            {booking.serviceType === 'shared' && booking.sharedRideId && (
+              <div className="pt-3 border-t border-border">
+                <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-2.5 sm:p-3 mb-2.5">
+                  <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                    <Users size={16} weight="fill" className="text-accent flex-shrink-0" />
+                    <span className="font-semibold text-xs sm:text-sm uppercase tracking-wide">Transfert Partagé</span>
+                  </div>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">
+                    Partagé avec {booking.sharedPassengers || 1} autre{(booking.sharedPassengers || 1) > 1 ? 's' : ''} passager{(booking.sharedPassengers || 1) > 1 ? 's' : ''}
+                  </p>
+                </div>
+                <Button
+                  onClick={() => onViewRoute(booking.sharedRideId || null)}
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-2 border-2 border-accent/30 hover:border-accent hover:bg-accent/10 text-accent text-xs sm:text-sm h-8 sm:h-9"
+                >
+                  <Map size={16} />
+                  <span className="hidden xs:inline">Voir l'itinéraire complet</span>
+                  <span className="xs:hidden">Itinéraire</span>
+                </Button>
+              </div>
+            )}
+
+            {booking.price && (
+              <div className="pt-3 border-t border-border">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">Prix Total</span>
+                  <span className="text-xl sm:text-2xl font-bold text-accent">{booking.price}€</span>
+                </div>
+              </div>
+            )}
+
+            {showRebook && onRebook && (
+              <div className="pt-3">
+                <Button
+                  onClick={onRebook}
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-2 border-2 border-accent/30 hover:border-accent hover:bg-accent/10 text-xs sm:text-sm h-8 sm:h-9"
+                >
+                  <ArrowsClockwise size={16} />
+                  Réserver à nouveau
+                </Button>
+              </div>
+            )}
           </div>
-          {booking.serviceType === 'shared' && booking.sharedRideId && (
-            <div className="mt-6 pt-6 border-t border-border">
-              <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4 mb-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Users size={20} weight="fill" className="text-accent" />
-                  <span className="font-semibold text-sm uppercase tracking-wide">Transfert Partagé</span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Ce trajet est partagé avec {booking.sharedPassengers || 1} autre{(booking.sharedPassengers || 1) > 1 ? 's' : ''} passager{(booking.sharedPassengers || 1) > 1 ? 's' : ''}
-                </p>
-              </div>
-              <Button
-                onClick={() => onViewRoute(booking.sharedRideId || null)}
-                variant="outline"
-                className="w-full gap-2 border-2 border-accent/30 hover:border-accent hover:bg-accent/10 text-accent"
-              >
-                <Map size={18} />
-                Voir l'itinéraire complet
-              </Button>
-            </div>
-          )}
-          {booking.price && (
-            <div className="mt-6 pt-6 border-t border-border">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground uppercase tracking-wide">Prix Total</span>
-                <span className="text-2xl font-bold text-accent">{booking.price}€</span>
-              </div>
-            </div>
-          )}
-          {showRebook && onRebook && (
-            <div className="mt-6">
-              <Button
-                onClick={onRebook}
-                variant="outline"
-                className="w-full gap-2 border-2 border-accent/30 hover:border-accent hover:bg-accent/10"
-              >
-                <ArrowsClockwise size={18} />
-                Réserver à nouveau
-              </Button>
-            </div>
-          )}
         </CardContent>
       </Card>
     </motion.div>
