@@ -1505,7 +1505,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
               </p>
             </div>
 
-            <SharedRideManager bookings={bookings} />
+            <SharedRideManager bookings={bookings} onUpdateBooking={onUpdateBooking} />
           </TabsContent>
 
           <TabsContent value="bookings" className="space-y-6">

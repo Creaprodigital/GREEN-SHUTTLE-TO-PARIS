@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,11 +7,13 @@ import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Users, MapPin, Clock, CurrencyEur, ArrowRight, Info, Check, X } from '@phosphor-icons/react'
+import { Users, MapPin, Clock, CurrencyEur, ArrowRight, Info, Check, X, Sparkle, Lightning, TrendUp } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
 import { Booking } from '@/types/booking'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { autoMatchSharedRides, findPotentialMatches } from '@/lib/sharedRideMatching'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 export interface SharedRideSettings {
   enabled: boolean
@@ -58,14 +60,57 @@ interface SharedRideGroup {
 
 interface SharedRideManagerProps {
   bookings: Booking[]
+  onUpdateBooking?: (id: string, updates: Partial<Booking>) => void
 }
 
-export default function SharedRideManager({ bookings }: SharedRideManagerProps) {
+export default function SharedRideManager({ bookings, onUpdateBooking }: SharedRideManagerProps) {
   const [settings, setSettings] = useKV<SharedRideSettings>('shared-ride-settings', DEFAULT_SHARED_RIDE_SETTINGS)
+  const [isMatching, setIsMatching] = useState(false)
+  const [lastMatchTime, setLastMatchTime] = useState<number | null>(null)
 
   const sharedBookings = useMemo(() => {
     return bookings.filter(b => b.serviceType === 'shared' && b.status !== 'cancelled')
   }, [bookings])
+
+  const runAutoMatch = async () => {
+    if (!settings?.autoMatchEnabled || !onUpdateBooking) {
+      toast.error('Le matching automatique n\'est pas activé')
+      return
+    }
+
+    setIsMatching(true)
+    try {
+      const result = await autoMatchSharedRides(bookings, settings)
+      
+      if (result.matchesMade > 0) {
+        result.updatedBookings.forEach(booking => {
+          const original = bookings.find(b => b.id === booking.id)
+          if (original && original.sharedRideId !== booking.sharedRideId) {
+            onUpdateBooking(booking.id, {
+              sharedRideId: booking.sharedRideId,
+              isSharedRide: booking.isSharedRide,
+              sharedPassengers: booking.sharedPassengers,
+              price: booking.price
+            })
+          }
+        })
+        
+        setLastMatchTime(Date.now())
+        toast.success(`${result.matchesMade} nouveau${result.matchesMade > 1 ? 'x' : ''} groupe${result.matchesMade > 1 ? 's' : ''} créé${result.matchesMade > 1 ? 's' : ''} !`, {
+          description: 'Les passagers compatibles ont été associés'
+        })
+      } else {
+        toast.info('Aucun nouveau match trouvé', {
+          description: 'Tous les trajets compatibles sont déjà groupés'
+        })
+      }
+    } catch (error) {
+      toast.error('Erreur lors du matching automatique')
+      console.error('Auto-match error:', error)
+    } finally {
+      setIsMatching(false)
+    }
+  }
 
   const sharedRideGroups = useMemo(() => {
     const groups: SharedRideGroup[] = []
@@ -219,13 +264,64 @@ export default function SharedRideManager({ bookings }: SharedRideManagerProps) 
         </Card>
       </div>
 
+      {settings?.autoMatchEnabled && (
+        <Alert className="border-2 border-accent/30 bg-accent/5">
+          <Sparkle size={20} weight="fill" className="text-accent" />
+          <AlertTitle>Matching Automatique Actif</AlertTitle>
+          <AlertDescription className="flex items-center justify-between">
+            <span>Le système recherche automatiquement des trajets compatibles toutes les 30 secondes</span>
+            <Button 
+              onClick={runAutoMatch} 
+              disabled={isMatching || !onUpdateBooking}
+              variant="outline"
+              size="sm"
+              className="ml-4"
+            >
+              {isMatching ? (
+                <>
+                  <Lightning size={16} className="mr-2 animate-pulse" />
+                  Matching en cours...
+                </>
+              ) : (
+                <>
+                  <Lightning size={16} className="mr-2" />
+                  Matcher Maintenant
+                </>
+              )}
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users size={24} weight="fill" />
-            Paramètres du Transfert Partagé
-          </CardTitle>
-          <CardDescription>Configurez les règles de matching et les remises</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Users size={24} weight="fill" />
+                Paramètres du Transfert Partagé
+              </CardTitle>
+              <CardDescription>Configurez les règles de matching et les remises</CardDescription>
+            </div>
+            <Button 
+              onClick={runAutoMatch} 
+              disabled={isMatching || !onUpdateBooking || !settings?.enabled}
+              size="lg"
+              className="gap-2"
+            >
+              {isMatching ? (
+                <>
+                  <TrendUp size={20} className="animate-pulse" />
+                  Matching...
+                </>
+              ) : (
+                <>
+                  <Lightning size={20} weight="fill" />
+                  Lancer le Matching
+                </>
+              )}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
