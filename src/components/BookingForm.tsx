@@ -86,16 +86,40 @@ export default function BookingForm() {
   }
 
   const findForfaitForRoute = (vehicleId: string): ZoneForfait | null => {
-    if (!pickupCoords || !destinationCoords || !zoneForfaits || !pricingZones) return null
+    if (!pickupCoords || !destinationCoords || !zoneForfaits || !pricingZones) {
+      console.log('🔍 findForfaitForRoute - Données manquantes:', {
+        pickupCoords: !!pickupCoords,
+        destinationCoords: !!destinationCoords,
+        zoneForfaits: zoneForfaits?.length || 0,
+        pricingZones: pricingZones?.length || 0
+      })
+      return null
+    }
     
     const fromZone = findZoneForPoint(pickupCoords)
     const toZone = findZoneForPoint(destinationCoords)
+    
+    console.log('🔍 findForfaitForRoute - Zones trouvées:', {
+      fromZone: fromZone?.name || 'non trouvée',
+      toZone: toZone?.name || 'non trouvée',
+      pickupCoords,
+      destinationCoords
+    })
     
     if (!fromZone || !toZone) return null
     
     const forfait = zoneForfaits.find(
       f => f.fromZoneId === fromZone.id && f.toZoneId === toZone.id && f.vehicleId === vehicleId
     )
+    
+    console.log('🔍 findForfaitForRoute - Recherche forfait:', {
+      fromZoneId: fromZone.id,
+      toZoneId: toZone.id,
+      vehicleId,
+      forfaitTrouve: !!forfait,
+      prixForfait: forfait?.fixedPrice,
+      tousLesForfaits: zoneForfaits
+    })
     
     return forfait || null
   }
@@ -193,7 +217,7 @@ export default function BookingForm() {
       } else {
         const pricePerKm = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
         const pricePerMinute = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
-        const minimumPrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonMinimumTransferPrice || vehiclePricing.minimumTransferPrice || 40) : (vehiclePricing.minimumTransferPrice || 40)
+        const minimumPrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonMinimumTransferPrice || vehiclePricing.minimumTransferPrice || 0) : (vehiclePricing.minimumTransferPrice || 0)
         
         console.log(`💰 TARIF AU KM/MIN - Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€, Prix minimum transfert: ${minimumPrice}€`)
         
