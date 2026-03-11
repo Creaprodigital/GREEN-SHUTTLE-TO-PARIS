@@ -579,157 +579,235 @@ export default function BookingForm() {
       transition={{ duration: 0.5, delay: 0.2 }}
       className="relative -mt-16 sm:-mt-24 z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
     >
-      <Dialog open={showPromoPreview} onOpenChange={setShowPromoPreview}>
-        <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ 
-              duration: 0.3,
-              ease: [0.16, 1, 0.3, 1]
-            }}
-          >
-            <DialogHeader>
+      <AnimatePresence>
+        {showPromoPreview && (
+          <Dialog open={showPromoPreview} onOpenChange={setShowPromoPreview}>
+            <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
               <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1, duration: 0.4 }}
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ 
+                  opacity: 0, 
+                  scale: 1.1, 
+                  y: -30,
+                  transition: {
+                    duration: 0.4,
+                    ease: [0.68, -0.55, 0.27, 1.55]
+                  }
+                }}
+                transition={{ 
+                  duration: 0.3,
+                  ease: [0.16, 1, 0.3, 1]
+                }}
               >
-                <DialogTitle className="flex items-center gap-2 sm:gap-3 text-lg sm:text-2xl font-bold uppercase tracking-wide">
-                  <motion.div 
-                    className="p-2 sm:p-3 bg-accent/20 rounded-full"
-                    initial={{ rotate: -180, scale: 0 }}
-                    animate={{ rotate: 0, scale: 1 }}
-                    transition={{ delay: 0.2, duration: 0.5, type: "spring", stiffness: 200 }}
+                <DialogHeader>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -30, transition: { duration: 0.2 } }}
+                    transition={{ delay: 0.1, duration: 0.4 }}
                   >
-                    <Gift size={24} weight="fill" className="sm:w-8 sm:h-8 text-accent" />
+                    <DialogTitle className="flex items-center gap-2 sm:gap-3 text-lg sm:text-2xl font-bold uppercase tracking-wide">
+                      <motion.div 
+                        className="p-2 sm:p-3 bg-accent/20 rounded-full"
+                        initial={{ rotate: -180, scale: 0 }}
+                        animate={{ rotate: 0, scale: 1 }}
+                        exit={{ 
+                          rotate: 180, 
+                          scale: 0,
+                          transition: { 
+                            duration: 0.4,
+                            ease: [0.68, -0.55, 0.27, 1.55]
+                          }
+                        }}
+                        transition={{ delay: 0.2, duration: 0.5, type: "spring", stiffness: 200 }}
+                      >
+                        <Gift size={24} weight="fill" className="sm:w-8 sm:h-8 text-accent" />
+                      </motion.div>
+                      <span className="text-base sm:text-2xl">Promotion Aller-Retour</span>
+                    </DialogTitle>
                   </motion.div>
-                  <span className="text-base sm:text-2xl">Promotion Aller-Retour</span>
-                </DialogTitle>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.4 }}
-              >
-                <DialogDescription className="text-sm sm:text-base pt-2">
-                  Profitez d'une réduction exclusive sur tous les transferts aller-retour !
-                </DialogDescription>
-              </motion.div>
-            </DialogHeader>
-            
-            {roundTripDiscount?.enabled && roundTripDiscount.value > 0 && (
-              <div className="space-y-4 sm:space-y-5 py-3 sm:py-4">
-                <motion.div 
-                  className="relative overflow-hidden rounded-xl bg-gradient-to-br from-accent/30 via-accent/20 to-accent/10 p-4 sm:p-6 border-2 border-accent/40"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3, duration: 0.5, type: "spring", stiffness: 100 }}
-                >
-                  <motion.div 
-                    className="absolute top-0 right-0 -mt-4 -mr-4"
-                    initial={{ rotate: 0, scale: 0 }}
-                    animate={{ rotate: 360, scale: 1 }}
-                    transition={{ delay: 0.4, duration: 0.8 }}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0, transition: { duration: 0.15 } }}
+                    transition={{ delay: 0.2, duration: 0.4 }}
                   >
-                    <Sparkle size={80} weight="fill" className="sm:w-[120px] sm:h-[120px] text-accent/10" />
+                    <DialogDescription className="text-sm sm:text-base pt-2">
+                      Profitez d'une réduction exclusive sur tous les transferts aller-retour !
+                    </DialogDescription>
                   </motion.div>
-                  <div className="relative z-10 flex flex-col items-center text-center space-y-2 sm:space-y-3">
+                </DialogHeader>
+                
+                {roundTripDiscount?.enabled && roundTripDiscount.value > 0 && (
+                  <div className="space-y-4 sm:space-y-5 py-3 sm:py-4">
                     <motion.div 
-                      className="p-3 sm:p-4 bg-accent rounded-full"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.5, duration: 0.4, type: "spring", stiffness: 200 }}
+                      className="relative overflow-hidden rounded-xl bg-gradient-to-br from-accent/30 via-accent/20 to-accent/10 p-4 sm:p-6 border-2 border-accent/40"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ 
+                        opacity: 0, 
+                        scale: 1.2,
+                        y: -20,
+                        transition: { 
+                          duration: 0.35,
+                          ease: [0.68, -0.55, 0.27, 1.55]
+                        }
+                      }}
+                      transition={{ delay: 0.3, duration: 0.5, type: "spring", stiffness: 100 }}
                     >
-                      <Percent size={28} weight="bold" className="sm:w-10 sm:h-10 text-accent-foreground" />
+                      <motion.div 
+                        className="absolute top-0 right-0 -mt-4 -mr-4"
+                        initial={{ rotate: 0, scale: 0 }}
+                        animate={{ rotate: 360, scale: 1 }}
+                        exit={{ 
+                          rotate: 720, 
+                          scale: 0,
+                          transition: { duration: 0.5 }
+                        }}
+                        transition={{ delay: 0.4, duration: 0.8 }}
+                      >
+                        <Sparkle size={80} weight="fill" className="sm:w-[120px] sm:h-[120px] text-accent/10" />
+                      </motion.div>
+                      <div className="relative z-10 flex flex-col items-center text-center space-y-2 sm:space-y-3">
+                        <motion.div 
+                          className="p-3 sm:p-4 bg-accent rounded-full"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          exit={{ 
+                            scale: 0,
+                            rotate: 360,
+                            transition: { 
+                              duration: 0.4,
+                              ease: [0.68, -0.55, 0.27, 1.55]
+                            }
+                          }}
+                          transition={{ delay: 0.5, duration: 0.4, type: "spring", stiffness: 200 }}
+                        >
+                          <Percent size={28} weight="bold" className="sm:w-10 sm:h-10 text-accent-foreground" />
+                        </motion.div>
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ 
+                            opacity: 0, 
+                            y: -30,
+                            scale: 1.3,
+                            transition: { 
+                              duration: 0.35,
+                              ease: [0.68, -0.55, 0.27, 1.55]
+                            }
+                          }}
+                          transition={{ delay: 0.6, duration: 0.4 }}
+                        >
+                          <motion.div 
+                            className="text-4xl sm:text-5xl font-bold text-accent mb-1"
+                            initial={{ scale: 0.5 }}
+                            animate={{ scale: 1 }}
+                            exit={{ 
+                              scale: 1.5,
+                              transition: { 
+                                duration: 0.3,
+                                ease: [0.68, -0.55, 0.27, 1.55]
+                              }
+                            }}
+                            transition={{ delay: 0.7, duration: 0.5, type: "spring", stiffness: 150 }}
+                          >
+                            -{roundTripDiscount.value}{roundTripDiscount.type === 'percentage' ? '%' : '€'}
+                          </motion.div>
+                          <div className="text-xs sm:text-sm uppercase tracking-widest font-medium text-foreground/80">
+                            de réduction immédiate
+                          </div>
+                        </motion.div>
+                      </div>
                     </motion.div>
+
+                    <motion.div 
+                      className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4 sm:p-5 space-y-3"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ 
+                        opacity: 0, 
+                        y: 20,
+                        scale: 0.9,
+                        transition: { duration: 0.25 }
+                      }}
+                      transition={{ delay: 0.8, duration: 0.4 }}
+                    >
+                      <h4 className="font-semibold uppercase tracking-wide text-xs sm:text-sm flex items-center gap-2">
+                        <Tag size={16} weight="fill" className="sm:w-[18px] sm:h-[18px] text-accent" />
+                        Comment ça marche ?
+                      </h4>
+                      <ul className="space-y-2 text-xs sm:text-sm text-muted-foreground">
+                        {[
+                          'Sélectionnez "Aller-Retour" lors de votre réservation',
+                          'La réduction s\'applique automatiquement sur le prix total',
+                          'Cumulable avec vos codes promo valides',
+                          'Valable sur tous les véhicules de notre flotte'
+                        ].map((text, index) => (
+                          <motion.li 
+                            key={index}
+                            className="flex items-start gap-2"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ 
+                              opacity: 0, 
+                              x: -20,
+                              transition: { duration: 0.2, delay: index * 0.05 }
+                            }}
+                            transition={{ delay: 0.9 + (index * 0.1), duration: 0.3 }}
+                          >
+                            <Check size={16} weight="bold" className="sm:w-[18px] sm:h-[18px] text-accent flex-shrink-0 mt-0.5" />
+                            <span>{text}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </motion.div>
+
+                    {roundTripDiscount.description && (
+                      <motion.div 
+                        className="text-xs text-center text-muted-foreground italic px-2 sm:px-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                        transition={{ delay: 1.3, duration: 0.4 }}
+                      >
+                        {roundTripDiscount.description}
+                      </motion.div>
+                    )}
+
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.6, duration: 0.4 }}
+                      exit={{ 
+                        opacity: 0, 
+                        y: 30,
+                        scale: 0.95,
+                        transition: { duration: 0.2 }
+                      }}
+                      transition={{ delay: 1.4, duration: 0.4 }}
                     >
-                      <motion.div 
-                        className="text-4xl sm:text-5xl font-bold text-accent mb-1"
-                        initial={{ scale: 0.5 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.7, duration: 0.5, type: "spring", stiffness: 150 }}
+                      <Button
+                        onClick={() => {
+                          setTransferType('roundtrip')
+                          setShowPromoPreview(false)
+                          toast.success('Transfert aller-retour sélectionné !', {
+                            description: `Vous bénéficiez de -${roundTripDiscount.value}${roundTripDiscount.type === 'percentage' ? '%' : '€'}`
+                          })
+                        }}
+                        className="w-full h-11 sm:h-12 text-sm sm:text-base bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
                       >
-                        -{roundTripDiscount.value}{roundTripDiscount.type === 'percentage' ? '%' : '€'}
-                      </motion.div>
-                      <div className="text-xs sm:text-sm uppercase tracking-widest font-medium text-foreground/80">
-                        de réduction immédiate
-                      </div>
+                        <Sparkle size={18} weight="fill" className="sm:w-5 sm:h-5 mr-2" />
+                        Profiter de cette offre
+                      </Button>
                     </motion.div>
                   </div>
-                </motion.div>
-
-                <motion.div 
-                  className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4 sm:p-5 space-y-3"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8, duration: 0.4 }}
-                >
-                  <h4 className="font-semibold uppercase tracking-wide text-xs sm:text-sm flex items-center gap-2">
-                    <Tag size={16} weight="fill" className="sm:w-[18px] sm:h-[18px] text-accent" />
-                    Comment ça marche ?
-                  </h4>
-                  <ul className="space-y-2 text-xs sm:text-sm text-muted-foreground">
-                    {[
-                      'Sélectionnez "Aller-Retour" lors de votre réservation',
-                      'La réduction s\'applique automatiquement sur le prix total',
-                      'Cumulable avec vos codes promo valides',
-                      'Valable sur tous les véhicules de notre flotte'
-                    ].map((text, index) => (
-                      <motion.li 
-                        key={index}
-                        className="flex items-start gap-2"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.9 + (index * 0.1), duration: 0.3 }}
-                      >
-                        <Check size={16} weight="bold" className="sm:w-[18px] sm:h-[18px] text-accent flex-shrink-0 mt-0.5" />
-                        <span>{text}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
-                </motion.div>
-
-                {roundTripDiscount.description && (
-                  <motion.div 
-                    className="text-xs text-center text-muted-foreground italic px-2 sm:px-4"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.3, duration: 0.4 }}
-                  >
-                    {roundTripDiscount.description}
-                  </motion.div>
                 )}
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.4, duration: 0.4 }}
-                >
-                  <Button
-                    onClick={() => {
-                      setTransferType('roundtrip')
-                      setShowPromoPreview(false)
-                      toast.success('Transfert aller-retour sélectionné !', {
-                        description: `Vous bénéficiez de -${roundTripDiscount.value}${roundTripDiscount.type === 'percentage' ? '%' : '€'}`
-                      })
-                    }}
-                    className="w-full h-11 sm:h-12 text-sm sm:text-base bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
-                  >
-                    <Sparkle size={18} weight="fill" className="sm:w-5 sm:h-5 mr-2" />
-                    Profiter de cette offre
-                  </Button>
-                </motion.div>
-              </div>
-            )}
-          </motion.div>
-        </DialogContent>
-      </Dialog>
+              </motion.div>
+            </DialogContent>
+          </Dialog>
+        )}
+      </AnimatePresence>
 
       <Dialog open={showRoutePreview} onOpenChange={setShowRoutePreview}>
         <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
