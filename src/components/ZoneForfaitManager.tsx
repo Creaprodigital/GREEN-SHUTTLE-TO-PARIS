@@ -30,7 +30,7 @@ export interface ZoneForfait {
 export default function ZoneForfaitManager() {
   const [zones, setZones] = useKV<PricingZone[]>('pricing-zones', [])
   const [forfaits, setForfaits] = useKV<ZoneForfait[]>('zone-forfaits', [])
-  const [fleetData] = useKV<VehicleClass[]>('fleet-data', DEFAULT_FLEET)
+  const [fleetData] = useKV<VehicleClass[]>('fleet', DEFAULT_FLEET)
   
   const [showZoneDialog, setShowZoneDialog] = useState(false)
   const [showForfaitDialog, setShowForfaitDialog] = useState(false)
