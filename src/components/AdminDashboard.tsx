@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple, X, CurrencyCircleDollar, Sparkle, Info, EnvelopeSimple } from '@phosphor-icons/react'
+import { Car, MapPin, Calendar, Clock, User as UserIcon, UsersThree, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple, X, CurrencyCircleDollar, Sparkle, Info, EnvelopeSimple } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { VehiclePricing, DEFAULT_PRICING, ServiceOption, DEFAULT_OPTIONS, PricingSettings } from '@/types/pricing'
@@ -1641,7 +1641,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                       </div>
                       
                       <div className="flex items-center gap-1.5 bg-accent/10 border border-accent/30 rounded-lg px-2.5 py-1.5 w-fit">
-                        {booking.serviceType === 'shared' && <Users size={14} weight="fill" className="flex-shrink-0" />}
+                        {booking.serviceType === 'shared' && <UsersThree size={14} weight="fill" className="flex-shrink-0" />}
                         {booking.serviceType === 'hourly' && <Clock size={14} weight="fill" className="flex-shrink-0" />}
                         {booking.serviceType === 'tour' && <MapPin size={14} weight="fill" className="flex-shrink-0" />}
                         {booking.serviceType === 'transfer' && <Car size={14} className="flex-shrink-0" />}
