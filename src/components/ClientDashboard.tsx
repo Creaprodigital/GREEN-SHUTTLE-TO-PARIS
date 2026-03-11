@@ -175,7 +175,7 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
                         <p className="text-lg text-muted-foreground">Aucun trajet prévu</p>
                         <p className="text-sm text-muted-foreground mt-2">Réservez votre prochain transfert</p>
                         <Button 
-                          onClick={onNavigateToServices}
+                          onClick={onNavigateToHome}
                           className="mt-6 gap-2 bg-accent hover:bg-accent/90"
                         >
                           <Plus size={18} />
@@ -250,7 +250,7 @@ export default function ClientDashboard({ userEmail, bookings, onLogout, onNavig
                   <Button 
                     variant="outline" 
                     className="w-full mt-4 border-2 border-accent/30 hover:border-accent hover:bg-accent/10"
-                    onClick={onNavigateToServices}
+                    onClick={onNavigateToHome}
                   >
                     <Plus size={16} className="mr-2" />
                     Nouvelle Réservation
