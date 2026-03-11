@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import PlacesAutocomplete from '@/components/PlacesAutocomplete'
 import CircuitMap from '@/components/CircuitMap'
+import RoutePreviewMap from '@/components/RoutePreviewMap'
 import { Booking } from '@/types/booking'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { ServiceOption, VehiclePricing, DEFAULT_PRICING, DEFAULT_OPTIONS, PricingSettings } from '@/types/pricing'
@@ -71,6 +72,7 @@ export default function BookingForm() {
   const [appliedPromoCode, setAppliedPromoCode] = useState<PromoCode | null>(null)
   const [promoCodeError, setPromoCodeError] = useState('')
   const [showPromoPreview, setShowPromoPreview] = useState(false)
+  const [showRoutePreview, setShowRoutePreview] = useState(false)
 
   const isPointInPolygon = (point: { lat: number; lng: number }, polygon: { lat: number; lng: number }[]): boolean => {
     if (!polygon || polygon.length < 3) {
@@ -1045,6 +1047,20 @@ export default function BookingForm() {
                     </div>
                   )}
 
+                  {serviceType === 'shared' && pickup && destination && pickupCoords && destinationCoords && (
+                    <div className="mb-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowRoutePreview(true)}
+                        className="w-full h-12 border-2 border-accent/30 hover:border-accent hover:bg-accent/10 text-accent font-medium"
+                      >
+                        <MapPin size={20} weight="fill" className="mr-2" />
+                        Voir l'itinéraire optimisé
+                      </Button>
+                    </div>
+                  )}
+
                   <div className="space-y-4">
                     <Label className="text-sm font-medium uppercase tracking-wide">Sélectionnez votre véhicule</Label>
                     <RadioGroup value={vehicleType} onValueChange={setVehicleType}>
@@ -1561,6 +1577,37 @@ export default function BookingForm() {
           </form>
         </CardContent>
       </Card>
+
+      <Dialog open={showRoutePreview} onOpenChange={setShowRoutePreview}>
+        <DialogContent className="max-w-5xl max-h-[90vh] p-0">
+          <DialogHeader className="p-6 pb-0">
+            <DialogTitle className="text-xl font-semibold">Itinéraire Optimisé de Votre Course Partagée</DialogTitle>
+            <DialogDescription>
+              Visualisez le trajet optimisé avec tous les arrêts pour la course partagée
+            </DialogDescription>
+          </DialogHeader>
+          {pickupCoords && destinationCoords && (
+            <RoutePreviewMap
+              stops={[
+                {
+                  address: pickup,
+                  lat: pickupCoords.lat,
+                  lng: pickupCoords.lng,
+                  type: 'pickup'
+                },
+                {
+                  address: destination,
+                  lat: destinationCoords.lat,
+                  lng: destinationCoords.lng,
+                  type: 'destination'
+                }
+              ]}
+              className="h-[600px]"
+              showOptimizationStats={true}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </motion.div>
   )
 }
