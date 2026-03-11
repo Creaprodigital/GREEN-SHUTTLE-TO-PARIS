@@ -1107,68 +1107,6 @@ export default function BookingForm() {
                     </div>
                   )}
 
-                  {vehicleType && (
-                    <div className="bg-accent/10 border-2 border-accent/30 rounded-lg p-5 space-y-3">
-                      <h4 className="font-semibold uppercase tracking-wide text-sm flex items-center gap-2">
-                        <CurrencyEur size={18} weight="bold" />
-                        Prix de la Course
-                      </h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Véhicule avec Chauffeur:</span>
-                          <span className="font-medium">{fleet?.find(v => v.id === vehicleType)?.title}</span>
-                        </div>
-                        {serviceType === 'transfer' && (
-                          <>
-                            {isCalculatingDistance ? (
-                              <div className="flex justify-center items-center text-xs text-muted-foreground py-2">
-                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-accent border-t-transparent mr-2"></div>
-                                Calcul de la distance en cours...
-                              </div>
-                            ) : distanceKm > 0 ? (
-                              <>
-                                <div className="flex justify-between items-center text-xs">
-                                  <span className="text-muted-foreground">Distance:</span>
-                                  <span className="font-medium">{distanceKm.toFixed(1)} km</span>
-                                </div>
-                                <div className="flex justify-between items-center text-xs">
-                                  <span className="text-muted-foreground">Durée estimée:</span>
-                                  <span className="font-medium">{durationMinutes} min</span>
-                                </div>
-                              </>
-                            ) : null}
-                          </>
-                        )}
-                        {serviceType === 'hourly' && (
-                          <div className="flex justify-between items-center text-xs">
-                            <span className="text-muted-foreground">Durée:</span>
-                            <span className="font-medium">{hourlyDuration} heure{parseInt(hourlyDuration) > 1 ? 's' : ''}</span>
-                          </div>
-                        )}
-                        {selectedOptions.length > 0 && (
-                          <>
-                            {selectedOptions.map(optionId => {
-                              const option = serviceOptions?.find(o => o.id === optionId)
-                              if (!option || option.price === 0) return null
-                              return (
-                                <div key={optionId} className="flex justify-between items-center text-xs">
-                                  <span className="text-muted-foreground">{option.name}:</span>
-                                  <span className="font-medium">+{option.price.toFixed(2)}€</span>
-                                </div>
-                              )
-                            })}
-                          </>
-                        )}
-                        <div className="border-t border-accent/20 pt-2 mt-2">
-                          <div className="flex justify-between items-center">
-                            <span className="font-semibold uppercase tracking-wide">Total:</span>
-                            <span className="text-2xl font-bold text-accent">{calculatePrice(vehicleType).toFixed(2)}€</span>
-                          </div>
-                        </div>
-                        </div>
-                      </div>
-                  )}
-
                   <div className="flex justify-between pt-4">
                     <Button type="button" onClick={handleBack} variant="outline" className="h-12 px-8 text-base font-medium uppercase tracking-widest">
                       <ArrowLeft className="mr-2" size={20} />
