@@ -18,6 +18,7 @@ import { Booking } from '@/types/booking'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { ServiceOption, VehiclePricing, DEFAULT_PRICING, DEFAULT_OPTIONS, PricingSettings } from '@/types/pricing'
 import { Circuit } from '@/types/circuit'
+import { PricingZone, ZoneForfait } from '@/components/ZoneForfaitManager'
 
 export default function BookingForm() {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
@@ -27,6 +28,8 @@ export default function BookingForm() {
   const [circuits] = useKV<Circuit[]>('circuits', [])
   const [activePricingMode] = useKV<'high-demand' | 'low-season'>('active-pricing-mode', 'high-demand')
   const [pricingSettings] = useKV<PricingSettings>('pricing-settings', { roundToWholeEuro: false })
+  const [pricingZones] = useKV<PricingZone[]>('pricing-zones', [])
+  const [zoneForfaits] = useKV<ZoneForfait[]>('zone-forfaits', [])
   const [currentStep, setCurrentStep] = useState(1)
   
   const [serviceType, setServiceType] = useState<'transfer' | 'hourly' | 'tour'>('transfer')
@@ -57,6 +60,45 @@ export default function BookingForm() {
   const [notes, setNotes] = useState('')
   
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'cash' | 'transfer'>('card')
+
+  const isPointInPolygon = (point: { lat: number; lng: number }, polygon: { lat: number; lng: number }[]): boolean => {
+    let inside = false
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const xi = polygon[i].lat, yi = polygon[i].lng
+      const xj = polygon[j].lat, yj = polygon[j].lng
+      
+      const intersect = ((yi > point.lng) !== (yj > point.lng)) &&
+        (point.lat < (xj - xi) * (point.lng - yi) / (yj - yi) + xi)
+      if (intersect) inside = !inside
+    }
+    return inside
+  }
+
+  const findZoneForPoint = (point: { lat: number; lng: number } | null): PricingZone | null => {
+    if (!point || !pricingZones) return null
+    
+    for (const zone of pricingZones) {
+      if (isPointInPolygon(point, zone.polygon)) {
+        return zone
+      }
+    }
+    return null
+  }
+
+  const findForfaitForRoute = (vehicleId: string): ZoneForfait | null => {
+    if (!pickupCoords || !destinationCoords || !zoneForfaits || !pricingZones) return null
+    
+    const fromZone = findZoneForPoint(pickupCoords)
+    const toZone = findZoneForPoint(destinationCoords)
+    
+    if (!fromZone || !toZone) return null
+    
+    const forfait = zoneForfaits.find(
+      f => f.fromZoneId === fromZone.id && f.toZoneId === toZone.id && f.vehicleId === vehicleId
+    )
+    
+    return forfait || null
+  }
 
   const vehiclePrices = useMemo(() => {
     const prices: Record<string, number> = {}
@@ -94,6 +136,39 @@ export default function BookingForm() {
       console.log('Tarif trouvé:', vehiclePricing)
 
       let basePrice = 0
+      
+      if (serviceType === 'transfer' && pickupCoords && destinationCoords) {
+        const forfait = findForfaitForRoute(vehicle.id)
+        if (forfait) {
+          basePrice = forfait.fixedPrice
+          const fromZone = findZoneForPoint(pickupCoords)
+          const toZone = findZoneForPoint(destinationCoords)
+          console.log(`💎 FORFAIT APPLIQUÉ: ${fromZone?.name} → ${toZone?.name} = ${basePrice}€ (tarif fixe prioritaire)`)
+          
+          let totalPrice = basePrice
+
+          const optionsPrice = selectedOptions.reduce((sum, optionId) => {
+            const option = serviceOptions?.find(o => o.id === optionId)
+            const price = option?.price || 0
+            if (price > 0) {
+              console.log(`   ➕ Option ${option?.name}: +${price}€`)
+            }
+            return sum + price
+          }, 0)
+
+          totalPrice = basePrice + optionsPrice
+          
+          if (pricingSettings?.roundToWholeEuro) {
+            totalPrice = Math.ceil(totalPrice)
+            console.log(`🔄 Prix arrondi à .00€: ${totalPrice.toFixed(2)}€`)
+          }
+          
+          console.log(`✅ Total ${vehicle.title}: ${basePrice.toFixed(2)}€ forfait + ${optionsPrice.toFixed(2)}€ options = ${totalPrice.toFixed(2)}€`)
+          
+          prices[vehicle.id] = totalPrice
+          return
+        }
+      }
       
       if (serviceType === 'hourly') {
         const hours = parseInt(hourlyDuration)
@@ -176,7 +251,7 @@ export default function BookingForm() {
 
     console.log('📋 Prix finaux calculés:', prices)
     return prices
-  }, [fleet, pricing, serviceType, hourlyDuration, activePricingMode, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions, pickup, destination, pricingSettings, pickupCoords, destinationCoords, selectedCircuitId, circuits])
+  }, [fleet, pricing, serviceType, hourlyDuration, activePricingMode, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions, pickup, destination, pricingSettings, pickupCoords, destinationCoords, selectedCircuitId, circuits, zoneForfaits, pricingZones])
 
   const calculatePrice = (vehicleId: string): number => {
     return vehiclePrices[vehicleId] || 0

@@ -19,6 +19,7 @@ import { toast } from 'sonner'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import CircuitManager from '@/components/CircuitManager'
+import ZoneForfaitManager from '@/components/ZoneForfaitManager'
 import { useKV } from '@github/spark/hooks'
 
 interface AdminAccount {
@@ -1302,6 +1303,18 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                     </motion.div>
                   )
                 })}
+            </div>
+
+            <div className="mt-12 pt-12 border-t-2 border-border">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+                  Forfaits Zone à Zone
+                </h3>
+                <p className="text-foreground/70">
+                  Créez des zones géographiques et définissez des tarifs fixes entre zones (prioritaire sur les calculs KM/Min)
+                </p>
+              </div>
+              <ZoneForfaitManager fleetData={Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET} />
             </div>
           </TabsContent>
 
