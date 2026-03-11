@@ -692,44 +692,39 @@ export default function BookingForm() {
                   transition={{ duration: 0.3 }}
                   className="space-y-5"
                 >
-                  {serviceType === 'transfer' && (() => {
-                    const fromZone = findZoneForPoint(pickupCoords)
-                    const toZone = findZoneForPoint(destinationCoords)
-                    
-                    return (
-                      <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4">
-                        {isCalculatingDistance ? (
-                          <div className="flex justify-center items-center text-sm text-muted-foreground py-3">
-                            <div className="animate-spin rounded-full h-5 w-5 border-2 border-accent border-t-transparent mr-3"></div>
-                            Calcul de la distance en cours...
+                  {serviceType === 'transfer' && (
+                    <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4">
+                      {isCalculatingDistance ? (
+                        <div className="flex justify-center items-center text-sm text-muted-foreground py-3">
+                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-accent border-t-transparent mr-3"></div>
+                          Calcul de la distance en cours...
+                        </div>
+                      ) : distanceKm > 0 ? (
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="flex flex-col items-center justify-center p-3 bg-background rounded-md">
+                            <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Distance</div>
+                            <div className="text-2xl font-bold text-accent">{distanceKm.toFixed(1)} km</div>
                           </div>
-                        ) : distanceKm > 0 ? (
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="flex flex-col items-center justify-center p-3 bg-background rounded-md">
-                              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Distance</div>
-                              <div className="text-2xl font-bold text-accent">{distanceKm.toFixed(1)} km</div>
-                            </div>
-                            <div className="flex flex-col items-center justify-center p-3 bg-background rounded-md">
-                              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Durée estimée</div>
-                              <div className="text-2xl font-bold text-accent">{durationMinutes} min</div>
-                            </div>
+                          <div className="flex flex-col items-center justify-center p-3 bg-background rounded-md">
+                            <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Durée estimée</div>
+                            <div className="text-2xl font-bold text-accent">{durationMinutes} min</div>
                           </div>
-                        ) : (pickup && destination && !pickupCoords && !destinationCoords) ? (
-                          <div className="text-center text-xs text-muted-foreground py-3">
-                            ⚠️ Veuillez sélectionner une adresse dans la liste de suggestions pour calculer la distance
-                          </div>
-                        ) : (pickup && destination && (!pickupCoords || !destinationCoords)) ? (
-                          <div className="text-center text-xs text-muted-foreground py-3">
-                            ⚠️ Veuillez sélectionner {!pickupCoords ? 'le lieu de départ' : 'la destination'} dans la liste de suggestions
-                          </div>
-                        ) : (
-                          <div className="text-center text-xs text-muted-foreground py-3">
-                            Saisissez le départ et la destination pour calculer la distance
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })()}
+                        </div>
+                      ) : (pickup && destination && !pickupCoords && !destinationCoords) ? (
+                        <div className="text-center text-xs text-muted-foreground py-3">
+                          ⚠️ Veuillez sélectionner une adresse dans la liste de suggestions pour calculer la distance
+                        </div>
+                      ) : (pickup && destination && (!pickupCoords || !destinationCoords)) ? (
+                        <div className="text-center text-xs text-muted-foreground py-3">
+                          ⚠️ Veuillez sélectionner {!pickupCoords ? 'le lieu de départ' : 'la destination'} dans la liste de suggestions
+                        </div>
+                      ) : (
+                        <div className="text-center text-xs text-muted-foreground py-3">
+                          Saisissez le départ et la destination pour calculer la distance
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div className="space-y-4">
                     <Label className="text-sm font-medium uppercase tracking-wide">Sélectionnez votre véhicule</Label>
@@ -788,128 +783,101 @@ export default function BookingForm() {
                     </RadioGroup>
                   </div>
 
-                  {serviceOptions && serviceOptions.length > 0 && (() => {
-                    const fromZone = findZoneForPoint(pickupCoords)
-                    const toZone = findZoneForPoint(destinationCoords)
-                    const hasZonePricing = serviceType === 'transfer' && fromZone && toZone && vehicleType && findZonePricing(fromZone, toZone, vehicleType)
-                    
-                    if (hasZonePricing) {
-                      return null
-                    }
-                    
-                    return (
-                      <div className="space-y-4 pt-6 border-t border-border">
-                        <Label className="text-sm font-medium uppercase tracking-wide">Options Supplémentaires</Label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {serviceOptions.map((option) => (
-                            <div key={option.id} className="flex items-start space-x-3 p-4 border-2 border-border rounded-lg hover:border-accent/50 transition-colors">
-                              <Checkbox
-                                id={option.id}
-                                checked={selectedOptions.includes(option.id)}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    setSelectedOptions([...selectedOptions, option.id])
-                                  } else {
-                                    setSelectedOptions(selectedOptions.filter(id => id !== option.id))
-                                  }
-                                }}
-                                className="mt-1"
-                              />
-                              <div className="flex-1 cursor-pointer" onClick={() => {
-                                const checkbox = document.getElementById(option.id) as HTMLButtonElement
-                                if (checkbox) checkbox.click()
-                              }}>
-                                <Label htmlFor={option.id} className="font-semibold text-sm cursor-pointer">
-                                  {option.name}
-                                  {option.price > 0 && <span className="text-accent ml-2">+{option.price}€</span>}
-                                </Label>
-                                <p className="text-xs text-muted-foreground mt-1">{option.description}</p>
-                              </div>
+                  {serviceOptions && serviceOptions.length > 0 && (
+                    <div className="space-y-4 pt-6 border-t border-border">
+                      <Label className="text-sm font-medium uppercase tracking-wide">Options Supplémentaires</Label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {serviceOptions.map((option) => (
+                          <div key={option.id} className="flex items-start space-x-3 p-4 border-2 border-border rounded-lg hover:border-accent/50 transition-colors">
+                            <Checkbox
+                              id={option.id}
+                              checked={selectedOptions.includes(option.id)}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  setSelectedOptions([...selectedOptions, option.id])
+                                } else {
+                                  setSelectedOptions(selectedOptions.filter(id => id !== option.id))
+                                }
+                              }}
+                              className="mt-1"
+                            />
+                            <div className="flex-1 cursor-pointer" onClick={() => {
+                              const checkbox = document.getElementById(option.id) as HTMLButtonElement
+                              if (checkbox) checkbox.click()
+                            }}>
+                              <Label htmlFor={option.id} className="font-semibold text-sm cursor-pointer">
+                                {option.name}
+                                {option.price > 0 && <span className="text-accent ml-2">+{option.price}€</span>}
+                              </Label>
+                              <p className="text-xs text-muted-foreground mt-1">{option.description}</p>
                             </div>
-                          ))}
-                        </div>
+                          </div>
+                        ))}
                       </div>
-                    )
-                  })()}
+                    </div>
+                  )}
 
-                  {vehicleType && (() => {
-                    const fromZone = findZoneForPoint(pickupCoords)
-                    const toZone = findZoneForPoint(destinationCoords)
-                    const hasZonePricing = serviceType === 'transfer' && fromZone && toZone && findZonePricing(fromZone, toZone, vehicleType)
-                    
-                    return (
-                      <div className="bg-accent/10 border-2 border-accent/30 rounded-lg p-5 space-y-3">
-                        <h4 className="font-semibold uppercase tracking-wide text-sm flex items-center gap-2">
-                          <CurrencyEur size={18} weight="bold" />
-                          Prix de la Course
-                        </h4>
-                        {hasZonePricing && (
-                          <div className="p-3 bg-accent/20 border border-accent/40 rounded-md">
-                            <div className="flex items-center gap-2 text-sm font-semibold text-accent mb-1">
-                              <MapPin size={16} weight="fill" />
-                              <span>Forfait Zone Appliqué</span>
-                            </div>
-                            <div className="text-xs text-foreground/80">
-                              {fromZone.name} → {toZone.name} - Tarif fixe
-                            </div>
+                  {vehicleType && (
+                    <div className="bg-accent/10 border-2 border-accent/30 rounded-lg p-5 space-y-3">
+                      <h4 className="font-semibold uppercase tracking-wide text-sm flex items-center gap-2">
+                        <CurrencyEur size={18} weight="bold" />
+                        Prix de la Course
+                      </h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Véhicule avec Chauffeur:</span>
+                          <span className="font-medium">{fleet?.find(v => v.id === vehicleType)?.title}</span>
+                        </div>
+                        {serviceType === 'transfer' && (
+                          <>
+                            {isCalculatingDistance ? (
+                              <div className="flex justify-center items-center text-xs text-muted-foreground py-2">
+                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-accent border-t-transparent mr-2"></div>
+                                Calcul de la distance en cours...
+                              </div>
+                            ) : distanceKm > 0 ? (
+                              <>
+                                <div className="flex justify-between items-center text-xs">
+                                  <span className="text-muted-foreground">Distance:</span>
+                                  <span className="font-medium">{distanceKm.toFixed(1)} km</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs">
+                                  <span className="text-muted-foreground">Durée estimée:</span>
+                                  <span className="font-medium">{durationMinutes} min</span>
+                                </div>
+                              </>
+                            ) : null}
+                          </>
+                        )}
+                        {serviceType === 'hourly' && (
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="text-muted-foreground">Durée:</span>
+                            <span className="font-medium">{hourlyDuration} heure{parseInt(hourlyDuration) > 1 ? 's' : ''}</span>
                           </div>
                         )}
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground">Véhicule avec Chauffeur:</span>
-                            <span className="font-medium">{fleet?.find(v => v.id === vehicleType)?.title}</span>
-                          </div>
-                          {serviceType === 'transfer' && !hasZonePricing && (
-                            <>
-                              {isCalculatingDistance ? (
-                                <div className="flex justify-center items-center text-xs text-muted-foreground py-2">
-                                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-accent border-t-transparent mr-2"></div>
-                                  Calcul de la distance en cours...
+                        {selectedOptions.length > 0 && (
+                          <>
+                            {selectedOptions.map(optionId => {
+                              const option = serviceOptions?.find(o => o.id === optionId)
+                              if (!option || option.price === 0) return null
+                              return (
+                                <div key={optionId} className="flex justify-between items-center text-xs">
+                                  <span className="text-muted-foreground">{option.name}:</span>
+                                  <span className="font-medium">+{option.price.toFixed(2)}€</span>
                                 </div>
-                              ) : distanceKm > 0 ? (
-                                <>
-                                  <div className="flex justify-between items-center text-xs">
-                                    <span className="text-muted-foreground">Distance:</span>
-                                    <span className="font-medium">{distanceKm.toFixed(1)} km</span>
-                                  </div>
-                                  <div className="flex justify-between items-center text-xs">
-                                    <span className="text-muted-foreground">Durée estimée:</span>
-                                    <span className="font-medium">{durationMinutes} min</span>
-                                  </div>
-                                </>
-                              ) : null}
-                            </>
-                          )}
-                          {serviceType === 'hourly' && (
-                            <div className="flex justify-between items-center text-xs">
-                              <span className="text-muted-foreground">Durée:</span>
-                              <span className="font-medium">{hourlyDuration} heure{parseInt(hourlyDuration) > 1 ? 's' : ''}</span>
-                            </div>
-                          )}
-                          {!hasZonePricing && selectedOptions.length > 0 && (
-                            <>
-                              {selectedOptions.map(optionId => {
-                                const option = serviceOptions?.find(o => o.id === optionId)
-                                if (!option || option.price === 0) return null
-                                return (
-                                  <div key={optionId} className="flex justify-between items-center text-xs">
-                                    <span className="text-muted-foreground">{option.name}:</span>
-                                    <span className="font-medium">+{option.price.toFixed(2)}€</span>
-                                  </div>
-                                )
-                              })}
-                            </>
-                          )}
-                          <div className="border-t border-accent/20 pt-2 mt-2">
-                            <div className="flex justify-between items-center">
-                              <span className="font-semibold uppercase tracking-wide">Total:</span>
-                              <span className="text-2xl font-bold text-accent">{calculatePrice(vehicleType).toFixed(2)}€</span>
-                            </div>
+                              )
+                            })}
+                          </>
+                        )}
+                        <div className="border-t border-accent/20 pt-2 mt-2">
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold uppercase tracking-wide">Total:</span>
+                            <span className="text-2xl font-bold text-accent">{calculatePrice(vehicleType).toFixed(2)}€</span>
                           </div>
                         </div>
+                        </div>
                       </div>
-                    )
-                  })()}
+                  )}
 
                   <div className="flex justify-between pt-4">
                     <Button type="button" onClick={handleBack} variant="outline" className="h-12 px-8 text-base font-medium uppercase tracking-widest">
@@ -1170,33 +1138,23 @@ export default function BookingForm() {
                         <span className="text-muted-foreground">Client:</span>
                         <span className="font-medium">{firstName} {lastName}</span>
                       </div>
-                      {selectedOptions.length > 0 && (() => {
-                        const fromZone = findZoneForPoint(pickupCoords)
-                        const toZone = findZoneForPoint(destinationCoords)
-                        const hasZonePricing = serviceType === 'transfer' && fromZone && toZone && vehicleType && findZonePricing(fromZone, toZone, vehicleType)
-                        
-                        if (hasZonePricing) {
-                          return null
-                        }
-                        
-                        return (
-                          <>
-                            <div className="border-t border-accent/20 pt-2 mt-2">
-                              <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">Options:</div>
-                              {selectedOptions.map(optionId => {
-                                const option = serviceOptions?.find(o => o.id === optionId)
-                                if (!option) return null
-                                return (
-                                  <div key={optionId} className="flex justify-between text-xs">
-                                    <span className="text-muted-foreground">{option.name}:</span>
-                                    <span className="font-medium">{option.price > 0 ? `+${option.price.toFixed(2)}€` : 'Inclus'}</span>
-                                  </div>
-                                )
-                              })}
-                            </div>
-                          </>
-                        )
-                      })()}
+                      {selectedOptions.length > 0 && (
+                        <>
+                          <div className="border-t border-accent/20 pt-2 mt-2">
+                            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">Options:</div>
+                            {selectedOptions.map(optionId => {
+                              const option = serviceOptions?.find(o => o.id === optionId)
+                              if (!option) return null
+                              return (
+                                <div key={optionId} className="flex justify-between text-xs">
+                                  <span className="text-muted-foreground">{option.name}:</span>
+                                  <span className="font-medium">{option.price > 0 ? `+${option.price.toFixed(2)}€` : 'Inclus'}</span>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </>
+                      )}
                       {vehicleType && (
                         <div className="border-t border-accent/20 pt-2 mt-2">
                           <div className="flex justify-between items-center">
