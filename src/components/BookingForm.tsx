@@ -25,11 +25,14 @@ import { PricingZone, ZoneForfait } from '@/components/ZoneForfaitManager'
 import { TelegramSettings, DEFAULT_TELEGRAM_SETTINGS } from '@/types/telegram'
 import { sendTelegramNotification } from '@/lib/telegram'
 import { PromoCode, DEFAULT_PROMO_CODES, RoundTripDiscount, DEFAULT_ROUNDTRIP_DISCOUNT } from '@/types/promo'
+import { EmailSettings, DEFAULT_EMAIL_SETTINGS } from '@/types/email'
+import { sendBookingConfirmation } from '@/lib/email'
 
 export default function BookingForm() {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
   const [fleet] = useKV<VehicleClass[]>('fleet', DEFAULT_FLEET)
   const [telegramSettings] = useKV<TelegramSettings>('telegram-settings', DEFAULT_TELEGRAM_SETTINGS)
+  const [emailSettings] = useKV<EmailSettings>('email-settings', DEFAULT_EMAIL_SETTINGS)
   const [serviceOptions] = useKV<ServiceOption[]>('service-options', DEFAULT_OPTIONS)
   const [pricing] = useKV<VehiclePricing[]>('pricing', DEFAULT_PRICING)
   const [circuits] = useKV<Circuit[]>('circuits', [])
@@ -513,6 +516,15 @@ export default function BookingForm() {
         console.log('✅ Notification Telegram envoyée avec succès')
       } else {
         console.log('⚠️ Échec de l\'envoi de la notification Telegram')
+      }
+    }
+    
+    if (emailSettings && emailSettings.enabled) {
+      const emailResult = await sendBookingConfirmation(newBooking, emailSettings)
+      if (emailResult.success) {
+        console.log('✅ Email de confirmation envoyé avec succès')
+      } else {
+        console.log('⚠️ Échec de l\'envoi de l\'email:', emailResult.message)
       }
     }
     

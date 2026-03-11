@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple, X, CurrencyCircleDollar, Sparkle, Info } from '@phosphor-icons/react'
+import { Car, MapPin, Calendar, Clock, User as UserIcon, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple, X, CurrencyCircleDollar, Sparkle, Info, EnvelopeSimple } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { VehiclePricing, DEFAULT_PRICING, ServiceOption, DEFAULT_OPTIONS, PricingSettings } from '@/types/pricing'
@@ -25,6 +25,8 @@ import SharedRideManager from '@/components/SharedRideManager'
 import { useKV } from '@github/spark/hooks'
 import { TelegramSettings, DEFAULT_TELEGRAM_SETTINGS } from '@/types/telegram'
 import { RoundTripDiscount, DEFAULT_ROUNDTRIP_DISCOUNT } from '@/types/promo'
+import { EmailSettings, DEFAULT_EMAIL_SETTINGS } from '@/types/email'
+import { sendBookingUpdate, sendBookingConfirmation } from '@/lib/email'
 
 interface AdminAccount {
   email: string
@@ -85,6 +87,7 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
   
   const [telegramSettings, setTelegramSettings] = useKV<TelegramSettings>('telegram-settings', DEFAULT_TELEGRAM_SETTINGS)
   const [roundTripDiscount, setRoundTripDiscount] = useKV<RoundTripDiscount>('roundtrip-discount', DEFAULT_ROUNDTRIP_DISCOUNT)
+  const [emailSettings, setEmailSettings] = useKV<EmailSettings>('email-settings', DEFAULT_EMAIL_SETTINGS)
 
   useEffect(() => {
     if (!fleetData || !pricingData) return
@@ -154,9 +157,21 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
     cancelled: bookings.filter(b => b.status === 'cancelled').length
   }
 
-  const handleStatusChange = (bookingId: string, newStatus: Booking['status']) => {
+  const handleStatusChange = async (bookingId: string, newStatus: Booking['status']) => {
+    const booking = bookings.find(b => b.id === bookingId)
+    const previousStatus = booking?.status
+    
     onUpdateBooking(bookingId, { status: newStatus })
     toast.success(`Booking status updated to ${newStatus}`)
+    
+    if (emailSettings?.enabled && emailSettings?.sendUpdatesToClient && booking && previousStatus !== newStatus) {
+      const updatedBooking = { ...booking, status: newStatus }
+      const result = await sendBookingUpdate(updatedBooking, emailSettings, previousStatus)
+      
+      if (result.success) {
+        toast.success('Email de mise à jour envoyé au client')
+      }
+    }
   }
 
   const handlePriceChange = (bookingId: string, price: string) => {
@@ -1941,6 +1956,342 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
                     <li><strong>Pour un groupe:</strong> Ajoutez le bot au groupe, puis utilisez @userinfobot dans le groupe pour obtenir le Group Chat ID (commence par -)</li>
                     <li>Vous pouvez configurer les deux pour recevoir les notifications dans votre chat personnel ET dans un groupe</li>
                   </ol>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-accent/20">
+              <CardHeader className="border-b border-border">
+                <CardTitle className="text-xl font-semibold uppercase tracking-wide flex items-center gap-2">
+                  <EnvelopeSimple size={24} className="text-accent" />
+                  Notifications Email
+                </CardTitle>
+                <CardDescription>
+                  Envoyez des confirmations et mises à jour de réservation par email
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6 space-y-6">
+                <div className="flex items-center justify-between p-4 bg-secondary/50 border border-border">
+                  <div className="space-y-1">
+                    <Label htmlFor="email-enabled" className="text-sm font-medium uppercase tracking-wide">
+                      Activer les notifications
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Active ou désactive l'envoi de notifications par email
+                    </p>
+                  </div>
+                  <Switch
+                    id="email-enabled"
+                    checked={emailSettings?.enabled || false}
+                    onCheckedChange={(checked) => {
+                      setEmailSettings((current) => ({
+                        ...(current || DEFAULT_EMAIL_SETTINGS),
+                        enabled: checked
+                      }))
+                      toast.success(checked ? 'Notifications email activées' : 'Notifications email désactivées')
+                    }}
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="email-admin" className="text-sm font-medium uppercase tracking-wide">
+                      Email Admin
+                    </Label>
+                    <Input
+                      id="email-admin"
+                      type="email"
+                      value={emailSettings?.adminEmail || ''}
+                      onChange={(e) => {
+                        setEmailSettings((current) => ({
+                          ...(current || DEFAULT_EMAIL_SETTINGS),
+                          adminEmail: e.target.value
+                        }))
+                      }}
+                      placeholder="admin@greenshuttle.com"
+                      className="h-12 bg-secondary border-border"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="email-from" className="text-sm font-medium uppercase tracking-wide">
+                      Email Expéditeur
+                    </Label>
+                    <Input
+                      id="email-from"
+                      type="email"
+                      value={emailSettings?.fromEmail || ''}
+                      onChange={(e) => {
+                        setEmailSettings((current) => ({
+                          ...(current || DEFAULT_EMAIL_SETTINGS),
+                          fromEmail: e.target.value
+                        }))
+                      }}
+                      placeholder="noreply@greenshuttle.com"
+                      className="h-12 bg-secondary border-border"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email-from-name" className="text-sm font-medium uppercase tracking-wide">
+                    Nom de l'expéditeur
+                  </Label>
+                  <Input
+                    id="email-from-name"
+                    type="text"
+                    value={emailSettings?.fromName || ''}
+                    onChange={(e) => {
+                      setEmailSettings((current) => ({
+                        ...(current || DEFAULT_EMAIL_SETTINGS),
+                        fromName: e.target.value
+                      }))
+                    }}
+                    placeholder="Green Shuttle To Paris"
+                    className="h-12 bg-secondary border-border"
+                  />
+                </div>
+
+                <div className="border-t border-border pt-6 space-y-4">
+                  <p className="text-sm font-medium uppercase tracking-wide">Paramètres SMTP</p>
+                  
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="smtp-host" className="text-sm font-medium uppercase tracking-wide">
+                        Serveur SMTP
+                      </Label>
+                      <Input
+                        id="smtp-host"
+                        type="text"
+                        value={emailSettings?.smtpHost || ''}
+                        onChange={(e) => {
+                          setEmailSettings((current) => ({
+                            ...(current || DEFAULT_EMAIL_SETTINGS),
+                            smtpHost: e.target.value
+                          }))
+                        }}
+                        placeholder="smtp.gmail.com"
+                        className="h-12 bg-secondary border-border"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="smtp-port" className="text-sm font-medium uppercase tracking-wide">
+                        Port SMTP
+                      </Label>
+                      <Input
+                        id="smtp-port"
+                        type="text"
+                        value={emailSettings?.smtpPort || ''}
+                        onChange={(e) => {
+                          setEmailSettings((current) => ({
+                            ...(current || DEFAULT_EMAIL_SETTINGS),
+                            smtpPort: e.target.value
+                          }))
+                        }}
+                        placeholder="587"
+                        className="h-12 bg-secondary border-border"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="smtp-user" className="text-sm font-medium uppercase tracking-wide">
+                        Nom d'utilisateur SMTP
+                      </Label>
+                      <Input
+                        id="smtp-user"
+                        type="text"
+                        value={emailSettings?.smtpUser || ''}
+                        onChange={(e) => {
+                          setEmailSettings((current) => ({
+                            ...(current || DEFAULT_EMAIL_SETTINGS),
+                            smtpUser: e.target.value
+                          }))
+                        }}
+                        placeholder="username@gmail.com"
+                        className="h-12 bg-secondary border-border"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="smtp-password" className="text-sm font-medium uppercase tracking-wide">
+                        Mot de passe SMTP
+                      </Label>
+                      <Input
+                        id="smtp-password"
+                        type="password"
+                        value={emailSettings?.smtpPassword || ''}
+                        onChange={(e) => {
+                          setEmailSettings((current) => ({
+                            ...(current || DEFAULT_EMAIL_SETTINGS),
+                            smtpPassword: e.target.value
+                          }))
+                        }}
+                        placeholder="••••••••"
+                        className="h-12 bg-secondary border-border"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t border-border pt-6 space-y-4">
+                  <p className="text-sm font-medium uppercase tracking-wide">Options d'envoi</p>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-secondary/30 border border-border">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="send-confirmation" className="text-sm font-medium">
+                          Confirmation au client
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Envoyer un email de confirmation lors d'une nouvelle réservation
+                        </p>
+                      </div>
+                      <Switch
+                        id="send-confirmation"
+                        checked={emailSettings?.sendConfirmationToClient ?? true}
+                        onCheckedChange={(checked) => {
+                          setEmailSettings((current) => ({
+                            ...(current || DEFAULT_EMAIL_SETTINGS),
+                            sendConfirmationToClient: checked
+                          }))
+                        }}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-secondary/30 border border-border">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="send-admin" className="text-sm font-medium">
+                          Notification à l'admin
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Notifier l'administrateur des nouvelles réservations
+                        </p>
+                      </div>
+                      <Switch
+                        id="send-admin"
+                        checked={emailSettings?.sendNotificationToAdmin ?? true}
+                        onCheckedChange={(checked) => {
+                          setEmailSettings((current) => ({
+                            ...(current || DEFAULT_EMAIL_SETTINGS),
+                            sendNotificationToAdmin: checked
+                          }))
+                        }}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-secondary/30 border border-border">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="send-updates" className="text-sm font-medium">
+                          Mises à jour au client
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Envoyer un email lors des changements de statut
+                        </p>
+                      </div>
+                      <Switch
+                        id="send-updates"
+                        checked={emailSettings?.sendUpdatesToClient ?? true}
+                        onCheckedChange={(checked) => {
+                          setEmailSettings((current) => ({
+                            ...(current || DEFAULT_EMAIL_SETTINGS),
+                            sendUpdatesToClient: checked
+                          }))
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-border flex flex-col md:flex-row gap-3">
+                  <Button
+                    onClick={() => {
+                      if (!emailSettings?.adminEmail) {
+                        toast.error('Veuillez remplir l\'email admin')
+                        return
+                      }
+                      toast.success('Paramètres email enregistrés')
+                    }}
+                    className="flex-1 md:flex-initial h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+                  >
+                    <Check className="mr-2" size={20} />
+                    Enregistrer les paramètres
+                  </Button>
+                  
+                  <Button
+                    onClick={async () => {
+                      if (!emailSettings?.enabled) {
+                        toast.error('Veuillez activer les notifications email')
+                        return
+                      }
+                      if (!emailSettings?.adminEmail) {
+                        toast.error('Veuillez configurer l\'email admin')
+                        return
+                      }
+
+                      const testBooking: Booking = {
+                        id: `test-${Date.now()}`,
+                        userId: 'test@greenshuttle.com',
+                        userEmail: 'test@greenshuttle.com',
+                        serviceType: 'transfer',
+                        transferType: 'oneway',
+                        pickup: 'Aéroport Charles de Gaulle (CDG), Terminal 2E',
+                        destination: 'Paris, 5 Avenue des Champs-Élysées',
+                        date: new Date().toISOString().split('T')[0],
+                        time: '14:30',
+                        passengers: '2',
+                        luggage: '3',
+                        vehicleType: 'berline',
+                        selectedOptions: ['Wi-Fi à bord'],
+                        firstName: 'Jean',
+                        lastName: 'Dupont',
+                        phone: '+33 6 12 34 56 78',
+                        email: emailSettings.adminEmail,
+                        notes: 'Ceci est un email de test',
+                        paymentMethod: 'card',
+                        status: 'pending',
+                        createdAt: Date.now(),
+                        price: 85.50
+                      }
+
+                      toast.loading('Envoi de l\'email test...')
+                      
+                      const result = await sendBookingConfirmation(testBooking, emailSettings)
+                      
+                      if (result.success) {
+                        toast.success('✅ Email de test envoyé !', {
+                          description: result.message
+                        })
+                      } else {
+                        toast.error('❌ Échec de l\'envoi', {
+                          description: result.message
+                        })
+                      }
+                    }}
+                    variant="outline"
+                    className="flex-1 md:flex-initial h-12 border-2 border-accent/40 text-accent hover:bg-accent/10 font-medium uppercase tracking-widest"
+                  >
+                    <EnvelopeSimple className="mr-2" size={20} />
+                    Tester l'email
+                  </Button>
+                </div>
+
+                <div className="mt-6 p-4 bg-muted/30 border border-border space-y-2">
+                  <p className="text-sm font-medium uppercase tracking-wide text-foreground">
+                    ℹ️ Configuration email
+                  </p>
+                  <div className="text-sm text-muted-foreground space-y-1">
+                    <p>Cette fonctionnalité fonctionne en mode simulation dans le navigateur.</p>
+                    <p>Pour l'envoi réel d'emails, configurez les paramètres SMTP de votre service email (Gmail, SendGrid, Mailgun, etc.).</p>
+                    <p className="pt-2 font-medium">Les emails incluront:</p>
+                    <ul className="list-disc list-inside space-y-1 pl-2">
+                      <li>Confirmation de réservation pour le client</li>
+                      <li>Notification de nouvelle réservation pour l'admin</li>
+                      <li>Mises à jour lors des changements de statut</li>
+                    </ul>
+                  </div>
                 </div>
               </CardContent>
             </Card>
