@@ -192,15 +192,21 @@ export default function BookingForm() {
       let usedForfait = false
       
       if (serviceType === 'transfer' && pickupCoords && destinationCoords) {
-        console.log('🔍 Recherche de forfait zone à zone pour:', vehicle.id)
+        console.log('🔍 PRIORITÉ 1: Recherche de forfait zone à zone pour:', vehicle.id)
         const forfait = findForfaitForRoute(vehicle.id)
         if (forfait) {
           basePrice = forfait.fixedPrice
           usedForfait = true
           const fromZone = findZoneForPoint(pickupCoords)
           const toZone = findZoneForPoint(destinationCoords)
-          console.log(`💎 FORFAIT APPLIQUÉ: ${fromZone?.name} → ${toZone?.name} = ${basePrice}€ (tarif fixe prioritaire)`)
+          console.log(`💎 FORFAIT TROUVÉ ET APPLIQUÉ: ${fromZone?.name} → ${toZone?.name} = ${basePrice}€`)
+          console.log(`✅ Forfait prioritaire utilisé - Les tarifs km/minute sont IGNORÉS`)
           console.log('Forfait details:', forfait)
+          
+          if (transferType === 'roundtrip') {
+            basePrice *= 2
+            console.log(`↔️ Aller-retour forfait: × 2 = ${basePrice.toFixed(2)}€`)
+          }
           
           let totalPrice = basePrice
 
@@ -220,12 +226,12 @@ export default function BookingForm() {
             console.log(`🔄 Prix arrondi à .00€: ${totalPrice.toFixed(2)}€`)
           }
           
-          console.log(`✅ Total ${vehicle.title}: ${basePrice.toFixed(2)}€ forfait + ${optionsPrice.toFixed(2)}€ options = ${totalPrice.toFixed(2)}€`)
+          console.log(`✅ TOTAL ${vehicle.title} (FORFAIT): ${basePrice.toFixed(2)}€ forfait + ${optionsPrice.toFixed(2)}€ options = ${totalPrice.toFixed(2)}€`)
           
           prices[vehicle.id] = totalPrice
           return
         } else {
-          console.log(`⚠️ Aucun forfait trouvé pour ${vehicle.id}`)
+          console.log(`⚠️ Aucun forfait trouvé - Passage au calcul km/minute`)
         }
       }
       
@@ -243,11 +249,11 @@ export default function BookingForm() {
           basePrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonTourBasePrice || vehiclePricing.tourBasePrice) : vehiclePricing.tourBasePrice
           console.log(`🗺️ Tour: prix de base par défaut = ${basePrice}€`)
         }
-      } else {
+      } else if (serviceType === 'transfer') {
         const pricePerKm = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
         const pricePerMinute = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
         
-        console.log(`💰 TARIF AU KM/MIN - Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€`)
+        console.log(`💰 CALCUL KM/MIN (pas de forfait disponible) - Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€`)
         
         if (distanceKm > 0 && durationMinutes > 0) {
           const kmPrice = pricePerKm * distanceKm
