@@ -52,7 +52,7 @@ const statusColors = {
 
 
 
-export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdateBooking, onDeleteBooking, onNavigateToHome, onNavigateToChauffeurPrive, onNavigateToAirportTransfer, onNavigateToCorporateEvent }: AdminDashboardProps) {
+export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdateBooking, onDeleteBooking, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact }: AdminDashboardProps) {
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [adminAccounts, setAdminAccounts] = useKV<AdminAccount[]>('admin-accounts', [

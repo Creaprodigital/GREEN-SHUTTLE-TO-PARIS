@@ -18,10 +18,10 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const menuItems = [
-    { label: 'ACCUEIL', onClick: onNavigateToHome },
-    { label: 'NOS SERVICES', onClick: onNavigateToServices },
-    { label: 'QUI SOMMES-NOUS', onClick: onNavigateToAbout },
-    { label: 'CONTACT', onClick: onNavigateToContact }
+    { label: 'ACCUEIL', onClick: onNavigateToHome || (() => {}) },
+    { label: 'NOS SERVICES', onClick: onNavigateToServices || (() => {}) },
+    { label: 'QUI SOMMES-NOUS', onClick: onNavigateToAbout || (() => {}) },
+    { label: 'CONTACT', onClick: onNavigateToContact || (() => {}) }
   ]
 
   return (
