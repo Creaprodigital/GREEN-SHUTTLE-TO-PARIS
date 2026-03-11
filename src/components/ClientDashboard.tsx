@@ -15,6 +15,7 @@ import { useSharedRideNotifications } from '@/hooks/useSharedRideNotifications'
 import NotificationCenter from '@/components/NotificationCenter'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
+import UserProfile from '@/components/UserProfile'
 
 interface ClientDashboardProps {
   userEmail: string
@@ -162,12 +163,18 @@ export default function ClientDashboard({ userEmail, onLogout, onNavigateToHome,
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <div className="lg:col-span-2">
               <Tabs defaultValue="upcoming" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6 h-auto">
+                <TabsList className="grid w-full grid-cols-3 mb-4 sm:mb-6 h-auto">
                   <TabsTrigger value="upcoming" className="text-xs sm:text-sm py-2 sm:py-2.5">
-                    Trajets à Venir ({upcomingBookings.length})
+                    <span className="hidden sm:inline">Trajets à Venir ({upcomingBookings.length})</span>
+                    <span className="sm:hidden">À Venir ({upcomingBookings.length})</span>
                   </TabsTrigger>
                   <TabsTrigger value="past" className="text-xs sm:text-sm py-2 sm:py-2.5">
-                    Historique ({pastBookings.length})
+                    <span className="hidden sm:inline">Historique ({pastBookings.length})</span>
+                    <span className="sm:hidden">Passés ({pastBookings.length})</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 sm:py-2.5">
+                    <span className="hidden sm:inline">Mon Profil</span>
+                    <span className="sm:hidden">Profil</span>
                   </TabsTrigger>
                 </TabsList>
                 
@@ -223,6 +230,10 @@ export default function ClientDashboard({ userEmail, onLogout, onNavigateToHome,
                       />
                     ))
                   )}
+                </TabsContent>
+
+                <TabsContent value="profile" className="space-y-4 sm:space-y-6">
+                  <UserProfile userEmail={userEmail} />
                 </TabsContent>
               </Tabs>
             </div>
