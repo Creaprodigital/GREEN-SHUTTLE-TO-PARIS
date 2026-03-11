@@ -2,7 +2,7 @@ export interface Booking {
   id: string
   userId: string
   userEmail: string
-  serviceType: 'transfer' | 'hourly' | 'tour'
+  serviceType: 'transfer' | 'hourly' | 'tour' | 'shared'
   transferType?: 'oneway' | 'roundtrip'
   hourlyDuration?: string
   circuitId?: string
@@ -28,6 +28,9 @@ export interface Booking {
   promoCode?: string
   discount?: number
   originalPrice?: number
+  sharedRideId?: string
+  isSharedRide?: boolean
+  sharedPassengers?: number
 }
 
 export interface User {

@@ -39,7 +39,7 @@ export default function BookingForm() {
   const [roundTripDiscount] = useKV<RoundTripDiscount>('roundtrip-discount', DEFAULT_ROUNDTRIP_DISCOUNT)
   const [currentStep, setCurrentStep] = useState(1)
   
-  const [serviceType, setServiceType] = useState<'transfer' | 'tour'>('transfer')
+  const [serviceType, setServiceType] = useState<'transfer' | 'hourly' | 'tour' | 'shared'>('transfer')
   const [transferType, setTransferType] = useState<'oneway' | 'roundtrip'>('oneway')
   const [hourlyDuration, setHourlyDuration] = useState('2')
   const [selectedCircuitId, setSelectedCircuitId] = useState('')
@@ -205,7 +205,7 @@ export default function BookingForm() {
       let basePrice = 0
       let usedForfait = false
       
-      if (serviceType === 'transfer' && pickupCoords && destinationCoords) {
+      if ((serviceType === 'transfer' || serviceType === 'shared') && pickupCoords && destinationCoords) {
         console.log('🔍 PRIORITÉ 1: Recherche de forfait zone à zone pour:', vehicle.id)
         const forfait = findForfaitForRoute(vehicle.id)
         if (forfait) {
@@ -309,6 +309,12 @@ export default function BookingForm() {
       }, 0)
 
       totalPrice = basePrice + optionsPrice
+      
+      if (serviceType === 'shared') {
+        const numPassengers = parseInt(passengers) || 1
+        totalPrice = totalPrice / numPassengers
+        console.log(`🚕 Transfert partagé: Prix divisé par ${numPassengers} passagers = ${totalPrice.toFixed(2)}€ par personne`)
+      }
       
       if (pricingSettings?.roundToWholeEuro) {
         totalPrice = Math.ceil(totalPrice)
@@ -420,7 +426,7 @@ export default function BookingForm() {
       toast.error('Veuillez sélectionner un circuit touristique')
       return false
     }
-    if (serviceType === 'transfer' && !destination) {
+    if ((serviceType === 'transfer' || serviceType === 'shared') && !destination) {
       toast.error('Veuillez indiquer la destination')
       return false
     }
@@ -678,13 +684,41 @@ export default function BookingForm() {
                   transition={{ duration: 0.3 }}
                   className="space-y-5"
                 >
-                  <Tabs value={serviceType} onValueChange={(v) => setServiceType(v as 'transfer' | 'hourly' | 'tour')} className="mb-6">
-                    <TabsList className="grid w-full grid-cols-3 bg-secondary">
+                  <Tabs value={serviceType} onValueChange={(v) => setServiceType(v as 'transfer' | 'hourly' | 'tour' | 'shared')} className="mb-6">
+                    <TabsList className="grid w-full grid-cols-4 bg-secondary">
                       <TabsTrigger value="transfer">Transfert</TabsTrigger>
+                      <TabsTrigger value="shared">Transfert Partagé</TabsTrigger>
                       <TabsTrigger value="hourly">Mise à Disposition</TabsTrigger>
                       <TabsTrigger value="tour">Circuit Touristique</TabsTrigger>
                     </TabsList>
                   </Tabs>
+
+                  {serviceType === 'shared' && (
+                    <div className="mb-6 bg-accent/10 border-2 border-accent/30 rounded-lg p-5">
+                      <h4 className="text-base font-semibold uppercase tracking-wide mb-3 text-accent flex items-center gap-2">
+                        <Users size={20} weight="fill" />
+                        Transfert Partagé - Comment ça marche ?
+                      </h4>
+                      <div className="space-y-3 text-sm text-foreground/80">
+                        <p className="flex items-start gap-2">
+                          <span className="flex-shrink-0 w-6 h-6 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-xs">1</span>
+                          <span>Vous réservez un trajet (ex : aéroport → centre-ville)</span>
+                        </p>
+                        <p className="flex items-start gap-2">
+                          <span className="flex-shrink-0 w-6 h-6 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-xs">2</span>
+                          <span>L'application cherche d'autres passagers avec le même trajet ou une direction similaire</span>
+                        </p>
+                        <p className="flex items-start gap-2">
+                          <span className="flex-shrink-0 w-6 h-6 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-xs">3</span>
+                          <span>Les passagers montent dans le même taxi ou VTC</span>
+                        </p>
+                        <p className="flex items-start gap-2">
+                          <span className="flex-shrink-0 w-6 h-6 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-xs">4</span>
+                          <span className="font-semibold text-accent">Le prix est divisé entre les passagers - Économisez jusqu'à 70% !</span>
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   {serviceType === 'transfer' && (
                     <div className="mb-4">
@@ -823,7 +857,7 @@ export default function BookingForm() {
                       />
                     </div>
 
-                    {serviceType === 'transfer' && (
+                    {(serviceType === 'transfer' || serviceType === 'shared') && (
                       <div className="space-y-2">
                         <Label htmlFor="destination" className="text-sm font-medium uppercase tracking-wide">Destination</Label>
                         <PlacesAutocomplete
@@ -1055,7 +1089,12 @@ export default function BookingForm() {
                                           )}
                                         </div>
                                         <div className="text-[10px] text-muted-foreground mt-1">
-                                          {appliedForfaits[vehicle.id] ? 'Forfait Zone à Zone' : 'Véhicule avec Chauffeur'}
+                                          {serviceType === 'shared' 
+                                            ? `Prix par personne (${passengers} ${parseInt(passengers) > 1 ? 'passagers' : 'passager'})` 
+                                            : appliedForfaits[vehicle.id] 
+                                            ? 'Forfait Zone à Zone' 
+                                            : 'Véhicule avec Chauffeur'
+                                          }
                                         </div>
                                       </div>
                                     )}
@@ -1368,7 +1407,7 @@ export default function BookingForm() {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Service:</span>
                         <span className="font-medium">
-                          {serviceType === 'transfer' ? 'Transfert' : serviceType === 'hourly' ? 'Mise à Disposition' : 'Circuit Touristique'}
+                          {serviceType === 'transfer' ? 'Transfert' : serviceType === 'hourly' ? 'Mise à Disposition' : serviceType === 'shared' ? 'Transfert Partagé' : 'Circuit Touristique'}
                           {serviceType === 'transfer' && ` (${transferType === 'oneway' ? 'Aller Simple' : 'Aller-Retour'})`}
                           {serviceType === 'hourly' && ` (${hourlyDuration}h)`}
                         </span>
