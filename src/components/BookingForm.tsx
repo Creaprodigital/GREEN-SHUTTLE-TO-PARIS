@@ -62,6 +62,11 @@ export default function BookingForm() {
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'cash' | 'transfer'>('card')
 
   const isPointInPolygon = (point: { lat: number; lng: number }, polygon: { lat: number; lng: number }[]): boolean => {
+    if (!polygon || polygon.length < 3) {
+      console.log('⚠️ Polygone invalide:', polygon)
+      return false
+    }
+    
     let inside = false
     for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
       const xi = polygon[i].lat, yi = polygon[i].lng
@@ -71,17 +76,33 @@ export default function BookingForm() {
         (point.lat < (xj - xi) * (point.lng - yi) / (yj - yi) + xi)
       if (intersect) inside = !inside
     }
+    
+    console.log(`   isPointInPolygon(${point.lat}, ${point.lng}) dans polygone[${polygon.length} points] = ${inside}`)
     return inside
   }
 
   const findZoneForPoint = (point: { lat: number; lng: number } | null): PricingZone | null => {
-    if (!point || !pricingZones) return null
+    if (!point) {
+      console.log('  ⚠️ findZoneForPoint - Point null')
+      return null
+    }
+    
+    if (!pricingZones || pricingZones.length === 0) {
+      console.log('  ⚠️ findZoneForPoint - Aucune zone de pricing disponible')
+      return null
+    }
+    
+    console.log(`  🔍 findZoneForPoint - Recherche zone pour point (${point.lat}, ${point.lng})`)
+    console.log(`  📍 Zones disponibles:`, pricingZones.map(z => `${z.name} (${z.polygon.length} points)`))
     
     for (const zone of pricingZones) {
       if (isPointInPolygon(point, zone.polygon)) {
+        console.log(`  ✅ Zone trouvée: ${zone.name}`)
         return zone
       }
     }
+    
+    console.log('  ❌ Aucune zone trouvée pour ce point')
     return null
   }
 
@@ -137,6 +158,10 @@ export default function BookingForm() {
     console.log('Hourly duration:', hourlyDuration)
     console.log('Active pricing mode:', activePricingMode)
     console.log('Selected options:', selectedOptions)
+    console.log('Pickup coords:', pickupCoords)
+    console.log('Destination coords:', destinationCoords)
+    console.log('Zone forfaits disponibles:', zoneForfaits)
+    console.log('Pricing zones disponibles:', pricingZones)
     
     if (!fleet || fleet.length === 0) {
       console.log('❌ Fleet vide ou manquant')
@@ -163,6 +188,7 @@ export default function BookingForm() {
       let usedForfait = false
       
       if (serviceType === 'transfer' && pickupCoords && destinationCoords) {
+        console.log('🔍 Recherche de forfait zone à zone pour:', vehicle.id)
         const forfait = findForfaitForRoute(vehicle.id)
         if (forfait) {
           basePrice = forfait.fixedPrice
@@ -170,6 +196,7 @@ export default function BookingForm() {
           const fromZone = findZoneForPoint(pickupCoords)
           const toZone = findZoneForPoint(destinationCoords)
           console.log(`💎 FORFAIT APPLIQUÉ: ${fromZone?.name} → ${toZone?.name} = ${basePrice}€ (tarif fixe prioritaire)`)
+          console.log('Forfait details:', forfait)
           
           let totalPrice = basePrice
 
@@ -193,6 +220,8 @@ export default function BookingForm() {
           
           prices[vehicle.id] = totalPrice
           return
+        } else {
+          console.log(`⚠️ Aucun forfait trouvé pour ${vehicle.id}`)
         }
       }
       
