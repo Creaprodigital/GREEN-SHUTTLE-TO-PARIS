@@ -55,7 +55,19 @@ export default function ZoneForfaitManager() {
 
   useEffect(() => {
     if (showZoneDialog && mapRef.current === null) {
-      setTimeout(() => initMap(), 100)
+      let attempts = 0
+      const maxAttempts = 10
+      const tryInitMap = () => {
+        attempts++
+        if (window.google && window.google.maps && window.google.maps.drawing) {
+          initMap()
+        } else if (attempts < maxAttempts) {
+          setTimeout(tryInitMap, 200)
+        } else {
+          toast.error('Impossible de charger Google Maps. Veuillez rafraîchir la page.')
+        }
+      }
+      setTimeout(tryInitMap, 100)
     }
   }, [showZoneDialog])
 
@@ -80,6 +92,11 @@ export default function ZoneForfaitManager() {
   const initMap = () => {
     const mapElement = document.getElementById('zone-map')
     if (!mapElement) return
+
+    if (!window.google || !window.google.maps || !window.google.maps.drawing) {
+      toast.error('Google Maps n\'est pas encore chargé. Veuillez réessayer.')
+      return
+    }
 
     const map = new google.maps.Map(mapElement, {
       center: { lat: 48.8566, lng: 2.3522 },
