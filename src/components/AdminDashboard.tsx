@@ -94,18 +94,18 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
           
           return {
             vehicleId: v.id,
-            pricePerKm: 1.5,
-            pricePerMinute: 0.5,
-            pricePerHour: 30,
-            tourBasePrice: 150,
-            minimumTransferPrice: 40,
-            minimumHourlyPrice: 60,
-            lowSeasonPricePerKm: 1.2,
-            lowSeasonPricePerMinute: 0.4,
-            lowSeasonPricePerHour: 25,
-            lowSeasonTourBasePrice: 120,
-            lowSeasonMinimumTransferPrice: 35,
-            lowSeasonMinimumHourlyPrice: 50
+            pricePerKm: 0,
+            pricePerMinute: 0,
+            pricePerHour: 0,
+            tourBasePrice: 0,
+            minimumTransferPrice: 0,
+            minimumHourlyPrice: 0,
+            lowSeasonPricePerKm: 0,
+            lowSeasonPricePerMinute: 0,
+            lowSeasonPricePerHour: 0,
+            lowSeasonTourBasePrice: 0,
+            lowSeasonMinimumTransferPrice: 0,
+            lowSeasonMinimumHourlyPrice: 0
           }
         })
       
@@ -121,16 +121,16 @@ export default function AdminDashboard({ userEmail, bookings, onLogout, onUpdate
         
         return {
           vehicleId: v.id,
-          pricePerKm: 1.5,
-          pricePerMinute: 0.5,
-          pricePerHour: 30,
-          tourBasePrice: 150,
-          minimumTransferPrice: 40,
-          lowSeasonPricePerKm: 1.2,
-          lowSeasonPricePerMinute: 0.4,
-          lowSeasonPricePerHour: 25,
-          lowSeasonTourBasePrice: 120,
-          lowSeasonMinimumTransferPrice: 35
+          pricePerKm: 0,
+          pricePerMinute: 0,
+          pricePerHour: 0,
+          tourBasePrice: 0,
+          minimumTransferPrice: 0,
+          lowSeasonPricePerKm: 0,
+          lowSeasonPricePerMinute: 0,
+          lowSeasonPricePerHour: 0,
+          lowSeasonTourBasePrice: 0,
+          lowSeasonMinimumTransferPrice: 0
         }
       })
       
