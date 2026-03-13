@@ -739,9 +739,8 @@ export default function CircuitManager() {
                           key={inputKey}
                           id="new-stop-address"
                           ref={inputRef}
-                          defaultValue=""
                           onChange={(e) => setNewStopAddress(e.target.value)}
-                          placeholder="Entrez une adresse..."
+                          onChange={(e) => setNewStopAddress(e.target.value)}
                           className="h-11 bg-secondary border-border"
                           autoComplete="off"
                         />
