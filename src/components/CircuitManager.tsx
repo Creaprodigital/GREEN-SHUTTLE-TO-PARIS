@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,6 +11,7 @@ import { Circuit, CircuitStop } from '@/types/circuit'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
+import PlacesAutocomplete from '@/components/PlacesAutocomplete'
 
 export default function CircuitManager() {
   const [circuits, setCircuits] = useKV<Circuit[]>('circuits', [])
@@ -23,42 +24,7 @@ export default function CircuitManager() {
   const [newStopAddress, setNewStopAddress] = useState('')
   const [newStopDuration, setNewStopDuration] = useState('')
   const [newStopNotes, setNewStopNotes] = useState('')
-  const [inputKey, setInputKey] = useState(0)
-
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (inputRef.current && editingCircuit) {
-      if (autocompleteRef.current) {
-        google.maps.event.clearInstanceListeners(autocompleteRef.current)
-        autocompleteRef.current = null
-      }
-      
-      const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
-        fields: ['formatted_address', 'geometry', 'name'],
-        componentRestrictions: { country: 'fr' }
-      })
-      
-      const listener = autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace()
-        if (place && place.formatted_address && place.geometry && place.geometry.location) {
-          setNewStopAddress(place.formatted_address)
-          if (inputRef.current) {
-            inputRef.current.value = place.formatted_address
-          }
-        }
-      })
-      
-      autocompleteRef.current = autocomplete
-      
-      return () => {
-        if (listener) {
-          google.maps.event.removeListener(listener)
-        }
-      }
-    }
-  }, [editingCircuit?.id, inputKey])
+  const [newStopCoords, setNewStopCoords] = useState<{ lat: number; lng: number } | undefined>()
 
   const handleCreateCircuit = () => {
     if (!newCircuitName) {
@@ -94,26 +60,13 @@ export default function CircuitManager() {
       return
     }
 
-    const geocoder = new google.maps.Geocoder()
-    
-    try {
-      const result = await new Promise<google.maps.GeocoderResult>((resolve, reject) => {
-        geocoder.geocode({ address: newStopAddress }, (results, status) => {
-          if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
-            resolve(results[0])
-          } else {
-            reject(new Error('Adresse non trouvée'))
-          }
-        })
-      })
-
-      const location = result.geometry.location
+    if (newStopCoords) {
       const newStop: CircuitStop = {
         id: `stop-${Date.now()}`,
         title: newStopTitle,
-        address: result.formatted_address || newStopAddress,
-        lat: location.lat(),
-        lng: location.lng(),
+        address: newStopAddress,
+        lat: newStopCoords.lat,
+        lng: newStopCoords.lng,
         order: editingCircuit.stops.length,
         duration: newStopDuration ? parseInt(newStopDuration) : undefined,
         notes: newStopNotes || undefined
@@ -134,11 +87,56 @@ export default function CircuitManager() {
       setNewStopAddress('')
       setNewStopDuration('')
       setNewStopNotes('')
-      setInputKey(prev => prev + 1)
+      setNewStopCoords(undefined)
       
       toast.success('Étape ajoutée au circuit')
-    } catch (error) {
-      toast.error('Impossible de trouver cette adresse')
+    } else {
+      const geocoder = new google.maps.Geocoder()
+      
+      try {
+        const result = await new Promise<google.maps.GeocoderResult>((resolve, reject) => {
+          geocoder.geocode({ address: newStopAddress }, (results, status) => {
+            if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+              resolve(results[0])
+            } else {
+              reject(new Error('Adresse non trouvée'))
+            }
+          })
+        })
+
+        const location = result.geometry.location
+        const newStop: CircuitStop = {
+          id: `stop-${Date.now()}`,
+          title: newStopTitle,
+          address: result.formatted_address || newStopAddress,
+          lat: location.lat(),
+          lng: location.lng(),
+          order: editingCircuit.stops.length,
+          duration: newStopDuration ? parseInt(newStopDuration) : undefined,
+          notes: newStopNotes || undefined
+        }
+
+        const updatedCircuit = {
+          ...editingCircuit,
+          stops: [...editingCircuit.stops, newStop],
+          updatedAt: new Date().toISOString()
+        }
+
+        setEditingCircuit(updatedCircuit)
+        setCircuits((current) =>
+          (current || []).map((c) => (c.id === editingCircuit.id ? updatedCircuit : c))
+        )
+
+        setNewStopTitle('')
+        setNewStopAddress('')
+        setNewStopDuration('')
+        setNewStopNotes('')
+        setNewStopCoords(undefined)
+        
+        toast.success('Étape ajoutée au circuit')
+      } catch (error) {
+        toast.error('Impossible de trouver cette adresse')
+      }
     }
   }
 
@@ -332,9 +330,6 @@ export default function CircuitManager() {
                     <Button
                       onClick={() => {
                         setEditingCircuit(circuit)
-                        if (autocompleteRef.current) {
-                          autocompleteRef.current = null
-                        }
                       }}
                       className="h-11 px-6 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
                     >
@@ -383,9 +378,6 @@ export default function CircuitManager() {
         onOpenChange={(open) => {
           if (!open) {
             setEditingCircuit(null)
-            if (autocompleteRef.current) {
-              autocompleteRef.current = null
-            }
           }
         }}
       >
@@ -475,14 +467,16 @@ export default function CircuitManager() {
                         <Label htmlFor="new-stop-address" className="text-sm font-medium uppercase tracking-wide">
                           Adresse (pour la carte)
                         </Label>
-                        <Input
-                          key={inputKey}
+                        <PlacesAutocomplete
                           id="new-stop-address"
-                          ref={inputRef}
-                          onChange={(e) => setNewStopAddress(e.target.value)}
-                          onChange={(e) => setNewStopAddress(e.target.value)}
+                          value={newStopAddress}
+                          onChange={(value, coords) => {
+                            setNewStopAddress(value)
+                            setNewStopCoords(coords)
+                          }}
+                          placeholder="Rechercher une adresse..."
                           className="h-11 bg-secondary border-border"
-                          autoComplete="off"
+                          icon={<MapPin size={20} />}
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
