@@ -575,7 +575,7 @@ export default function CircuitManager() {
                       )}
                     </div>
                   </div>
-              </div>
+                </div>
             </div>
           )}
         </DialogContent>
