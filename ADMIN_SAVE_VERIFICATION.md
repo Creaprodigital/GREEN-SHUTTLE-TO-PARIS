@@ -1,11 +1,11 @@
 # Vérification de l'Enregistrement des Paramètres Admin
 
-## ✅ Modules Vérifiés
+### 1. **Véhicules (F
 
-### 1. **Véhicules (Fleet Management)**
-- ✅ Ajout de véhicules → `setFleetData()` - ligne 318-337
-- ✅ Modification du titre/description → `setFleetData()` - ligne 300-310
-- ✅ Upload d'images → `setFleetData()` - ligne 279-290
+- ✅ Paramètres d'affichage d'image → `s
+- **Clé de stockage**: `'fleet'`
+### 2. **Tarifs (Pricing)**
+- ✅ Mode tarifaire (Haute demande/Basse saison) → `set
 - ✅ Paramètres d'affichage d'image → `setFleetData()` - ligne 582-597
 - ✅ Suppression de véhicules → `setFleetData()` - ligne 341-348
 - **Clé de stockage**: `'fleet'`
@@ -14,22 +14,22 @@
 - ✅ Prix par KM/Minute/Heure → `setPricingData()` - ligne 350-380
 - ✅ Mode tarifaire (Haute demande/Basse saison) → `setActivePricingMode()` - ligne 383-388
 - ✅ Arrondissement des tarifs → `setPricingSettings()` - ligne 1080-1085
-- **Clés de stockage**: `'pricing'`, `'active-pricing-mode'`, `'pricing-settings'`
 
-### 3. **Forfaits Zone à Zone (ZoneForfaitManager)**
-- ✅ Création de zones → `setZones()` - ligne 272-282 (ZoneForfaitManager.tsx)
-- ✅ Modification de zones → `setZones()` - ligne 263-270
-- ✅ Suppression de zones → `setZones()` - ligne 292
-- ✅ Création de forfaits → `setForfaits()` - ligne 354-366
-- ✅ Modification de forfaits → `setForfaits()` - ligne 338-352
-- ✅ Suppression de forfaits → `setForfaits()` - ligne 372
-- **Clés de stockage**: `'pricing-zones'`, `'zone-forfaits'`
 
-### 4. **Options de Service**
-- ✅ Ajout d'options → `setOptionsData()` - ligne 398-412
-- ✅ Modification d'options → `setOptionsData()` - ligne 414-423
-- ✅ Suppression d'options → `setOptionsData()` - ligne 425-432
-- **Clé de stockage**: `'service-options'`
+- ✅ Modification de circuits → via `setCircuits()`
+- **Clé de stockage**: `'circuits'`
+### 6. **Codes Promo (PromoCodeManager)**
+- ✅ Activation/Désactivation → `setPromoCodes()` - 
+- **Clé de stockage**: `'promo-codes'`
+### 7. **Promotion Aller-Retour**
+- ✅ Type de réduction → `setRoundTripDiscount()` - ligne 
+- ✅ Description → `setRoundTripDiscount()` - ligne 1479-1483
+
+- ✅ Activation/Paramètres → `
+- ✅ Pourcentage de détour max
+- ✅ Réduction par passager
+- ✅ Matching automatique
+
 
 ### 5. **Circuits Touristiques (CircuitManager)**
 - ✅ Création de circuits → `setCircuits()` (CircuitManager.tsx ligne 16)
@@ -66,9 +66,9 @@
 - ✅ Bot Token → `setTelegramSettings()` - ligne 1816-1821
 - ✅ Chat ID → `setTelegramSettings()` - ligne 1849-1854
 - ✅ Group Chat ID → `setTelegramSettings()` - ligne 1880-1886
-- **Clé de stockage**: `'telegram-settings'`
+## 🧪 Tests Recommandés
 
-### 10. **Notifications Email**
+
 - ✅ Activation → `setEmailSettings()` - ligne 2068-2075
 - ✅ Email Admin → `setEmailSettings()` - ligne 2101-2107
 - ✅ Email Expéditeur → `setEmailSettings()` - ligne 2131-2137
@@ -78,11 +78,11 @@
 - ✅ User SMTP → `setEmailSettings()` - ligne 2271-2278
 - ✅ Password SMTP → `setEmailSettings()` - ligne 2302-2310
 - ✅ Options d'envoi → `setEmailSettings()` - lignes 2333-2384
-- **Clé de stockage**: `'email-settings'`
+1. Aller dans Admin > Tarifs > Forfaits Z
 
-### 11. **Comptes Admin**
+4. Rafraîchir la page
 - ✅ Ajout d'admin → `setAdminAccounts()` - ligne 212-223
-- ✅ Suppression d'admin → `setAdminAccounts()` - ligne 233-238
+### Test 4: Options
 - **Clé de stockage**: `'admin-accounts'`
 
 ## 🔧 Mécanisme d'Enregistrement
@@ -92,71 +92,71 @@ Tous les modules utilisent le **hook React `useKV`** qui :
 2. **Synchronise en temps réel** les changements
 3. **Fournit une interface réactive** avec `[value, setValue, deleteValue]`
 
-### Exemple d'utilisation :
+1. Aller dans Admin > Promo
 ```typescript
 const [settings, setSettings] = useKV<Settings>('settings-key', defaultValue)
 
-// Modification = Sauvegarde automatique
+### Test 7: Notifications Telegram
 setSettings((current) => ({ ...current, enabled: true }))
-```
+3. 
 
-## 🧪 Tests Recommandés
+
 
 Pour vérifier que tout s'enregistre correctement :
 
-### Test 1: Véhicules
+5. ✅ Toute la configu
 1. Aller dans Admin > Véhicules
-2. Ajouter un nouveau véhicule avec titre "Test Vehicle"
+1. Aller dans Admin > Partagés
 3. Rafraîchir la page
 4. ✅ Le véhicule "Test Vehicle" doit toujours être présent
 
-### Test 2: Tarifs
+### Test 10: Circu
 1. Aller dans Admin > Tarifs
 2. Modifier le prix/km d'un véhicule (ex: 3.50€)
 3. Basculer entre "Forte demande" et "Basse saison"
-4. Rafraîchir la page
+
 5. ✅ Les modifications doivent être conservées
 
 ### Test 3: Forfaits Zone à Zone
 1. Aller dans Admin > Tarifs > Forfaits Zone à Zone
 2. Créer une nouvelle zone (dessiner sur la carte)
-3. Créer un forfait entre 2 zones
+4. Vérifier que la clé de stockag
 4. Rafraîchir la page
 5. ✅ La zone et le forfait doivent être présents
 
-### Test 4: Options
+```javascript
 1. Aller dans Admin > Options
-2. Ajouter une nouvelle option "Test Option" à 10€
+await spark.kv.get('fleet') // Voir les véhicules
 3. Modifier son prix à 15€
-4. Rafraîchir la page
+await spark.kv.get('z
 5. ✅ L'option doit exister avec le prix 15€
 
 ### Test 5: Codes Promo
-1. Aller dans Admin > Promos
+
 2. Créer un code "TEST2024" avec 20% de réduction
-3. Désactiver le code
+**Tous les modules ut
 4. Rafraîchir la page
 5. ✅ Le code doit exister et être désactivé
 
 ### Test 6: Promotion Aller-Retour
 1. Aller dans Admin > Promos
-2. Activer la promotion aller-retour
+
 3. Définir 15% de réduction
-4. Rafraîchir la page
+
 5. ✅ La promotion doit être active à 15%
 
 ### Test 7: Notifications Telegram
-1. Aller dans Admin > Paramètres
-2. Activer les notifications Telegram
-3. Entrer un Bot Token et Chat ID
-4. Rafraîchir la page
-5. ✅ Les paramètres doivent être conservés
 
-### Test 8: Notifications Email
-1. Aller dans Admin > Paramètres > Email
-2. Activer les notifications
-3. Configurer SMTP (host, port, user, password)
+2. Activer les notifications Telegram
+
 4. Rafraîchir la page
+
+
+
+1. Aller dans Admin > Paramètres > Email
+
+3. Configurer SMTP (host, port, user, password)
+
 5. ✅ Toute la configuration SMTP doit être présente
 
 ### Test 9: Trajets Partagés
@@ -164,9 +164,9 @@ Pour vérifier que tout s'enregistre correctement :
 2. Modifier "Max passagers par trajet" à 6
 3. Modifier "Réduction par passager" à 30%
 4. Rafraîchir la page
-5. ✅ Les paramètres doivent être à 6 et 30%
 
-### Test 10: Circuits
+
+
 1. Aller dans Admin > Circuits
 2. Créer un nouveau circuit "Test Circuit"
 3. Ajouter 3 étapes
@@ -178,7 +178,7 @@ Pour vérifier que tout s'enregistre correctement :
 **Tous les paramètres modifiés dans l'admin doivent persister après un rafraîchissement de la page.**
 
 Si un paramètre ne se sauvegarde pas :
-1. Vérifier que le composant utilise bien `useKV`
+
 2. Vérifier que `setValue()` est appelé avec une fonction `(current) => ...`
 3. Vérifier la console du navigateur pour les erreurs
 4. Vérifier que la clé de stockage est unique
@@ -190,7 +190,7 @@ Pour vérifier manuellement les valeurs stockées :
 ```javascript
 // Ouvrir la console du navigateur
 await spark.kv.keys() // Liste toutes les clés
-await spark.kv.get('fleet') // Voir les véhicules
+
 await spark.kv.get('pricing') // Voir les tarifs
 await spark.kv.get('pricing-zones') // Voir les zones
 await spark.kv.get('zone-forfaits') // Voir les forfaits
@@ -198,7 +198,7 @@ await spark.kv.get('service-options') // Voir les options
 await spark.kv.get('promo-codes') // Voir les codes promo
 await spark.kv.get('telegram-settings') // Voir config Telegram
 await spark.kv.get('email-settings') // Voir config Email
-```
+
 
 ## ✅ Conclusion
 
@@ -206,6 +206,6 @@ await spark.kv.get('email-settings') // Voir config Email
 
 Les données sont enregistrées automatiquement à chaque modification et persistent entre les sessions. Il n'y a pas de problème d'enregistrement dans le code actuel.
 
----
+
 
 *Rapport généré le: ${new Date().toLocaleString('fr-FR')}*
