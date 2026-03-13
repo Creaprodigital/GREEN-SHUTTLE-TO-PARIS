@@ -492,20 +492,18 @@ export default function CircuitManager() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="circuit-stop-notes" className="text-sm font-medium uppercase tracking-wide">
                             Notes
-                          </Label>
+                            Notes
                           <Input
                             id="circuit-stop-notes"
-                            value={newStopNotes}
                             onChange={(e) => setNewStopNotes(e.target.value)}
-                            placeholder="Note..."
+                            value={newStopNotes}
                             className="h-11 bg-secondary border-border"
                             autoComplete="off"
                           />
-                        </div>
+                            autoComplete="off"
                       </div>
-                      <Button
+                        </div>
                         onClick={handleAddStop}
                         className="w-full h-11 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
                       >
