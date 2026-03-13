@@ -19,6 +19,7 @@ export default function CircuitManager() {
   const [newCircuitName, setNewCircuitName] = useState('')
   const [newCircuitDescription, setNewCircuitDescription] = useState('')
   const [editingCircuit, setEditingCircuit] = useState<Circuit | null>(null)
+  const [newStopTitle, setNewStopTitle] = useState('')
   const [newStopAddress, setNewStopAddress] = useState('')
   const [newStopDuration, setNewStopDuration] = useState('')
   const [newStopNotes, setNewStopNotes] = useState('')
@@ -205,9 +206,10 @@ export default function CircuitManager() {
         content: `
           <div style="color: #0f0f0f; font-weight: 600;">
             <strong>Étape ${index + 1}</strong><br/>
-            ${stop.address}<br/>
-            ${stop.duration ? `Durée: ${stop.duration} min` : ''}
-            ${stop.notes ? `<br/><em>${stop.notes}</em>` : ''}
+            ${stop.title ? `<strong style="font-size: 14px;">${stop.title}</strong><br/>` : ''}
+            <span style="font-size: 12px; color: #666;">📍 ${stop.address}</span><br/>
+            ${stop.duration ? `Durée: ${stop.duration} min<br/>` : ''}
+            ${stop.notes ? `<em>${stop.notes}</em>` : ''}
           </div>
         `
       })
@@ -285,6 +287,11 @@ export default function CircuitManager() {
       return
     }
 
+    if (!newStopTitle) {
+      toast.error('Veuillez entrer un titre pour cette étape')
+      return
+    }
+
     const geocoder = new google.maps.Geocoder()
     
     try {
@@ -301,6 +308,7 @@ export default function CircuitManager() {
       const location = result.geometry.location
       const newStop: CircuitStop = {
         id: `stop-${Date.now()}`,
+        title: newStopTitle,
         address: result.formatted_address || newStopAddress,
         lat: location.lat(),
         lng: location.lng(),
@@ -320,6 +328,7 @@ export default function CircuitManager() {
         (current || []).map((c) => (c.id === editingCircuit.id ? updatedCircuit : c))
       )
 
+      setNewStopTitle('')
       setNewStopAddress('')
       setNewStopDuration('')
       setNewStopNotes('')
@@ -550,7 +559,7 @@ export default function CircuitManager() {
                           {idx + 1}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">{stop.address}</p>
+                          <p className="text-sm font-medium text-foreground truncate">{stop.title || stop.address}</p>
                           {stop.duration && (
                             <p className="text-xs text-muted-foreground">Durée: {stop.duration} min</p>
                           )}
@@ -650,8 +659,20 @@ export default function CircuitManager() {
                     </h4>
                     <div className="space-y-3">
                       <div className="space-y-2">
+                        <Label htmlFor="new-stop-title" className="text-sm font-medium uppercase tracking-wide">
+                          Titre de l'Étape
+                        </Label>
+                        <Input
+                          id="new-stop-title"
+                          value={newStopTitle}
+                          onChange={(e) => setNewStopTitle(e.target.value)}
+                          placeholder="ex: Tour Eiffel, Arc de Triomphe..."
+                          className="h-11 bg-secondary border-border"
+                        />
+                      </div>
+                      <div className="space-y-2">
                         <Label htmlFor="new-stop-address" className="text-sm font-medium uppercase tracking-wide">
-                          Adresse
+                          Adresse (pour la carte)
                         </Label>
                         <Input
                           id="new-stop-address"
@@ -718,7 +739,8 @@ export default function CircuitManager() {
                               {idx + 1}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-foreground">{stop.address}</p>
+                              <p className="text-sm font-medium text-foreground">{stop.title || stop.address}</p>
+                              <p className="text-xs text-muted-foreground italic">📍 {stop.address}</p>
                               {stop.duration && (
                                 <p className="text-xs text-muted-foreground">Durée: {stop.duration} min</p>
                               )}

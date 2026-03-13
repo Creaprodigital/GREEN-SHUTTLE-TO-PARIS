@@ -184,7 +184,6 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
 
   const handleDelete = (bookingId: string) => {
     if (confirm('Are you sure you want to delete this booking?')) {
-      setBookings((current) => (current || []).filter((booking) => booking.id !== bookingId))
       onDeleteBooking(bookingId)
       toast.success('Booking deleted')
     }
@@ -1155,9 +1154,10 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                                   onChange={(e) => handleUpdatePricing(
                                     vehicle.id, 
                                     isHighDemand ? 'pricePerKm' : 'lowSeasonPricePerKm', 
-                                    parseFloat(e.target.value) || 0
+                                    e.target.value === '' ? 0 : parseFloat(e.target.value)
                                   )}
                                   className="h-12 bg-secondary border-border"
+                                  placeholder="0.00"
                                 />
                               </div>
 
@@ -1185,9 +1185,10 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                                   onChange={(e) => handleUpdatePricing(
                                     vehicle.id, 
                                     isHighDemand ? 'pricePerMinute' : 'lowSeasonPricePerMinute', 
-                                    parseFloat(e.target.value) || 0
+                                    e.target.value === '' ? 0 : parseFloat(e.target.value)
                                   )}
                                   className="h-12 bg-secondary border-border"
+                                  placeholder="0.00"
                                 />
                               </div>
 
@@ -1215,9 +1216,10 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                                   onChange={(e) => handleUpdatePricing(
                                     vehicle.id, 
                                     isHighDemand ? 'tourBasePrice' : 'lowSeasonTourBasePrice', 
-                                    parseFloat(e.target.value) || 0
+                                    e.target.value === '' ? 0 : parseFloat(e.target.value)
                                   )}
                                   className="h-12 bg-secondary border-border"
+                                  placeholder="0.00"
                                 />
                               </div>
                             </div>

@@ -1,5 +1,6 @@
 export interface CircuitStop {
   id: string
+  title?: string
   address: string
   lat: number
   lng: number
