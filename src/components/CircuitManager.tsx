@@ -23,6 +23,7 @@ export default function CircuitManager() {
   const [newStopAddress, setNewStopAddress] = useState('')
   const [newStopDuration, setNewStopDuration] = useState('')
   const [newStopNotes, setNewStopNotes] = useState('')
+  const [inputKey, setInputKey] = useState(0)
 
   const mapRef = useRef<HTMLDivElement>(null)
   const googleMapRef = useRef<google.maps.Map | null>(null)
@@ -58,27 +59,40 @@ export default function CircuitManager() {
   }, [editingCircuit?.stops])
 
   useEffect(() => {
-    if (inputRef.current && googleMapRef.current) {
+    if (inputRef.current && googleMapRef.current && editingCircuit) {
       if (autocompleteRef.current) {
         google.maps.event.clearInstanceListeners(autocompleteRef.current)
+        autocompleteRef.current = null
       }
       
       const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
         fields: ['formatted_address', 'geometry', 'name'],
         componentRestrictions: { country: 'fr' }
       })
-      autocomplete.bindTo('bounds', googleMapRef.current)
       
-      autocomplete.addListener('place_changed', () => {
+      if (googleMapRef.current) {
+        autocomplete.bindTo('bounds', googleMapRef.current)
+      }
+      
+      const listener = autocomplete.addListener('place_changed', () => {
         const place = autocomplete.getPlace()
-        if (place && place.formatted_address) {
+        if (place && place.formatted_address && place.geometry && place.geometry.location) {
           setNewStopAddress(place.formatted_address)
+          if (inputRef.current) {
+            inputRef.current.value = place.formatted_address
+          }
         }
       })
       
       autocompleteRef.current = autocomplete
+      
+      return () => {
+        if (listener) {
+          google.maps.event.removeListener(listener)
+        }
+      }
     }
-  }, [inputRef.current, googleMapRef.current, editingCircuit])
+  }, [googleMapRef.current, editingCircuit?.id, inputKey])
 
   const initializeMap = () => {
     if (!mapRef.current) return
@@ -360,10 +374,7 @@ export default function CircuitManager() {
       setNewStopAddress('')
       setNewStopDuration('')
       setNewStopNotes('')
-      
-      if (inputRef.current) {
-        inputRef.current.value = ''
-      }
+      setInputKey(prev => prev + 1)
       
       toast.success('Étape ajoutée au circuit')
     } catch (error) {
@@ -725,12 +736,14 @@ export default function CircuitManager() {
                           Adresse (pour la carte)
                         </Label>
                         <Input
+                          key={inputKey}
                           id="new-stop-address"
                           ref={inputRef}
-                          value={newStopAddress}
+                          defaultValue=""
                           onChange={(e) => setNewStopAddress(e.target.value)}
                           placeholder="Entrez une adresse..."
                           className="h-11 bg-secondary border-border"
+                          autoComplete="off"
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
