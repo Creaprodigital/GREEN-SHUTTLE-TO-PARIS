@@ -69,3 +69,46 @@
 body {
   font-family: var(--font-body);
 }
+
+.pac-container {
+  z-index: 10000 !important;
+  background-color: oklch(0.18 0 0);
+  border: 1px solid oklch(0.30 0 0);
+  border-radius: 0;
+  margin-top: 2px;
+  font-family: var(--font-body);
+}
+
+.pac-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: oklch(0.98 0 0);
+  border-top: 1px solid oklch(0.30 0 0);
+}
+
+.pac-item:first-child {
+  border-top: none;
+}
+
+.pac-item:hover {
+  background-color: oklch(0.25 0 0);
+}
+
+.pac-item-selected {
+  background-color: oklch(0.75 0.14 75);
+  color: oklch(0.15 0 0);
+}
+
+.pac-item-query {
+  color: oklch(0.98 0 0);
+  font-weight: 600;
+}
+
+.pac-matched {
+  font-weight: 700;
+  color: oklch(0.75 0.14 75);
+}
+
+.pac-icon {
+  display: none;
+}

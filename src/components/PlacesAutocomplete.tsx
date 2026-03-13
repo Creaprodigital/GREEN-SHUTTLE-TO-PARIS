@@ -30,27 +30,52 @@ export default function PlacesAutocomplete({
   useEffect(() => {
     if (!inputRef.current || !(window as any).google) return
 
-    autocompleteRef.current = new (window as any).google.maps.places.Autocomplete(inputRef.current, {
+    const autocompleteOptions = {
       types: ['geocode'],
-      componentRestrictions: { country: 'fr' }
-    })
+      componentRestrictions: { country: 'fr' },
+      fields: ['formatted_address', 'geometry', 'name']
+    }
+
+    autocompleteRef.current = new (window as any).google.maps.places.Autocomplete(
+      inputRef.current,
+      autocompleteOptions
+    )
+
+    const pacContainer = document.querySelector('.pac-container') as HTMLElement
+    if (pacContainer) {
+      pacContainer.style.zIndex = '10000'
+    }
 
     const listener = autocompleteRef.current.addListener('place_changed', () => {
       const place = autocompleteRef.current?.getPlace()
       if (place?.formatted_address) {
-        setInputValue(place.formatted_address)
+        const newAddress = place.formatted_address
+        setInputValue(newAddress)
         const coords = place.geometry?.location ? {
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng()
         } : undefined
-        onChange(place.formatted_address, coords)
+        onChange(newAddress, coords)
       }
+    })
+
+    const observer = new MutationObserver(() => {
+      const containers = document.querySelectorAll('.pac-container')
+      containers.forEach((container) => {
+        (container as HTMLElement).style.zIndex = '10000'
+      })
+    })
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
     })
 
     return () => {
       if (listener) {
         (window as any).google.maps.event.removeListener(listener)
       }
+      observer.disconnect()
     }
   }, [onChange])
 
