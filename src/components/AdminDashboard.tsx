@@ -55,7 +55,7 @@ const statusColors = {
 
 
 export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, onDeleteBooking, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact }: AdminDashboardProps) {
-  const [bookings] = useKV<Booking[]>('bookings', [])
+  const [bookings, setBookings] = useKV<Booking[]>('bookings', [])
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [adminAccounts, setAdminAccounts] = useKV<AdminAccount[]>('admin-accounts', [
@@ -184,6 +184,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
 
   const handleDelete = (bookingId: string) => {
     if (confirm('Are you sure you want to delete this booking?')) {
+      setBookings((current) => (current || []).filter((booking) => booking.id !== bookingId))
       onDeleteBooking(bookingId)
       toast.success('Booking deleted')
     }
