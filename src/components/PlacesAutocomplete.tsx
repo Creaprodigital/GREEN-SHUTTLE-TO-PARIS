@@ -99,7 +99,7 @@ export default function PlacesAutocomplete({
         onChange={handleInputChange}
         placeholder={placeholder}
         className={cn(icon ? 'pl-11' : '', className)}
-        autoComplete="off"
+        autoComplete="new-password"
       />
     </div>
   )

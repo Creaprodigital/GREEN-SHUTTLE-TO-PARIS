@@ -461,11 +461,11 @@ export default function CircuitManager() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="new-stop-address" className="text-sm font-medium uppercase tracking-wide">
+                        <Label htmlFor="circuit-stop-address" className="text-sm font-medium uppercase tracking-wide">
                           Adresse (pour la carte)
                         </Label>
                         <PlacesAutocomplete
-                          id="new-stop-address"
+                          id="circuit-stop-address"
                           value={newStopAddress}
                           onChange={(value, coords) => {
                             setNewStopAddress(value)
@@ -478,28 +478,30 @@ export default function CircuitManager() {
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-2">
-                          <Label htmlFor="new-stop-duration" className="text-sm font-medium uppercase tracking-wide">
+                          <Label htmlFor="circuit-stop-duration" className="text-sm font-medium uppercase tracking-wide">
                             Durée (min)
                           </Label>
                           <Input
-                            id="new-stop-duration"
+                            id="circuit-stop-duration"
                             type="number"
                             value={newStopDuration}
                             onChange={(e) => setNewStopDuration(e.target.value)}
                             placeholder="30"
                             className="h-11 bg-secondary border-border"
+                            autoComplete="off"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="new-stop-notes" className="text-sm font-medium uppercase tracking-wide">
+                          <Label htmlFor="circuit-stop-notes" className="text-sm font-medium uppercase tracking-wide">
                             Notes
                           </Label>
                           <Input
-                            id="new-stop-notes"
+                            id="circuit-stop-notes"
                             value={newStopNotes}
                             onChange={(e) => setNewStopNotes(e.target.value)}
                             placeholder="Note..."
                             className="h-11 bg-secondary border-border"
+                            autoComplete="off"
                           />
                         </div>
                       </div>
