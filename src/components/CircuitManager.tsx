@@ -25,41 +25,11 @@ export default function CircuitManager() {
   const [newStopNotes, setNewStopNotes] = useState('')
   const [inputKey, setInputKey] = useState(0)
 
-  const mapRef = useRef<HTMLDivElement>(null)
-  const googleMapRef = useRef<google.maps.Map | null>(null)
-  const markersRef = useRef<google.maps.Marker[]>([])
-  const directionsRenderersRef = useRef<google.maps.DirectionsRenderer[]>([])
-  const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null)
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (editingCircuit && mapRef.current) {
-      if (!googleMapRef.current) {
-        initializeMap()
-      }
-    }
-  }, [editingCircuit])
-
-  useEffect(() => {
-    if (mapRef.current && !googleMapRef.current && editingCircuit) {
-      const timer = setTimeout(() => {
-        if (mapRef.current && !googleMapRef.current) {
-          initializeMap()
-        }
-      }, 100)
-      return () => clearTimeout(timer)
-    }
-  }, [mapRef.current, editingCircuit])
-
-  useEffect(() => {
-    if (editingCircuit && googleMapRef.current) {
-      updateMapMarkers()
-    }
-  }, [editingCircuit?.stops])
-
-  useEffect(() => {
-    if (inputRef.current && googleMapRef.current && editingCircuit) {
+    if (inputRef.current && editingCircuit) {
       if (autocompleteRef.current) {
         google.maps.event.clearInstanceListeners(autocompleteRef.current)
         autocompleteRef.current = null
@@ -69,10 +39,6 @@ export default function CircuitManager() {
         fields: ['formatted_address', 'geometry', 'name'],
         componentRestrictions: { country: 'fr' }
       })
-      
-      if (googleMapRef.current) {
-        autocomplete.bindTo('bounds', googleMapRef.current)
-      }
       
       const listener = autocomplete.addListener('place_changed', () => {
         const place = autocomplete.getPlace()
@@ -92,213 +58,7 @@ export default function CircuitManager() {
         }
       }
     }
-  }, [googleMapRef.current, editingCircuit?.id, inputKey])
-
-  const initializeMap = () => {
-    if (!mapRef.current) return
-
-    const map = new google.maps.Map(mapRef.current, {
-      center: { lat: 48.8566, lng: 2.3522 },
-      zoom: 12,
-      mapTypeId: 'roadmap',
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: false,
-      zoomControl: true,
-      scaleControl: true,
-      styles: [
-        {
-          featureType: 'all',
-          elementType: 'labels',
-          stylers: [{ visibility: 'off' }]
-        },
-        {
-          featureType: 'administrative',
-          stylers: [{ visibility: 'off' }]
-        },
-        {
-          featureType: 'landscape',
-          elementType: 'geometry',
-          stylers: [{ color: '#f5f5f5' }, { visibility: 'simplified' }]
-        },
-        {
-          featureType: 'poi',
-          stylers: [{ visibility: 'off' }]
-        },
-        {
-          featureType: 'poi.attraction',
-          elementType: 'geometry',
-          stylers: [{ visibility: 'on' }, { color: '#e8d5b7' }]
-        },
-        {
-          featureType: 'poi.attraction',
-          elementType: 'labels',
-          stylers: [{ visibility: 'on' }]
-        },
-        {
-          featureType: 'poi.attraction',
-          elementType: 'labels.text.fill',
-          stylers: [{ color: '#8b7355' }]
-        },
-        {
-          featureType: 'poi.park',
-          elementType: 'geometry',
-          stylers: [{ visibility: 'on' }, { color: '#d4e5c1' }]
-        },
-        {
-          featureType: 'road',
-          elementType: 'geometry',
-          stylers: [{ visibility: 'on' }, { color: '#ffffff' }]
-        },
-        {
-          featureType: 'road',
-          elementType: 'geometry.stroke',
-          stylers: [{ color: '#d9d9d9' }]
-        },
-        {
-          featureType: 'road.highway',
-          elementType: 'geometry',
-          stylers: [{ color: '#ffeaa7' }]
-        },
-        {
-          featureType: 'road.highway',
-          elementType: 'geometry.stroke',
-          stylers: [{ color: '#fdcb6e' }]
-        },
-        {
-          featureType: 'road.arterial',
-          elementType: 'geometry',
-          stylers: [{ color: '#ffffff' }]
-        },
-        {
-          featureType: 'road',
-          elementType: 'labels',
-          stylers: [{ visibility: 'on' }]
-        },
-        {
-          featureType: 'road',
-          elementType: 'labels.text.fill',
-          stylers: [{ color: '#6b6b6b' }]
-        },
-        {
-          featureType: 'transit',
-          stylers: [{ visibility: 'off' }]
-        },
-        {
-          featureType: 'water',
-          elementType: 'geometry',
-          stylers: [{ color: '#a8d8ea' }]
-        },
-        {
-          featureType: 'water',
-          elementType: 'labels',
-          stylers: [{ visibility: 'on' }]
-        },
-        {
-          featureType: 'water',
-          elementType: 'labels.text.fill',
-          stylers: [{ color: '#5a8aa0' }]
-        }
-      ]
-    })
-
-    googleMapRef.current = map
-    directionsServiceRef.current = new google.maps.DirectionsService()
-
-    if (editingCircuit && editingCircuit.stops.length > 0) {
-      const bounds = new google.maps.LatLngBounds()
-      editingCircuit.stops.forEach(stop => {
-        bounds.extend({ lat: stop.lat, lng: stop.lng })
-      })
-      map.fitBounds(bounds)
-    }
-  }
-
-  const updateMapMarkers = () => {
-    if (!googleMapRef.current || !editingCircuit) return
-
-    markersRef.current.forEach(marker => marker.setMap(null))
-    markersRef.current = []
-    
-    directionsRenderersRef.current.forEach(renderer => renderer.setMap(null))
-    directionsRenderersRef.current = []
-
-    const bounds = new google.maps.LatLngBounds()
-
-    editingCircuit.stops.forEach((stop, index) => {
-      const marker = new google.maps.Marker({
-        position: { lat: stop.lat, lng: stop.lng },
-        map: googleMapRef.current,
-        label: {
-          text: `${index + 1}`,
-          color: '#0f0f0f',
-          fontWeight: 'bold'
-        },
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 20,
-          fillColor: '#b8d970',
-          fillOpacity: 1,
-          strokeColor: '#0f0f0f',
-          strokeWeight: 2
-        }
-      })
-
-      const infoWindow = new google.maps.InfoWindow({
-        content: `
-          <div style="color: #0f0f0f; font-weight: 600;">
-            <strong>Étape ${index + 1}</strong><br/>
-            ${stop.title ? `<strong style="font-size: 14px;">${stop.title}</strong><br/>` : ''}
-            <span style="font-size: 12px; color: #666;">📍 ${stop.address}</span><br/>
-            ${stop.duration ? `Durée: ${stop.duration} min<br/>` : ''}
-            ${stop.notes ? `<em>${stop.notes}</em>` : ''}
-          </div>
-        `
-      })
-
-      marker.addListener('click', () => {
-        infoWindow.open(googleMapRef.current, marker)
-      })
-
-      markersRef.current.push(marker)
-      bounds.extend({ lat: stop.lat, lng: stop.lng })
-    })
-
-    if (editingCircuit.stops.length > 1 && directionsServiceRef.current && googleMapRef.current) {
-      for (let i = 0; i < editingCircuit.stops.length - 1; i++) {
-        const origin = { lat: editingCircuit.stops[i].lat, lng: editingCircuit.stops[i].lng }
-        const destination = { lat: editingCircuit.stops[i + 1].lat, lng: editingCircuit.stops[i + 1].lng }
-
-        directionsServiceRef.current.route(
-          {
-            origin: origin,
-            destination: destination,
-            travelMode: google.maps.TravelMode.DRIVING
-          },
-          (result, status) => {
-            if (status === google.maps.DirectionsStatus.OK && result && googleMapRef.current) {
-              const directionsRenderer = new google.maps.DirectionsRenderer({
-                map: googleMapRef.current,
-                directions: result,
-                suppressMarkers: true,
-                preserveViewport: true,
-                polylineOptions: {
-                  strokeColor: '#b8d970',
-                  strokeOpacity: 0.8,
-                  strokeWeight: 4
-                }
-              })
-              directionsRenderersRef.current.push(directionsRenderer)
-            }
-          }
-        )
-      }
-    }
-
-    if (editingCircuit.stops.length > 0) {
-      googleMapRef.current.fitBounds(bounds)
-    }
-  }
+  }, [editingCircuit?.id, inputKey])
 
   const handleCreateCircuit = () => {
     if (!newCircuitName) {
@@ -438,16 +198,9 @@ export default function CircuitManager() {
       setCircuits((current) => (current || []).filter((c) => c.id !== circuitId))
       if (editingCircuit?.id === circuitId) {
         setEditingCircuit(null)
-        if (googleMapRef.current) {
-          googleMapRef.current = null
-        }
         if (autocompleteRef.current) {
           autocompleteRef.current = null
         }
-        markersRef.current.forEach(marker => marker.setMap(null))
-        markersRef.current = []
-        directionsRenderersRef.current.forEach(renderer => renderer.setMap(null))
-        directionsRenderersRef.current = []
       }
       toast.success('Circuit supprimé')
     }
@@ -579,14 +332,9 @@ export default function CircuitManager() {
                     <Button
                       onClick={() => {
                         setEditingCircuit(circuit)
-                        if (googleMapRef.current) {
-                          googleMapRef.current = null
-                        }
                         if (autocompleteRef.current) {
                           autocompleteRef.current = null
                         }
-                        markersRef.current = []
-                        directionsRenderersRef.current = []
                       }}
                       className="h-11 px-6 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
                     >
@@ -635,20 +383,13 @@ export default function CircuitManager() {
         onOpenChange={(open) => {
           if (!open) {
             setEditingCircuit(null)
-            if (googleMapRef.current) {
-              googleMapRef.current = null
-            }
             if (autocompleteRef.current) {
               autocompleteRef.current = null
             }
-            markersRef.current.forEach(marker => marker.setMap(null))
-            markersRef.current = []
-            directionsRenderersRef.current.forEach(renderer => renderer.setMap(null))
-            directionsRenderersRef.current = []
           }
         }}
       >
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold uppercase tracking-wide">
               {editingCircuit?.name}
@@ -657,8 +398,7 @@ export default function CircuitManager() {
 
           {editingCircuit && (
             <div className="space-y-6 pt-4">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-4">
+              <div className="space-y-4">
                   <div className="space-y-2">
                     <Label className="text-sm font-medium uppercase tracking-wide">
                       Nom du Circuit
@@ -843,17 +583,6 @@ export default function CircuitManager() {
                       )}
                     </div>
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium uppercase tracking-wide">
-                    Carte du Circuit
-                  </Label>
-                  <div
-                    ref={mapRef}
-                    className="w-full h-[600px] bg-muted/50 border-2 border-border"
-                  />
-                </div>
               </div>
             </div>
           )}
