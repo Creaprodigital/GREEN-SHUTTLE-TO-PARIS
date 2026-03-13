@@ -1199,6 +1199,88 @@ export default function BookingForm() {
                     </div>
                   )}
 
+                  {(serviceType === 'transfer' || serviceType === 'shared') && pickup && destination && pickupCoords && destinationCoords && (
+                    <div className="border-t border-border pt-5 mt-2">
+                      <h4 className="text-sm font-medium uppercase tracking-wide mb-4 text-accent flex items-center gap-2">
+                        <MapPin size={18} weight="fill" />
+                        Prévisualisation du Trajet
+                      </h4>
+                      <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4">
+                        {isCalculatingDistance ? (
+                          <div className="flex justify-center items-center text-sm text-muted-foreground py-8">
+                            <div className="animate-spin rounded-full h-6 w-6 border-2 border-accent border-t-transparent mr-3"></div>
+                            Calcul de l'itinéraire en cours...
+                          </div>
+                        ) : distanceKm > 0 && durationMinutes > 0 ? (
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="flex flex-col items-center justify-center p-4 bg-background rounded-lg border-2 border-accent/30">
+                                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-medium">Distance Totale</div>
+                                <div className="text-3xl font-bold text-accent flex items-center gap-1">
+                                  {distanceKm.toFixed(1)} 
+                                  <span className="text-lg">km</span>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-center justify-center p-4 bg-background rounded-lg border-2 border-accent/30">
+                                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-medium">Temps Estimé</div>
+                                <div className="text-3xl font-bold text-accent flex items-center gap-1">
+                                  <Clock size={28} weight="fill" className="mr-1" />
+                                  {durationMinutes} 
+                                  <span className="text-lg">min</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {transferType === 'roundtrip' && (
+                              <div className="bg-accent/10 border border-accent/30 rounded-lg p-3 text-center">
+                                <div className="text-xs text-muted-foreground mb-1">Trajet aller-retour</div>
+                                <div className="text-sm font-semibold text-accent">
+                                  Distance totale: {(distanceKm * 2).toFixed(1)} km • Temps total: {(durationMinutes * 2)} min
+                                </div>
+                              </div>
+                            )}
+
+                            <div className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
+                              <MapPin size={20} weight="fill" className="text-blue-500 flex-shrink-0 mt-0.5" />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Départ</div>
+                                <div className="text-sm font-medium text-foreground truncate">{pickup}</div>
+                              </div>
+                            </div>
+                            
+                            <div className="flex justify-center">
+                              <ArrowRight size={24} className="text-accent" weight="bold" />
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
+                              <MapPin size={20} weight="fill" className="text-red-500 flex-shrink-0 mt-0.5" />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Arrivée</div>
+                                <div className="text-sm font-medium text-foreground truncate">{destination}</div>
+                              </div>
+                            </div>
+
+                            {serviceType === 'shared' && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setShowRoutePreview(true)}
+                                className="w-full mt-2 border-2 border-accent/30 hover:border-accent hover:bg-accent/10 text-accent font-medium"
+                              >
+                                <MapPin size={20} weight="fill" className="mr-2" />
+                                Voir l'itinéraire détaillé sur la carte
+                              </Button>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="text-center text-sm text-muted-foreground py-8">
+                            Calcul de l'itinéraire en cours...
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {serviceType === 'transfer' && transferType === 'roundtrip' && (
                     <div className="border-t border-border pt-5 mt-2">
                       <h4 className="text-sm font-medium uppercase tracking-wide mb-4 text-accent">Informations de Retour</h4>
@@ -1253,34 +1335,58 @@ export default function BookingForm() {
                   transition={{ duration: 0.3 }}
                   className="space-y-5"
                 >
-                  {serviceType === 'transfer' && (
-                    <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4">
+                  {(serviceType === 'transfer' || serviceType === 'shared') && (
+                    <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4 mb-5">
+                      <div className="flex items-center gap-2 mb-3">
+                        <MapPin size={18} weight="fill" className="text-accent" />
+                        <h4 className="text-sm font-medium uppercase tracking-wide text-accent">
+                          Informations du Trajet
+                        </h4>
+                      </div>
                       {isCalculatingDistance ? (
-                        <div className="flex justify-center items-center text-sm text-muted-foreground py-3">
-                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-accent border-t-transparent mr-3"></div>
-                          Calcul de la distance en cours...
+                        <div className="flex justify-center items-center text-sm text-muted-foreground py-6">
+                          <div className="animate-spin rounded-full h-6 w-6 border-2 border-accent border-t-transparent mr-3"></div>
+                          Calcul de l'itinéraire en cours...
                         </div>
-                      ) : distanceKm > 0 ? (
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="flex flex-col items-center justify-center p-3 bg-background rounded-md">
-                            <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Distance</div>
-                            <div className="text-2xl font-bold text-accent">{distanceKm.toFixed(1)} km</div>
+                      ) : distanceKm > 0 && durationMinutes > 0 ? (
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="flex flex-col items-center justify-center p-4 bg-background rounded-lg border-2 border-accent/30">
+                              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-medium">Distance</div>
+                              <div className="text-3xl font-bold text-accent flex items-center gap-1">
+                                {distanceKm.toFixed(1)} 
+                                <span className="text-lg">km</span>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-center justify-center p-4 bg-background rounded-lg border-2 border-accent/30">
+                              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-medium">Durée</div>
+                              <div className="text-3xl font-bold text-accent flex items-center gap-1">
+                                <Clock size={28} weight="fill" className="mr-1" />
+                                {durationMinutes} 
+                                <span className="text-lg">min</span>
+                              </div>
+                            </div>
                           </div>
-                          <div className="flex flex-col items-center justify-center p-3 bg-background rounded-md">
-                            <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Durée estimée</div>
-                            <div className="text-2xl font-bold text-accent">{durationMinutes} min</div>
-                          </div>
+                          
+                          {transferType === 'roundtrip' && (
+                            <div className="bg-accent/10 border border-accent/30 rounded-lg p-3 text-center">
+                              <div className="text-xs text-muted-foreground mb-1">Trajet aller-retour</div>
+                              <div className="text-sm font-semibold text-accent">
+                                Total: {(distanceKm * 2).toFixed(1)} km • {(durationMinutes * 2)} min
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ) : (pickup && destination && !pickupCoords && !destinationCoords) ? (
-                        <div className="text-center text-xs text-muted-foreground py-3">
+                        <div className="text-center text-xs text-muted-foreground py-6">
                           ⚠️ Veuillez sélectionner une adresse dans la liste de suggestions pour calculer la distance
                         </div>
                       ) : (pickup && destination && (!pickupCoords || !destinationCoords)) ? (
-                        <div className="text-center text-xs text-muted-foreground py-3">
+                        <div className="text-center text-xs text-muted-foreground py-6">
                           ⚠️ Veuillez sélectionner {!pickupCoords ? 'le lieu de départ' : 'la destination'} dans la liste de suggestions
                         </div>
                       ) : (
-                        <div className="text-center text-xs text-muted-foreground py-3">
+                        <div className="text-center text-xs text-muted-foreground py-6">
                           Saisissez le départ et la destination pour calculer la distance
                         </div>
                       )}
@@ -1678,7 +1784,7 @@ export default function BookingForm() {
                         <span className="text-muted-foreground">Départ:</span>
                         <span className="font-medium text-right">{pickup || '-'}</span>
                       </div>
-                      {serviceType === 'transfer' && (
+                      {(serviceType === 'transfer' || serviceType === 'shared') && destination && (
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Destination:</span>
                           <span className="font-medium text-right">{destination || '-'}</span>
@@ -1708,19 +1814,37 @@ export default function BookingForm() {
                             <span className="text-muted-foreground">Valises:</span>
                             <span className="font-medium">{luggage}</span>
                           </div>
-                          {distanceKm > 0 && (
-                            <>
-                              <div className="flex justify-between text-xs">
-                                <span className="text-muted-foreground">Distance:</span>
-                                <span className="font-medium">{distanceKm.toFixed(1)} km</span>
-                              </div>
-                              <div className="flex justify-between text-xs">
-                                <span className="text-muted-foreground">Durée estimée:</span>
-                                <span className="font-medium">{durationMinutes} min</span>
-                              </div>
-                            </>
-                          )}
                         </>
+                      )}
+                      {(serviceType === 'transfer' || serviceType === 'shared') && distanceKm > 0 && (
+                        <div className="border-t border-accent/20 pt-2 mt-2">
+                          <div className="bg-accent/5 rounded-md p-3 space-y-2">
+                            <div className="flex items-center gap-2 mb-2">
+                              <MapPin size={16} weight="fill" className="text-accent" />
+                              <span className="text-xs font-semibold uppercase tracking-wide text-accent">Itinéraire</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="flex flex-col items-center p-2 bg-background rounded border border-accent/20">
+                                <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Distance</div>
+                                <div className="text-lg font-bold text-accent">
+                                  {transferType === 'roundtrip' ? (distanceKm * 2).toFixed(1) : distanceKm.toFixed(1)} km
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-center p-2 bg-background rounded border border-accent/20">
+                                <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Temps Estimé</div>
+                                <div className="text-lg font-bold text-accent flex items-center gap-1">
+                                  <Clock size={16} weight="fill" />
+                                  {transferType === 'roundtrip' ? (durationMinutes * 2) : durationMinutes} min
+                                </div>
+                              </div>
+                            </div>
+                            {transferType === 'roundtrip' && (
+                              <div className="text-[10px] text-center text-muted-foreground italic mt-1">
+                                Temps total aller-retour
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       )}
                       {serviceType === 'hourly' && (
                         <div className="flex justify-between text-xs">
