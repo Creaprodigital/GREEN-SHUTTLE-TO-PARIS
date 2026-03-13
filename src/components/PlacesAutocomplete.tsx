@@ -57,9 +57,7 @@ export default function PlacesAutocomplete({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
     setInputValue(newValue)
-    if (!newValue) {
-      onChange(newValue, undefined)
-    }
+    onChange(newValue, undefined)
   }
 
   return (

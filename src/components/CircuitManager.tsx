@@ -196,9 +196,6 @@ export default function CircuitManager() {
       setCircuits((current) => (current || []).filter((c) => c.id !== circuitId))
       if (editingCircuit?.id === circuitId) {
         setEditingCircuit(null)
-        if (autocompleteRef.current) {
-          autocompleteRef.current = null
-        }
       }
       toast.success('Circuit supprimé')
     }
