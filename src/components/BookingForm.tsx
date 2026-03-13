@@ -1201,10 +1201,25 @@ export default function BookingForm() {
 
                   {(serviceType === 'transfer' || serviceType === 'shared') && pickup && destination && pickupCoords && destinationCoords && (
                     <div className="border-t border-border pt-5 mt-2">
-                      <h4 className="text-sm font-medium uppercase tracking-wide mb-4 text-accent flex items-center gap-2">
-                        <MapPin size={18} weight="fill" />
-                        Prévisualisation du Trajet
-                      </h4>
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-sm font-medium uppercase tracking-wide text-accent flex items-center gap-2">
+                          <MapPin size={18} weight="fill" />
+                          Prévisualisation du Trajet
+                        </h4>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setCurrentStep(1)
+                            toast.info('Vous pouvez maintenant modifier votre trajet')
+                          }}
+                          className="text-xs uppercase tracking-wide text-accent hover:text-accent hover:bg-accent/10 font-medium"
+                        >
+                          <MapPin size={16} weight="fill" className="mr-1.5" />
+                          Modifier
+                        </Button>
+                      </div>
                       <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4">
                         {isCalculatingDistance ? (
                           <div className="flex justify-center items-center text-sm text-muted-foreground py-8">
@@ -1337,11 +1352,28 @@ export default function BookingForm() {
                 >
                   {(serviceType === 'transfer' || serviceType === 'shared') && (
                     <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4 mb-5">
-                      <div className="flex items-center gap-2 mb-3">
-                        <MapPin size={18} weight="fill" className="text-accent" />
-                        <h4 className="text-sm font-medium uppercase tracking-wide text-accent">
-                          Informations du Trajet
-                        </h4>
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <MapPin size={18} weight="fill" className="text-accent" />
+                          <h4 className="text-sm font-medium uppercase tracking-wide text-accent">
+                            Informations du Trajet
+                          </h4>
+                        </div>
+                        {pickup && destination && pickupCoords && destinationCoords && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setCurrentStep(1)
+                              toast.info('Vous pouvez maintenant modifier votre trajet')
+                            }}
+                            className="text-xs uppercase tracking-wide text-accent hover:text-accent hover:bg-accent/10 font-medium"
+                          >
+                            <MapPin size={16} weight="fill" className="mr-1.5" />
+                            Modifier
+                          </Button>
+                        )}
                       </div>
                       {isCalculatingDistance ? (
                         <div className="flex justify-center items-center text-sm text-muted-foreground py-6">
@@ -1376,6 +1408,28 @@ export default function BookingForm() {
                               </div>
                             </div>
                           )}
+                          
+                          <div className="pt-2 border-t border-accent/20">
+                            <div className="flex items-start gap-3 p-3 bg-background/50 rounded-lg mb-2">
+                              <MapPin size={20} weight="fill" className="text-blue-500 flex-shrink-0 mt-0.5" />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Départ</div>
+                                <div className="text-sm font-medium text-foreground truncate">{pickup}</div>
+                              </div>
+                            </div>
+                            
+                            <div className="flex justify-center my-1">
+                              <ArrowRight size={20} className="text-accent" weight="bold" />
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
+                              <MapPin size={20} weight="fill" className="text-red-500 flex-shrink-0 mt-0.5" />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Arrivée</div>
+                                <div className="text-sm font-medium text-foreground truncate">{destination}</div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       ) : (pickup && destination && !pickupCoords && !destinationCoords) ? (
                         <div className="text-center text-xs text-muted-foreground py-6">
@@ -1764,7 +1818,22 @@ export default function BookingForm() {
                   </div>
 
                   <div className="bg-accent/10 border-2 border-accent/30 rounded-lg p-4 space-y-2">
-                    <h4 className="font-semibold uppercase tracking-wide text-sm">Récapitulatif</h4>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold uppercase tracking-wide text-sm">Récapitulatif</h4>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setCurrentStep(1)
+                          toast.info('Modifiez votre trajet et vos informations')
+                        }}
+                        className="text-xs uppercase tracking-wide text-accent hover:text-accent hover:bg-accent/10 font-medium"
+                      >
+                        <MapPin size={14} weight="fill" className="mr-1.5" />
+                        Modifier
+                      </Button>
+                    </div>
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Service:</span>
