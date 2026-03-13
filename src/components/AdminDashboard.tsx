@@ -1150,7 +1150,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                                   type="number"
                                   step="0.1"
                                   min="0"
-                                  value={isHighDemand ? pricing.pricePerKm : (pricing.lowSeasonPricePerKm || 0)}
+                                  value={isHighDemand ? (pricing.pricePerKm || '') : (pricing.lowSeasonPricePerKm || '')}
                                   onChange={(e) => handleUpdatePricing(
                                     vehicle.id, 
                                     isHighDemand ? 'pricePerKm' : 'lowSeasonPricePerKm', 
@@ -1180,7 +1180,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                                   type="number"
                                   step="0.1"
                                   min="0"
-                                  value={isHighDemand ? pricing.pricePerMinute : (pricing.lowSeasonPricePerMinute || 0)}
+                                  value={isHighDemand ? (pricing.pricePerMinute || '') : (pricing.lowSeasonPricePerMinute || '')}
                                   onChange={(e) => handleUpdatePricing(
                                     vehicle.id, 
                                     isHighDemand ? 'pricePerMinute' : 'lowSeasonPricePerMinute', 
@@ -1210,7 +1210,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                                   type="number"
                                   step="1"
                                   min="0"
-                                  value={isHighDemand ? pricing.tourBasePrice : (pricing.lowSeasonTourBasePrice || 0)}
+                                  value={isHighDemand ? (pricing.tourBasePrice || '') : (pricing.lowSeasonTourBasePrice || '')}
                                   onChange={(e) => handleUpdatePricing(
                                     vehicle.id, 
                                     isHighDemand ? 'tourBasePrice' : 'lowSeasonTourBasePrice', 

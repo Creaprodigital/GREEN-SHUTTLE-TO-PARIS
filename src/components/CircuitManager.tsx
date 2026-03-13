@@ -634,7 +634,7 @@ export default function CircuitManager() {
                       type="number"
                       step="0.01"
                       min="0"
-                      value={editingCircuit.price || ''}
+                      value={editingCircuit.price !== undefined && editingCircuit.price !== 0 ? editingCircuit.price : ''}
                       onChange={(e) =>
                         setEditingCircuit({ ...editingCircuit, price: e.target.value ? parseFloat(e.target.value) : undefined })
                       }
