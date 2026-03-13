@@ -57,6 +57,29 @@ export default function CircuitManager() {
     }
   }, [editingCircuit?.stops])
 
+  useEffect(() => {
+    if (inputRef.current && googleMapRef.current) {
+      if (autocompleteRef.current) {
+        google.maps.event.clearInstanceListeners(autocompleteRef.current)
+      }
+      
+      const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
+        fields: ['formatted_address', 'geometry', 'name'],
+        componentRestrictions: { country: 'fr' }
+      })
+      autocomplete.bindTo('bounds', googleMapRef.current)
+      
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace()
+        if (place && place.formatted_address) {
+          setNewStopAddress(place.formatted_address)
+        }
+      })
+      
+      autocompleteRef.current = autocomplete
+    }
+  }, [inputRef.current, googleMapRef.current, editingCircuit])
+
   const initializeMap = () => {
     if (!mapRef.current) return
 
@@ -167,23 +190,6 @@ export default function CircuitManager() {
 
     googleMapRef.current = map
     directionsServiceRef.current = new google.maps.DirectionsService()
-
-    if (inputRef.current && !autocompleteRef.current) {
-      const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
-        fields: ['formatted_address', 'geometry', 'name'],
-        componentRestrictions: { country: 'fr' }
-      })
-      autocomplete.bindTo('bounds', map)
-      
-      autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace()
-        if (place && place.formatted_address) {
-          setNewStopAddress(place.formatted_address)
-        }
-      })
-      
-      autocompleteRef.current = autocomplete
-    }
 
     if (editingCircuit && editingCircuit.stops.length > 0) {
       const bounds = new google.maps.LatLngBounds()
@@ -354,6 +360,11 @@ export default function CircuitManager() {
       setNewStopAddress('')
       setNewStopDuration('')
       setNewStopNotes('')
+      
+      if (inputRef.current) {
+        inputRef.current.value = ''
+      }
+      
       toast.success('Étape ajoutée au circuit')
     } catch (error) {
       toast.error('Impossible de trouver cette adresse')
