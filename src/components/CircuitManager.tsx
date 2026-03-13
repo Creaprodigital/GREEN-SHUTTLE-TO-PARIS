@@ -33,10 +33,23 @@ export default function CircuitManager() {
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (editingCircuit && mapRef.current && !googleMapRef.current) {
-      initializeMap()
+    if (editingCircuit && mapRef.current) {
+      if (!googleMapRef.current) {
+        initializeMap()
+      }
     }
   }, [editingCircuit])
+
+  useEffect(() => {
+    if (mapRef.current && !googleMapRef.current && editingCircuit) {
+      const timer = setTimeout(() => {
+        if (mapRef.current && !googleMapRef.current) {
+          initializeMap()
+        }
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [mapRef.current, editingCircuit])
 
   useEffect(() => {
     if (editingCircuit && googleMapRef.current) {
@@ -153,13 +166,22 @@ export default function CircuitManager() {
     })
 
     googleMapRef.current = map
-      directionsServiceRef.current = new google.maps.DirectionsService()
+    directionsServiceRef.current = new google.maps.DirectionsService()
 
-    if (inputRef.current) {
+    if (inputRef.current && !autocompleteRef.current) {
       const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
-        fields: ['formatted_address', 'geometry', 'name']
+        fields: ['formatted_address', 'geometry', 'name'],
+        componentRestrictions: { country: 'fr' }
       })
       autocomplete.bindTo('bounds', map)
+      
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace()
+        if (place && place.formatted_address) {
+          setNewStopAddress(place.formatted_address)
+        }
+      })
+      
       autocompleteRef.current = autocomplete
     }
 
@@ -394,7 +416,12 @@ export default function CircuitManager() {
       setCircuits((current) => (current || []).filter((c) => c.id !== circuitId))
       if (editingCircuit?.id === circuitId) {
         setEditingCircuit(null)
-        googleMapRef.current = null
+        if (googleMapRef.current) {
+          googleMapRef.current = null
+        }
+        if (autocompleteRef.current) {
+          autocompleteRef.current = null
+        }
         markersRef.current.forEach(marker => marker.setMap(null))
         markersRef.current = []
         directionsRenderersRef.current.forEach(renderer => renderer.setMap(null))
@@ -530,7 +557,14 @@ export default function CircuitManager() {
                     <Button
                       onClick={() => {
                         setEditingCircuit(circuit)
-                        googleMapRef.current = null
+                        if (googleMapRef.current) {
+                          googleMapRef.current = null
+                        }
+                        if (autocompleteRef.current) {
+                          autocompleteRef.current = null
+                        }
+                        markersRef.current = []
+                        directionsRenderersRef.current = []
                       }}
                       className="h-11 px-6 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
                     >
@@ -579,7 +613,12 @@ export default function CircuitManager() {
         onOpenChange={(open) => {
           if (!open) {
             setEditingCircuit(null)
-            googleMapRef.current = null
+            if (googleMapRef.current) {
+              googleMapRef.current = null
+            }
+            if (autocompleteRef.current) {
+              autocompleteRef.current = null
+            }
             markersRef.current.forEach(marker => marker.setMap(null))
             markersRef.current = []
             directionsRenderersRef.current.forEach(renderer => renderer.setMap(null))
