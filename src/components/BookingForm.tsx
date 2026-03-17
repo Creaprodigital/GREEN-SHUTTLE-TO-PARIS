@@ -31,6 +31,7 @@ import { sendBookingConfirmation } from '@/lib/email'
 export default function BookingForm() {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
   const [fleet] = useKV<VehicleClass[]>('fleet', DEFAULT_FLEET)
+  const [vehicleImages] = useKV<Record<string, string>>('vehicle-images', {})
   const [telegramSettings] = useKV<TelegramSettings>('telegram-settings', DEFAULT_TELEGRAM_SETTINGS)
   const [emailSettings] = useKV<EmailSettings>('email-settings', DEFAULT_EMAIL_SETTINGS)
   const [serviceOptions] = useKV<ServiceOption[]>('service-options', DEFAULT_OPTIONS)
@@ -1479,10 +1480,10 @@ export default function BookingForm() {
                                   htmlFor={vehicle.id}
                                   className="flex flex-col items-center gap-3 rounded-lg border-2 border-border bg-secondary p-4 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all"
                                 >
-                                  {vehicle.image && (
+                                  {(vehicleImages?.[vehicle.id] || vehicle.image) && (
                                     <div className="w-full h-32 rounded-md overflow-hidden bg-background">
                                       <img 
-                                        src={vehicle.image} 
+                                        src={vehicleImages?.[vehicle.id] || vehicle.image} 
                                         alt={vehicle.title}
                                         className="w-full h-full"
                                         style={{

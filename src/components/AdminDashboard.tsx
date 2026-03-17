@@ -65,6 +65,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
   const [newAdminPassword, setNewAdminPassword] = useState('')
   
   const [fleetData, setFleetData] = useKV<VehicleClass[]>('fleet', DEFAULT_FLEET)
+  const [vehicleImages, setVehicleImages] = useKV<Record<string, string>>('vehicle-images', {})
   const [editingVehicle, setEditingVehicle] = useState<string | null>(null)
   const [uploadingImage, setUploadingImage] = useState<string | null>(null)
   const [editedTitle, setEditedTitle] = useState<string>('')
@@ -237,15 +238,44 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
     }
   }
 
+  const compressImage = (dataUrl: string, maxWidth = 1200, maxHeight = 800, quality = 0.82): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => {
+        let { width, height } = img
+        if (width > maxWidth) {
+          height = Math.round(height * maxWidth / width)
+          width = maxWidth
+        }
+        if (height > maxHeight) {
+          width = Math.round(width * maxHeight / height)
+          height = maxHeight
+        }
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        if (!ctx) {
+          reject(new Error('Canvas non supporté'))
+          return
+        }
+        ctx.drawImage(img, 0, 0, width, height)
+        resolve(canvas.toDataURL('image/jpeg', quality))
+      }
+      img.onerror = () => reject(new Error('Erreur de chargement de l\'image'))
+      img.src = dataUrl
+    })
+  }
+
   const handleImageUpload = async (vehicleId: string, file: File) => {
     if (!file.type.startsWith('image/')) {
       toast.error('Veuillez uploader un fichier image')
       return
     }
 
-    const maxSize = 5 * 1024 * 1024
+    const maxSize = 10 * 1024 * 1024
     if (file.size > maxSize) {
-      toast.error('L\'image doit faire moins de 5MB')
+      toast.error('L\'image doit faire moins de 10MB')
       return
     }
 
@@ -262,7 +292,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
 
       const uniqueFileName = generateUniqueFileName(file.name)
       
-      const result = await new Promise<string>((resolve, reject) => {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader()
         reader.onload = (e) => {
           const data = e.target?.result as string
@@ -276,11 +306,18 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
         reader.readAsDataURL(file)
       })
 
+      const result = await compressImage(dataUrl)
+
+      setVehicleImages((current) => ({
+        ...(current || {}),
+        [vehicleId]: result
+      }))
+
       setFleetData((currentData) => {
         const data = Array.isArray(currentData) ? currentData : DEFAULT_FLEET
         const updated = data.map((vehicle) => {
           if (vehicle.id === vehicleId) {
-            return { ...vehicle, image: result, imageName: uniqueFileName }
+            return { ...vehicle, image: '', imageName: uniqueFileName }
           }
           return vehicle
         })
@@ -456,12 +493,13 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
           {editingImage && (() => {
             const data = Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET
             const vehicle = data.find(v => v.id === editingImage)
-            return vehicle?.image && (
+            const vehicleImageSrc = vehicleImages?.[editingImage] || vehicle?.image
+            return vehicleImageSrc && (
             <div className="space-y-6 pt-4">
               <div 
                 className="relative aspect-[4/3] bg-muted/50 border-2 border-border overflow-hidden"
                 style={{
-                  backgroundImage: `url(${vehicle.image})`,
+                  backgroundImage: `url(${vehicleImageSrc})`,
                   backgroundSize: imageFit,
                   backgroundPosition: `${imagePosition.x}% ${imagePosition.y}%`,
                   backgroundRepeat: 'no-repeat',
@@ -830,10 +868,10 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                           <div className="flex flex-col md:flex-row gap-6">
                             <div className="w-full md:w-64 flex-shrink-0">
                               <div className="aspect-[4/3] bg-muted/50 relative overflow-hidden border-2 border-border group">
-                                {vehicle.image ? (
+                                {(vehicleImages?.[vehicle.id] || vehicle.image) ? (
                                   <>
                                     <img
-                                      src={vehicle.image}
+                                      src={vehicleImages?.[vehicle.id] || vehicle.image}
                                       alt={vehicle.title}
                                       className="w-full h-full object-cover"
                                     />
@@ -889,7 +927,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                                       <Upload className="animate-pulse" size={16} />
                                     </Button>
                                   )}
-                                  {vehicle.image && uploadingImage !== vehicle.id && (
+                                  {(vehicleImages?.[vehicle.id] || vehicle.image) && uploadingImage !== vehicle.id && (
                                     <Button
                                       variant="outline"
                                       size="icon"
@@ -901,7 +939,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                                   )}
                                 </div>
                                 <p className="text-[10px] text-muted-foreground">
-                                  Max 5MB. Recommended: 800x600px
+                                  Max 10MB. Compressée automatiquement.
                                 </p>
                               </div>
                             </div>

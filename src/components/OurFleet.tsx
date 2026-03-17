@@ -7,7 +7,8 @@ import { Car } from '@phosphor-icons/react'
 import { useMemo } from 'react'
 
 export default function OurFleet() {
-  const [fleetData] = useKV<VehicleClass[]>('fleet-data', DEFAULT_FLEET)
+  const [fleetData] = useKV<VehicleClass[]>('fleet', DEFAULT_FLEET)
+  const [vehicleImages] = useKV<Record<string, string>>('vehicle-images', {})
   
   const vehicles = useMemo(() => {
     const data = Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET
@@ -48,11 +49,11 @@ export default function OurFleet() {
                 >
                   <Card className="border-2 border-accent/20 overflow-hidden hover:border-accent/40 transition-all duration-300 h-full">
                     <div className="aspect-[16/9] bg-muted/50 relative overflow-hidden">
-                      {vehicle.image ? (
+                      {(vehicleImages?.[vehicle.id] || vehicle.image) ? (
                         <div 
                           className="w-full h-full"
                           style={{
-                            backgroundImage: `url(${vehicle.image})`,
+                            backgroundImage: `url(${vehicleImages?.[vehicle.id] || vehicle.image})`,
                             backgroundSize: vehicle.imageSettings?.fit || 'cover',
                             backgroundPosition: `${vehicle.imageSettings?.positionX || 50}% ${vehicle.imageSettings?.positionY || 50}%`,
                             backgroundRepeat: 'no-repeat'
