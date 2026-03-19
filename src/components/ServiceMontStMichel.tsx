@@ -108,7 +108,7 @@ export default function ServiceMontStMichel({
                     Découvrez le Mont Saint-Michel en toute tranquillité
                   </p>
                 </div>
-                <BookingForm compact={true} />
+                <BookingForm inline />
               </Card>
             </div>
           </div>

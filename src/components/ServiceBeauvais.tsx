@@ -108,7 +108,7 @@ export default function ServiceBeauvais({
                     Obtenez un devis instantané pour votre trajet
                   </p>
                 </div>
-                <BookingForm compact={true} />
+                <BookingForm inline />
               </Card>
             </div>
           </div>

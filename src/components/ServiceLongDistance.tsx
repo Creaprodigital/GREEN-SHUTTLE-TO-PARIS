@@ -108,7 +108,7 @@ export default function ServiceLongDistance({
                     Obtenez un devis pour votre destination
                   </p>
                 </div>
-                <BookingForm compact={true} />
+                <BookingForm inline />
               </Card>
             </div>
           </div>

@@ -108,7 +108,7 @@ export default function ServiceEvents({
                     Transport pour votre événement professionnel
                   </p>
                 </div>
-                <BookingForm compact={true} />
+                <BookingForm inline />
               </Card>
             </div>
           </div>

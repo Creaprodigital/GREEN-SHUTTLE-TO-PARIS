@@ -108,7 +108,7 @@ export default function ServiceFashionWeek({
                     Service premium pour la Fashion Week
                   </p>
                 </div>
-                <BookingForm compact={true} />
+                <BookingForm inline />
               </Card>
             </div>
           </div>

@@ -108,7 +108,7 @@ export default function ServiceWineTour({
                     Créez votre expérience viticole sur mesure
                   </p>
                 </div>
-                <BookingForm compact={true} />
+                <BookingForm inline />
               </Card>
             </div>
           </div>

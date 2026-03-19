@@ -108,7 +108,7 @@ export default function ServiceNormandy({
                     Obtenez un devis pour votre trajet vers la Normandie
                   </p>
                 </div>
-                <BookingForm compact={true} />
+                <BookingForm inline />
               </Card>
             </div>
           </div>
