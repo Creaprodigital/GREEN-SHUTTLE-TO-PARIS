@@ -31,6 +31,7 @@ export interface Booking {
   sharedRideId?: string
   isSharedRide?: boolean
   sharedPassengers?: number
+  stripePaymentIntentId?: string
 }
 
 export interface User {

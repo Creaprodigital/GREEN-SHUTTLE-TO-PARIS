@@ -27,12 +27,15 @@ import { sendTelegramNotification } from '@/lib/telegram'
 import { PromoCode, DEFAULT_PROMO_CODES, RoundTripDiscount, DEFAULT_ROUNDTRIP_DISCOUNT } from '@/types/promo'
 import { EmailSettings, DEFAULT_EMAIL_SETTINGS } from '@/types/email'
 import { sendBookingConfirmation } from '@/lib/email'
+import { StripeSettings, DEFAULT_STRIPE_SETTINGS } from '@/types/stripe'
+import StripePayment from '@/components/StripePayment'
 
 export default function BookingForm() {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
   const [fleet] = useKV<VehicleClass[]>('fleet', DEFAULT_FLEET)
   const [telegramSettings] = useKV<TelegramSettings>('telegram-settings', DEFAULT_TELEGRAM_SETTINGS)
   const [emailSettings] = useKV<EmailSettings>('email-settings', DEFAULT_EMAIL_SETTINGS)
+  const [stripeSettings] = useKV<StripeSettings>('stripe-settings', DEFAULT_STRIPE_SETTINGS)
   const [serviceOptions] = useKV<ServiceOption[]>('service-options', DEFAULT_OPTIONS)
   const [pricing] = useKV<VehiclePricing[]>('pricing', DEFAULT_PRICING)
   const [circuits] = useKV<Circuit[]>('circuits', [])
@@ -77,6 +80,8 @@ export default function BookingForm() {
   const [promoCodeError, setPromoCodeError] = useState('')
   const [showPromoPreview, setShowPromoPreview] = useState(false)
   const [showRoutePreview, setShowRoutePreview] = useState(false)
+  const [showStripePayment, setShowStripePayment] = useState(false)
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false)
 
   const isPointInPolygon = (point: { lat: number; lng: number }, polygon: { lat: number; lng: number }[]): boolean => {
     if (!polygon || polygon.length < 3) {
@@ -477,6 +482,15 @@ export default function BookingForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    if (paymentMethod === 'card' && stripeSettings?.enabled) {
+      setShowStripePayment(true)
+      return
+    }
+
+    await completeBooking()
+  }
+
+  const completeBooking = async (paymentIntentId?: string) => {
     const finalPrice = calculateFinalPrice(vehicleType)
 
     const newBooking: Booking = {
@@ -505,7 +519,8 @@ export default function BookingForm() {
       paymentMethod,
       status: 'pending',
       createdAt: Date.now(),
-      price: finalPrice
+      price: finalPrice,
+      stripePaymentIntentId: paymentIntentId
     }
 
     setBookings((current) => [...(current || []), newBooking])
@@ -560,6 +575,7 @@ export default function BookingForm() {
     setPromoCodeInput('')
     setAppliedPromoCode(null)
     setPromoCodeError('')
+    setShowStripePayment(false)
   }
 
   const getStepTitle = () => {
@@ -1688,17 +1704,34 @@ export default function BookingForm() {
                             value="card"
                             id="card"
                             className="peer sr-only"
+                            disabled={!stripeSettings?.enabled}
                           />
                           <Label
                             htmlFor="card"
-                            className="flex items-center gap-4 rounded-lg border-2 border-border bg-secondary p-4 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all"
+                            className={`flex items-center gap-4 rounded-lg border-2 border-border bg-secondary p-4 transition-all ${
+                              stripeSettings?.enabled 
+                                ? 'cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20' 
+                                : 'opacity-50 cursor-not-allowed'
+                            }`}
                           >
                             <div className="flex items-center justify-center w-12 h-12 rounded-full bg-background">
-                              <CreditCard size={24} className="text-accent" />
+                              <CreditCard size={24} className={stripeSettings?.enabled ? 'text-accent' : 'text-muted-foreground'} />
                             </div>
                             <div className="flex-1">
-                              <div className="font-semibold uppercase tracking-wide">Carte Bancaire</div>
-                              <div className="text-xs text-muted-foreground mt-1">Paiement sécurisé par carte</div>
+                              <div className="font-semibold uppercase tracking-wide flex items-center gap-2">
+                                Carte Bancaire
+                                {stripeSettings?.enabled && (
+                                  <span className="text-[10px] px-2 py-0.5 bg-green-500/20 text-green-500 border border-green-500/30 rounded-full font-normal">
+                                    Stripe
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {stripeSettings?.enabled 
+                                  ? 'Paiement sécurisé par carte via Stripe'
+                                  : 'Non disponible - Stripe non configuré'
+                                }
+                              </div>
                             </div>
                           </Label>
                         </div>
@@ -2039,6 +2072,43 @@ export default function BookingForm() {
               showOptimizationStats={true}
             />
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showStripePayment} onOpenChange={setShowStripePayment}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold uppercase tracking-wide">
+              Paiement Sécurisé
+            </DialogTitle>
+            <DialogDescription>
+              Complétez votre réservation en effectuant le paiement sécurisé
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            <StripePayment
+              amount={calculateFinalPrice(vehicleType)}
+              stripeSettings={stripeSettings || DEFAULT_STRIPE_SETTINGS}
+              onPaymentSuccess={async (paymentIntentId) => {
+                setIsProcessingPayment(true)
+                await completeBooking(paymentIntentId)
+                setIsProcessingPayment(false)
+              }}
+              onPaymentError={(error) => {
+                toast.error('Erreur de paiement', {
+                  description: error
+                })
+              }}
+              bookingMetadata={{
+                userEmail: email,
+                userName: `${firstName} ${lastName}`,
+                serviceType: serviceType,
+                pickup: pickup,
+                destination: destination || ''
+              }}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </motion.div>

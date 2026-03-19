@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Car, MapPin, Calendar, Clock, User as UserIcon, UsersThree, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple, X, CurrencyCircleDollar, Sparkle, Info, EnvelopeSimple } from '@phosphor-icons/react'
+import { Car, MapPin, Calendar, Clock, User as UserIcon, UsersThree, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple, X, CurrencyCircleDollar, Sparkle, Info, EnvelopeSimple, CreditCard } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { VehiclePricing, DEFAULT_PRICING, ServiceOption, DEFAULT_OPTIONS, PricingSettings } from '@/types/pricing'
@@ -27,6 +27,7 @@ import { TelegramSettings, DEFAULT_TELEGRAM_SETTINGS } from '@/types/telegram'
 import { RoundTripDiscount, DEFAULT_ROUNDTRIP_DISCOUNT } from '@/types/promo'
 import { EmailSettings, DEFAULT_EMAIL_SETTINGS } from '@/types/email'
 import { sendBookingUpdate, sendBookingConfirmation } from '@/lib/email'
+import { StripeSettings, DEFAULT_STRIPE_SETTINGS } from '@/types/stripe'
 
 interface AdminAccount {
   email: string
@@ -88,6 +89,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
   const [telegramSettings, setTelegramSettings] = useKV<TelegramSettings>('telegram-settings', DEFAULT_TELEGRAM_SETTINGS)
   const [roundTripDiscount, setRoundTripDiscount] = useKV<RoundTripDiscount>('roundtrip-discount', DEFAULT_ROUNDTRIP_DISCOUNT)
   const [emailSettings, setEmailSettings] = useKV<EmailSettings>('email-settings', DEFAULT_EMAIL_SETTINGS)
+  const [stripeSettings, setStripeSettings] = useKV<StripeSettings>('stripe-settings', DEFAULT_STRIPE_SETTINGS)
 
   useEffect(() => {
     if (!fleetData || !pricingData) return
@@ -2538,6 +2540,248 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                     <div className="pt-3 bg-accent/10 -mx-4 -mb-4 px-4 py-3 border-t border-accent/20">
                       <p className="text-xs text-foreground/80">
                         <strong>Note :</strong> Pour activer l'envoi réel d'emails en production, vous devrez intégrer un service backend qui utilisera ces paramètres SMTP pour envoyer les emails via votre serveur.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-accent/20">
+              <CardHeader className="border-b border-border">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg sm:text-xl font-semibold uppercase tracking-wide flex items-center gap-2">
+                      <CreditCard size={24} className="text-accent flex-shrink-0" />
+                      <span>Paiement Stripe</span>
+                    </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm mt-1">
+                      Configurez le mode de paiement en ligne sécurisé par Stripe
+                    </CardDescription>
+                  </div>
+                  <div className="flex flex-wrap gap-2 items-center w-full sm:w-auto">
+                    {stripeSettings?.publicKey && stripeSettings?.secretKey ? (
+                      <div className="px-2 sm:px-3 py-1 bg-green-500/20 border border-green-500/30 text-green-500 text-[10px] sm:text-xs font-medium uppercase tracking-wide flex items-center gap-1.5">
+                        <Check size={12} weight="bold" />
+                        <span className="whitespace-nowrap">API Configurée</span>
+                      </div>
+                    ) : (
+                      <div className="px-2 sm:px-3 py-1 bg-yellow-500/20 border border-yellow-500/30 text-yellow-500 text-[10px] sm:text-xs font-medium uppercase tracking-wide flex items-center gap-1.5">
+                        <Info size={12} weight="bold" />
+                        <span className="whitespace-nowrap">API Non configurée</span>
+                      </div>
+                    )}
+                    {stripeSettings?.enabled ? (
+                      <div className="px-2 sm:px-3 py-1 bg-accent/20 border border-accent/30 text-accent text-[10px] sm:text-xs font-medium uppercase tracking-wide">
+                        Activé
+                      </div>
+                    ) : (
+                      <div className="px-2 sm:px-3 py-1 bg-muted border border-border text-muted-foreground text-[10px] sm:text-xs font-medium uppercase tracking-wide">
+                        Désactivé
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-6 space-y-6">
+                <div className="bg-accent/10 border-2 border-accent/30 p-3 sm:p-4 space-y-3">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <Info size={20} className="text-accent flex-shrink-0 mt-0.5" weight="fill" />
+                    <div className="flex-1 space-y-2">
+                      <p className="text-xs sm:text-sm font-semibold text-accent uppercase tracking-wide">
+                        Guide de Configuration Stripe
+                      </p>
+                      <p className="text-xs sm:text-sm text-foreground/80">
+                        Acceptez les paiements par carte bancaire de manière sécurisée avec Stripe, le leader mondial du paiement en ligne.
+                      </p>
+                      <div className="flex flex-wrap gap-2 pt-2">
+                        <div className="px-2 py-1 bg-background/50 border border-border text-[10px] sm:text-xs font-medium whitespace-nowrap">
+                          ✓ Paiements sécurisés
+                        </div>
+                        <div className="px-2 py-1 bg-background/50 border border-border text-[10px] sm:text-xs font-medium whitespace-nowrap">
+                          ✓ 3D Secure
+                        </div>
+                        <div className="px-2 py-1 bg-background/50 border border-border text-[10px] sm:text-xs font-medium whitespace-nowrap">
+                          ✓ Webhooks temps réel
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between p-4 bg-secondary/50 border border-border">
+                  <div className="space-y-1">
+                    <Label htmlFor="stripe-enabled" className="text-sm font-medium uppercase tracking-wide">
+                      Activer les paiements Stripe
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Active ou désactive le mode de paiement par carte via Stripe
+                    </p>
+                  </div>
+                  <Switch
+                    id="stripe-enabled"
+                    checked={stripeSettings?.enabled || false}
+                    onCheckedChange={(checked) => {
+                      setStripeSettings((current) => ({
+                        ...(current || DEFAULT_STRIPE_SETTINGS),
+                        enabled: checked
+                      }))
+                      toast.success(checked ? 'Paiements Stripe activés' : 'Paiements Stripe désactivés')
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="stripe-public-key" className="text-sm font-medium uppercase tracking-wide">
+                      Clé Publique (Publishable Key)
+                    </Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info size={16} className="text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-sm">
+                            Clé publique Stripe (commence par pk_test_ ou pk_live_). Disponible dans votre tableau de bord Stripe.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <Input
+                    id="stripe-public-key"
+                    type="text"
+                    value={stripeSettings?.publicKey || ''}
+                    onChange={(e) => {
+                      setStripeSettings((current) => ({
+                        ...(current || DEFAULT_STRIPE_SETTINGS),
+                        publicKey: e.target.value
+                      }))
+                    }}
+                    placeholder="pk_test_..."
+                    className="h-12 bg-secondary border-border font-mono text-sm"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="stripe-secret-key" className="text-sm font-medium uppercase tracking-wide">
+                      Clé Secrète (Secret Key)
+                    </Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info size={16} className="text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-sm">
+                            Clé secrète Stripe (commence par sk_test_ ou sk_live_). Ne partagez jamais cette clé !
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <Input
+                    id="stripe-secret-key"
+                    type="password"
+                    value={stripeSettings?.secretKey || ''}
+                    onChange={(e) => {
+                      setStripeSettings((current) => ({
+                        ...(current || DEFAULT_STRIPE_SETTINGS),
+                        secretKey: e.target.value
+                      }))
+                    }}
+                    placeholder="sk_test_..."
+                    className="h-12 bg-secondary border-border font-mono text-sm"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="stripe-webhook-secret" className="text-sm font-medium uppercase tracking-wide">
+                      Webhook Secret
+                    </Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info size={16} className="text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-sm">
+                            Secret de signature webhook (commence par whsec_). Utilisé pour vérifier l'authenticité des événements Stripe.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <Input
+                    id="stripe-webhook-secret"
+                    type="password"
+                    value={stripeSettings?.webhookSecret || ''}
+                    onChange={(e) => {
+                      setStripeSettings((current) => ({
+                        ...(current || DEFAULT_STRIPE_SETTINGS),
+                        webhookSecret: e.target.value
+                      }))
+                    }}
+                    placeholder="whsec_..."
+                    className="h-12 bg-secondary border-border font-mono text-sm"
+                  />
+                </div>
+
+                <div className="pt-4 border-t border-border">
+                  <Button
+                    onClick={() => {
+                      if (!stripeSettings?.publicKey) {
+                        toast.error('Veuillez remplir la clé publique Stripe')
+                        return
+                      }
+                      if (!stripeSettings?.secretKey) {
+                        toast.error('Veuillez remplir la clé secrète Stripe')
+                        return
+                      }
+                      
+                      const isTestMode = stripeSettings.publicKey.startsWith('pk_test_')
+                      
+                      toast.success('✅ Paramètres Stripe enregistrés', {
+                        description: isTestMode ? 'Mode Test activé' : 'Mode Production activé'
+                      })
+                    }}
+                    className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-medium uppercase tracking-widest"
+                  >
+                    <Check className="mr-2" size={20} />
+                    Enregistrer les paramètres
+                  </Button>
+                </div>
+
+                <div className="mt-6 p-4 bg-muted/30 border border-border space-y-3">
+                  <p className="text-sm font-medium uppercase tracking-wide text-foreground">
+                    ℹ️ Configuration Stripe - Guide
+                  </p>
+                  <div className="text-sm text-muted-foreground space-y-2">
+                    <ol className="space-y-2 list-decimal list-inside pl-2">
+                      <li>Créez un compte sur <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">stripe.com</a></li>
+                      <li>Accédez à votre <strong className="text-foreground">Tableau de bord</strong> → <strong className="text-foreground">Développeurs</strong> → <strong className="text-foreground">Clés API</strong></li>
+                      <li>Copiez votre <strong className="text-foreground">Clé publique</strong> (pk_test_... pour le mode test)</li>
+                      <li>Copiez votre <strong className="text-foreground">Clé secrète</strong> (sk_test_... pour le mode test)</li>
+                      <li>Pour les webhooks : <strong className="text-foreground">Développeurs</strong> → <strong className="text-foreground">Webhooks</strong> → <strong className="text-foreground">Ajouter un point de terminaison</strong></li>
+                      <li>Copiez le <strong className="text-foreground">Secret de signature</strong> du webhook (whsec_...)</li>
+                    </ol>
+
+                    <div className="pt-3 space-y-1.5">
+                      <p className="font-medium text-foreground">🔔 Événements Webhook recommandés :</p>
+                      <ul className="list-disc list-inside space-y-1 pl-2">
+                        <li><code className="text-xs bg-background/50 px-1 py-0.5">payment_intent.succeeded</code> - Paiement réussi</li>
+                        <li><code className="text-xs bg-background/50 px-1 py-0.5">payment_intent.payment_failed</code> - Paiement échoué</li>
+                        <li><code className="text-xs bg-background/50 px-1 py-0.5">charge.succeeded</code> - Charge réussie</li>
+                        <li><code className="text-xs bg-background/50 px-1 py-0.5">charge.failed</code> - Charge échouée</li>
+                      </ul>
+                    </div>
+
+                    <div className="pt-3 bg-accent/10 -mx-4 -mb-4 px-4 py-3 border-t border-accent/20">
+                      <p className="text-xs text-foreground/80">
+                        <strong>Note :</strong> Utilisez les clés de test (pk_test_ et sk_test_) pendant le développement. Passez aux clés de production (pk_live_ et sk_live_) uniquement quand vous êtes prêt à accepter de vrais paiements.
                       </p>
                     </div>
                   </div>
