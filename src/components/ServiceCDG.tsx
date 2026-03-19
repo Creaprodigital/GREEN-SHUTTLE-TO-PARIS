@@ -17,7 +17,7 @@ export default function ServiceCDG(props: ServiceCDGProps) {
     <ServicePage
       {...props}
       title="Transfert Aéroport Charles de Gaulle"
-      subtitle="Voyagez sereinement entre l'aéroport CDG et Paris avec notre service VTC premium"
+      subtitle="Voyagez sereinement entre l'aéroport CDG et Paris avec notre service de chauffeur privé premium"
       heroImage="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=2000"
       description="Véloce Express vous garantit un transfert ponctuel, confortable et sécurisé entre l'aéroport Charles de Gaulle et Paris. Que ce soit pour un déplacement professionnel ou personnel, profitez d'un service haut de gamme avec chauffeur expérimenté."
       features={[

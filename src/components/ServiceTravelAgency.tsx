@@ -57,7 +57,7 @@ export default function ServiceTravelAgency({
                 <span className="text-accent font-medium text-sm tracking-wide">PARTENARIAT B2B</span>
               </div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-none" style={{ fontFamily: 'var(--font-display)' }}>
-                VTC pour<br />Agence de Voyage
+                Chauffeur Privé pour<br />Agence de Voyage
               </h1>
               <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
                 Partenaire transport fiable et professionnel pour vos clients
@@ -73,7 +73,7 @@ export default function ServiceTravelAgency({
                 Partenaire de confiance pour agences
               </h2>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
-                Vous êtes une <strong>agence de voyage</strong> et cherchez un partenaire de transport fiable pour vos clients ? Notre service VTC haut de gamme offre des solutions sur mesure pour tous types de déplacements.
+                Vous êtes une <strong>agence de voyage</strong> et cherchez un partenaire de transport fiable pour vos clients ? Notre service de chauffeur privé haut de gamme offre des solutions sur mesure pour tous types de déplacements.
               </p>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
                 Nous assurons un service ponctuel, sécurisé et confortable, adapté aux besoins des voyageurs et aux exigences des agences professionnelles.
@@ -105,7 +105,7 @@ export default function ServiceTravelAgency({
                     Contactez-nous
                   </h3>
                   <p className="text-foreground/60">
-                    Devenez partenaire VTC
+                    Devenez partenaire
                   </p>
                 </div>
                 <div className="space-y-4">

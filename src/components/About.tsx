@@ -100,7 +100,7 @@ export default function About({
           <div className="max-w-4xl mx-auto space-y-8 mb-16">
             <div className="bg-card border border-border p-8">
               <p className="text-lg text-foreground/80 leading-relaxed mb-6">
-                Bienvenue chez <span className="text-accent font-semibold">ELGOH</span>, votre service de chauffeur privé VTC dédié à vous offrir des trajets <span className="text-accent font-medium">confortables</span>, <span className="text-accent font-medium">sur mesure</span>, <span className="text-accent font-medium">sûrs</span> et <span className="text-accent font-medium">ponctuels</span>.
+                Bienvenue chez <span className="text-accent font-semibold">ELGOH</span>, votre service de chauffeur privé dédié à vous offrir des trajets <span className="text-accent font-medium">confortables</span>, <span className="text-accent font-medium">sur mesure</span>, <span className="text-accent font-medium">sûrs</span> et <span className="text-accent font-medium">ponctuels</span>.
               </p>
               
               <p className="text-lg text-foreground/80 leading-relaxed mb-6">

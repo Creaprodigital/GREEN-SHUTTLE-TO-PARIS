@@ -73,7 +73,7 @@ export default function ServiceWineTour({
                 Excursion privée dans les vignobles
               </h2>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
-                Partez à la découverte des <strong>meilleurs vins et champagnes</strong> autour de Paris avec un chauffeur privé. Notre service VTC haut de gamme vous garantit un transport confortable, sécurisé et ponctuel.
+                Partez à la découverte des <strong>meilleurs vins et champagnes</strong> autour de Paris avec un chauffeur privé. Notre service haut de gamme vous garantit un transport confortable, sécurisé et ponctuel.
               </p>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
                 Profitez pleinement de chaque dégustation, sans stress et à votre rythme. Idéal pour amateurs de vin, touristes ou clients VIP souhaitant une expérience sur mesure.

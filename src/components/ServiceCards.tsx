@@ -5,7 +5,7 @@ export default function ServiceCards() {
     {
       icon: Airplane,
       title: 'Transferts aéroports et gares',
-      description: 'Voyagez l\'esprit tranquille avec un chauffeur VTC ponctuel pour vos transferts vers les principaux aéroports et gares :',
+      description: 'Voyagez l\'esprit tranquille avec un chauffeur privé ponctuel pour vos transferts vers les principaux aéroports et gares :',
       items: [
         'Aéroport Charles de Gaulle',
         'Aéroport d\'Orly',
@@ -53,7 +53,7 @@ export default function ServiceCards() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-            Chauffeur VTC pour tous vos déplacements
+            Chauffeur Privé pour tous vos déplacements
           </h2>
           <p className="text-lg text-foreground/70 max-w-3xl mx-auto">
             Notre service de chauffeur privé à Paris s'adapte à tous vos besoins, que vous voyagiez pour affaires ou pour le plaisir.

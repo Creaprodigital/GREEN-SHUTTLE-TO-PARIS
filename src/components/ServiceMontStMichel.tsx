@@ -73,7 +73,7 @@ export default function ServiceMontStMichel({
                 Découvrez le Mont Saint-Michel
               </h2>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
-                Partez à la découverte du <strong>Mont Saint-Michel</strong>, l'un des sites les plus emblématiques de France, avec notre service de chauffeur privé VTC.
+                Partez à la découverte du <strong>Mont Saint-Michel</strong>, l'un des sites les plus emblématiques de France, avec notre service de chauffeur privé.
               </p>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
                 Que vous partiez de Paris, de l'aéroport Charles de Gaulle ou de l'aéroport d'Orly, profitez d'un trajet confortable, sécurisé et ponctuel. Évitez le stress des transports publics et profitez d'un véhicule haut de gamme.

@@ -21,7 +21,7 @@ export default function Footer({
               ELGOH
             </h3>
             <p className="text-muted-foreground text-sm font-light mb-4">
-              Service de chauffeur privé VTC premium à Paris et en Île-de-France depuis 2010.
+              Service de chauffeur privé premium à Paris et en Île-de-France depuis 2010.
             </p>
             <div className="space-y-2">
               <a 

@@ -60,7 +60,7 @@ export default function ServiceLongDistance({
                 Transferts<br />Longue Distance
               </h1>
               <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-                Chauffeur privé VTC depuis Paris - Bruxelles, Luxembourg, Lyon, Marseille et plus
+                Chauffeur privé depuis Paris - Bruxelles, Luxembourg, Lyon, Marseille et plus
               </p>
             </div>
           </div>
@@ -73,7 +73,7 @@ export default function ServiceLongDistance({
                 Voyagez en toute sérénité
               </h2>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
-                Voyagez confortablement et en toute sécurité sur de <strong>longues distances</strong> avec notre service de chauffeur privé VTC. Que vous partiez vers Bruxelles, Luxembourg, Marseille, Lyon ou d'autres destinations en France et en Europe.
+                Voyagez confortablement et en toute sécurité sur de <strong>longues distances</strong> avec notre service de chauffeur privé. Que vous partiez vers Bruxelles, Luxembourg, Marseille, Lyon ou d'autres destinations en France et en Europe.
               </p>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
                 Notre service est idéal pour voyageurs professionnels, familles, groupes et clients VIP, souhaitant éviter le stress des transports publics ou des vols internes.

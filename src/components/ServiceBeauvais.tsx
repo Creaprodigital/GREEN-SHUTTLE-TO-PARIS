@@ -60,7 +60,7 @@ export default function ServiceBeauvais({
                 Transfert Aéroport<br />Paris-Beauvais
               </h1>
               <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-                Service VTC entre l'aéroport Beauvais et Paris - Situé à 80 km, trajet confortable et direct
+                Service de chauffeur privé entre l'aéroport Beauvais et Paris - Situé à 80 km, trajet confortable et direct
               </p>
             </div>
           </div>
@@ -73,7 +73,7 @@ export default function ServiceBeauvais({
                 Voyagez confortablement entre Beauvais et Paris
               </h2>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
-                Voyagez confortablement entre <strong>Aéroport de Paris-Beauvais</strong> et Paris grâce à notre service de transfert VTC privé. Nous proposons une solution fiable et confortable pour rejoindre la capitale ou l'aéroport en toute tranquillité.
+                Voyagez confortablement entre <strong>Aéroport de Paris-Beauvais</strong> et Paris grâce à notre service de transfert avec chauffeur privé. Nous proposons une solution fiable et confortable pour rejoindre la capitale ou l'aéroport en toute tranquillité.
               </p>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
                 Situé à environ 80 km de Paris, l'aéroport Beauvais est principalement utilisé par les compagnies low-cost. Notre service vous permet de rejoindre votre destination rapidement et sans stress.

@@ -17,9 +17,9 @@ export default function ServiceOrly(props: ServiceOrlyProps) {
     <ServicePage
       {...props}
       title="Transfert Aéroport Orly ⇄ Paris"
-      subtitle="Service VTC fiable et confortable entre Orly et Paris"
+      subtitle="Service de chauffeur privé fiable et confortable entre Orly et Paris"
       heroImage="https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?auto=format&fit=crop&q=80&w=2000"
-      description="Voyagez en toute sérénité entre l'Aéroport de Paris-Orly et Paris grâce à notre service de transfert VTC privé. Nous proposons un transport confortable, fiable et ponctuel pour vos déplacements depuis ou vers l'aéroport."
+      description="Voyagez en toute sérénité entre l'Aéroport de Paris-Orly et Paris grâce à notre service de transfert avec chauffeur privé. Nous proposons un transport confortable, fiable et ponctuel pour vos déplacements depuis ou vers l'aéroport."
       features={[
         'Accueil personnalisé à l\'aéroport avec pancarte nominative',
         'Assistance pour vos bagages',

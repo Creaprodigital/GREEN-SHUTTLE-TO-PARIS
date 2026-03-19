@@ -57,7 +57,7 @@ export default function ServiceEvents({
                 <span className="text-accent font-medium text-sm tracking-wide">ÉVÉNEMENTS PROFESSIONNELS</span>
               </div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-none" style={{ fontFamily: 'var(--font-display)' }}>
-                VTC pour Événements<br />et Salons à Paris
+                Chauffeur Privé pour Événements<br />et Salons à Paris
               </h1>
               <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
                 Transport professionnel pour salons, congrès et événements corporate
@@ -73,7 +73,7 @@ export default function ServiceEvents({
                 Transport professionnel pour événements
               </h2>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
-                Participez à vos <strong>événements professionnels</strong> en toute sérénité grâce à notre service de VTC dédié aux événements et salons à Paris. Nous proposons des solutions de transport fiables et confortables pour les exposants, visiteurs, VIP et équipes organisatrices.
+                Participez à vos <strong>événements professionnels</strong> en toute sérénité grâce à notre service de chauffeur privé dédié aux événements et salons à Paris. Nous proposons des solutions de transport fiables et confortables pour les exposants, visiteurs, VIP et équipes organisatrices.
               </p>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
                 Que vous assistiez à un congrès, un salon professionnel ou un événement privé, notre service vous garantit ponctualité, discrétion et confort.
@@ -102,7 +102,7 @@ export default function ServiceEvents({
               <Card className="p-6 sm:p-8 border-accent/20 bg-card/50 backdrop-blur-sm">
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>
-                    Réservez votre VTC
+                    Réservez votre chauffeur
                   </h3>
                   <p className="text-foreground/60">
                     Transport pour votre événement professionnel

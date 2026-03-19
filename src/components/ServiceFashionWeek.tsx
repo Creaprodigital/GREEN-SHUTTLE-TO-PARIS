@@ -57,7 +57,7 @@ export default function ServiceFashionWeek({
                 <span className="text-accent font-medium text-sm tracking-wide">SERVICE VIP</span>
               </div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-none" style={{ fontFamily: 'var(--font-display)' }}>
-                VTC Premium<br />Fashion Week Paris
+                Chauffeur Privé Premium<br />Fashion Week Paris
               </h1>
               <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
                 Chauffeur privé exclusif pour professionnels de la mode, influenceurs et VIP
@@ -73,7 +73,7 @@ export default function ServiceFashionWeek({
                 Arrivez avec style à la Fashion Week
               </h2>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
-                Assurez-vous d'arriver à l'heure et avec style lors de la <strong>Fashion Week de Paris</strong> grâce à notre service VTC haut de gamme.
+                Assurez-vous d'arriver à l'heure et avec style lors de la <strong>Fashion Week de Paris</strong> grâce à notre service de chauffeur privé haut de gamme.
               </p>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
                 Que vous soyez professionnel de la mode, influenceur, presse internationale, VIP ou visiteur de l'événement, nous vous offrons un transport ponctuel, sécurisé et confortable entre hôtels, défilés et soirées.
@@ -102,7 +102,7 @@ export default function ServiceFashionWeek({
               <Card className="p-6 sm:p-8 border-accent/20 bg-card/50 backdrop-blur-sm">
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>
-                    Réservez votre VTC
+                    Réservez votre chauffeur
                   </h3>
                   <p className="text-foreground/60">
                     Service premium pour la Fashion Week

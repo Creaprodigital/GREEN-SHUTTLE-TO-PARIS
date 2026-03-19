@@ -60,7 +60,7 @@ export default function ServiceNormandy({
                 Transfert vers<br />la Normandie
               </h1>
               <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-                Chauffeur VTC depuis Paris et les aéroports - Deauville, Honfleur, Étretat, Mont Saint-Michel
+                Chauffeur privé depuis Paris et les aéroports - Deauville, Honfleur, Étretat, Mont Saint-Michel
               </p>
             </div>
           </div>
@@ -73,7 +73,7 @@ export default function ServiceNormandy({
                 Voyagez confortablement vers la Normandie
               </h2>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
-                Voyagez confortablement vers la <strong>Normandie</strong> avec notre service de chauffeur privé VTC. Que vous partiez de Paris, de l'aéroport Charles de Gaulle ou de l'aéroport d'Orly, nous vous garantissons un trajet ponctuel, sécurisé et confortable.
+                Voyagez confortablement vers la <strong>Normandie</strong> avec notre service de chauffeur privé. Que vous partiez de Paris, de l'aéroport Charles de Gaulle ou de l'aéroport d'Orly, nous vous garantissons un trajet ponctuel, sécurisé et confortable.
               </p>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
                 Évitez le stress des transports publics et profitez d'un véhicule haut de gamme avec chauffeur professionnel pour découvrir les plus beaux sites de Normandie.
