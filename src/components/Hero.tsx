@@ -3,7 +3,7 @@ import { Check } from '@phosphor-icons/react'
 
 export default function Hero() {
   return (
-    <div className="relative min-h-[600px] sm:min-h-[700px] flex items-center justify-center overflow-hidden pt-20">
+    <div className="relative min-h-[600px] sm:min-h-[700px] flex items-center justify-center overflow-hidden pt-32">
       <div 
         className="absolute inset-0 bg-cover bg-center"
         style={{

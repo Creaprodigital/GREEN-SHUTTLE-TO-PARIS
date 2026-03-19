@@ -448,7 +448,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
         userEmail={userEmail}
         isAdmin={true}
       />
-      <div className="min-h-screen bg-background pt-20">
+      <div className="min-h-screen bg-background pt-32">
 
       <Dialog open={editingImage !== null} onOpenChange={(open) => !open && setEditingImage(null)}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">

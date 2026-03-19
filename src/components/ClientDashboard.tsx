@@ -100,7 +100,7 @@ export default function ClientDashboard({ userEmail, onLogout, onNavigateToHome,
         userEmail={userEmail}
         isAdmin={false}
       />
-      <div className="min-h-screen bg-background pt-20">
+      <div className="min-h-screen bg-background pt-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="mb-6 sm:mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-display)' }}>

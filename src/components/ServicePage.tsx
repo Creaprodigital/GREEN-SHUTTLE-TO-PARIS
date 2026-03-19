@@ -67,7 +67,7 @@ export default function ServicePage({
         onLogout={onLogout}
       />
 
-      <main className="pt-20">
+      <main className="pt-32">
         <div 
           className="relative h-[400px] sm:h-[500px] bg-cover bg-center"
           style={{

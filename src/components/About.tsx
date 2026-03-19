@@ -73,7 +73,7 @@ export default function About({
       />
       
       <div 
-        className="relative h-[400px] bg-cover bg-center pt-20"
+        className="relative h-[400px] bg-cover bg-center pt-32"
         style={{
           backgroundImage: `
             linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.7)),
