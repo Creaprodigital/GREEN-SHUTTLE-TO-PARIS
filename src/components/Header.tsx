@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { User, List, X, SignOut, CaretDown } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -20,6 +20,7 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false)
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const services = [
     { id: 'cdg', label: 'Aéroport CDG', icon: '✈️' },
@@ -41,6 +42,29 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
     { label: 'QUI SOMMES-NOUS', onClick: onNavigateToAbout || (() => {}) },
     { label: 'CONTACT', onClick: onNavigateToContact || (() => {}) }
   ]
+
+  const handleMouseEnter = () => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current)
+      closeTimeoutRef.current = null
+    }
+    setServicesDropdownOpen(true)
+  }
+
+  const handleMouseLeave = () => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setServicesDropdownOpen(false)
+    }, 300)
+  }
+
+  const handleServiceClick = (serviceId: string) => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current)
+      closeTimeoutRef.current = null
+    }
+    setServicesDropdownOpen(false)
+    onNavigateToService?.(serviceId)
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-primary/95 backdrop-blur-sm border-b border-accent/20">
@@ -82,8 +106,8 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
             
             <div 
               className="relative"
-              onMouseEnter={() => setServicesDropdownOpen(true)}
-              onMouseLeave={() => setServicesDropdownOpen(false)}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
               <button
                 onClick={() => onNavigateToServices?.()}
@@ -101,16 +125,15 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
                     className="absolute top-full left-0 mt-2 w-64 bg-card border border-accent/20 shadow-lg overflow-hidden"
                   >
                     <div className="py-2">
                       {services.map((service) => (
                         <button
                           key={service.id}
-                          onClick={() => {
-                            setServicesDropdownOpen(false)
-                            onNavigateToService?.(service.id)
-                          }}
+                          onClick={() => handleServiceClick(service.id)}
                           className="w-full px-4 py-2.5 text-left text-sm text-foreground/80 hover:bg-accent hover:text-accent-foreground transition-colors flex items-center gap-3"
                         >
                           <span className="text-lg">{service.icon}</span>
