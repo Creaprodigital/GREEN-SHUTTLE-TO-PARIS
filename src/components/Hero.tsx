@@ -9,7 +9,7 @@ export default function Hero() {
         style={{
           backgroundImage: `
             linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.7)),
-            url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=2000')
+            url('https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?auto=format&fit=crop&q=90&w=2400')
           `
         }}
       />
