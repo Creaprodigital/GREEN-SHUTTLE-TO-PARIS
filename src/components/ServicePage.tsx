@@ -116,7 +116,7 @@ export default function ServicePage({
                 <p className="text-foreground/70 mb-6">
                   Utilisez notre calculateur pour obtenir instantanément le tarif exact de votre trajet.
                 </p>
-                <BookingForm />
+                <BookingForm inline />
               </div>
             </div>
           </div>

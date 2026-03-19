@@ -30,7 +30,11 @@ import { sendBookingConfirmation } from '@/lib/email'
 import { StripeSettings, DEFAULT_STRIPE_SETTINGS } from '@/types/stripe'
 import StripePayment from '@/components/StripePayment'
 
-export default function BookingForm() {
+interface BookingFormProps {
+  inline?: boolean
+}
+
+export default function BookingForm({ inline = false }: BookingFormProps) {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
   const [fleet] = useKV<VehicleClass[]>('fleet', DEFAULT_FLEET)
   const [telegramSettings] = useKV<TelegramSettings>('telegram-settings', DEFAULT_TELEGRAM_SETTINGS)
@@ -593,7 +597,7 @@ export default function BookingForm() {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="relative -mt-16 sm:-mt-24 z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
+      className={inline ? "" : "relative -mt-16 sm:-mt-24 z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"}
     >
       <AnimatePresence>
         {showPromoPreview && (
