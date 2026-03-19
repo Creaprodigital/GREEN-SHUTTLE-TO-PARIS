@@ -194,6 +194,7 @@ export default function Services({
         onNavigateToServices={onNavigateToServices}
         onNavigateToAbout={onNavigateToAbout}
         onNavigateToContact={onNavigateToContact}
+        onNavigateToService={onNavigateToService}
         userEmail={userEmail}
         isAdmin={isAdmin}
         onLogout={onLogout}

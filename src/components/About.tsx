@@ -10,6 +10,7 @@ interface AboutProps {
   onNavigateToServices?: () => void
   onNavigateToAbout?: () => void
   onNavigateToContact?: () => void
+  onNavigateToService?: (serviceId: string) => void
   onLogout?: () => void
   userEmail?: string
   isAdmin?: boolean
@@ -22,6 +23,7 @@ export default function About({
   onNavigateToServices,
   onNavigateToAbout,
   onNavigateToContact,
+  onNavigateToService,
   onLogout,
   userEmail,
   isAdmin
@@ -58,6 +60,7 @@ export default function About({
         onNavigateToServices={onNavigateToServices}
         onNavigateToAbout={onNavigateToAbout}
         onNavigateToContact={onNavigateToContact}
+        onNavigateToService={onNavigateToService}
         onLogout={onLogout}
         userEmail={userEmail}
         isAdmin={isAdmin}

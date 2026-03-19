@@ -104,6 +104,7 @@ function App() {
     onNavigateToServices: () => setView('services'),
     onNavigateToAbout: () => setView('about'),
     onNavigateToContact: () => setView('contact'),
+    onNavigateToService: handleNavigateToService,
     userEmail: currentUser?.email,
     isAdmin: currentUser?.isAdmin,
     onLogout: handleLogout
@@ -119,6 +120,7 @@ function App() {
           onNavigateToServices={() => setView('services')}
           onNavigateToAbout={() => setView('about')}
           onNavigateToContact={() => setView('contact')}
+          onNavigateToService={handleNavigateToService}
         />
       )}
       {view === 'login' && (
@@ -128,6 +130,7 @@ function App() {
           onNavigateToServices={() => setView('services')}
           onNavigateToAbout={() => setView('about')}
           onNavigateToContact={() => setView('contact')}
+          onNavigateToService={handleNavigateToService}
           isAdminMode={isAdminMode} 
         />
       )}
@@ -165,6 +168,7 @@ function App() {
           onNavigateToServices={() => setView('services')}
           onNavigateToAbout={() => setView('about')}
           onNavigateToContact={() => setView('contact')}
+          onNavigateToService={handleNavigateToService}
           userEmail={currentUser?.email}
           isAdmin={currentUser?.isAdmin}
           onLogout={handleLogout}
@@ -178,6 +182,7 @@ function App() {
           onNavigateToServices={() => setView('services')}
           onNavigateToAbout={() => setView('about')}
           onNavigateToContact={() => setView('contact')}
+          onNavigateToService={handleNavigateToService}
           userEmail={currentUser?.email}
           isAdmin={currentUser?.isAdmin}
           onLogout={handleLogout}
@@ -191,6 +196,7 @@ function App() {
           onNavigateToServices={() => setView('services')}
           onNavigateToAbout={() => setView('about')}
           onNavigateToContact={() => setView('contact')}
+          onNavigateToService={handleNavigateToService}
         />
       )}
       {view === 'admin' && currentUser && (
@@ -203,6 +209,7 @@ function App() {
           onNavigateToServices={() => setView('services')}
           onNavigateToAbout={() => setView('about')}
           onNavigateToContact={() => setView('contact')}
+          onNavigateToService={handleNavigateToService}
         />
       )}
     </div>

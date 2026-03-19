@@ -15,6 +15,7 @@ interface ContactProps {
   onNavigateToServices?: () => void
   onNavigateToAbout?: () => void
   onNavigateToContact?: () => void
+  onNavigateToService?: (serviceId: string) => void
   onLogout?: () => void
   userEmail?: string
   isAdmin?: boolean
@@ -27,6 +28,7 @@ export default function Contact({
   onNavigateToServices,
   onNavigateToAbout,
   onNavigateToContact,
+  onNavigateToService,
   onLogout,
   userEmail,
   isAdmin
@@ -83,6 +85,7 @@ export default function Contact({
         onNavigateToServices={onNavigateToServices}
         onNavigateToAbout={onNavigateToAbout}
         onNavigateToContact={onNavigateToContact}
+        onNavigateToService={onNavigateToService}
         onLogout={onLogout}
         userEmail={userEmail}
         isAdmin={isAdmin}

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { User, List, X, SignOut } from '@phosphor-icons/react'
+import { User, List, X, SignOut, CaretDown } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface HeaderProps {
@@ -10,17 +10,34 @@ interface HeaderProps {
   onNavigateToAbout?: () => void
   onNavigateToContact?: () => void
   onNavigateToClient?: () => void
+  onNavigateToService?: (serviceId: string) => void
   onLogout?: () => void
   userEmail?: string
   isAdmin?: boolean
 }
 
-export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact, onNavigateToClient, onLogout, userEmail, isAdmin }: HeaderProps) {
+export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact, onNavigateToClient, onNavigateToService, onLogout, userEmail, isAdmin }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false)
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
+
+  const services = [
+    { id: 'cdg', label: 'Aéroport CDG', icon: '✈️' },
+    { id: 'orly', label: 'Aéroport Orly', icon: '✈️' },
+    { id: 'beauvais', label: 'Aéroport Beauvais', icon: '✈️' },
+    { id: 'city-tour', label: 'Visite de Paris', icon: '🗼' },
+    { id: 'versailles', label: 'Château de Versailles', icon: '👑' },
+    { id: 'wine', label: 'Route des Vins', icon: '🍷' },
+    { id: 'normandy', label: 'Normandie', icon: '🏰' },
+    { id: 'mont-saint-michel', label: 'Mont Saint-Michel', icon: '⛪' },
+    { id: 'long-distance', label: 'Longue Distance', icon: '🚗' },
+    { id: 'travel-agency', label: 'Agences de Voyage', icon: '🏢' },
+    { id: 'fashion-week', label: 'Fashion Week', icon: '👗' },
+    { id: 'events', label: 'Événements', icon: '🎭' }
+  ]
 
   const menuItems = [
     { label: 'ACCUEIL', onClick: onNavigateToHome || (() => {}) },
-    { label: 'NOS SERVICES', onClick: onNavigateToServices || (() => {}) },
     { label: 'QUI SOMMES-NOUS', onClick: onNavigateToAbout || (() => {}) },
     { label: 'CONTACT', onClick: onNavigateToContact || (() => {}) }
   ]
@@ -62,6 +79,49 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
               </button>
             ))}
+            
+            <div 
+              className="relative"
+              onMouseEnter={() => setServicesDropdownOpen(true)}
+              onMouseLeave={() => setServicesDropdownOpen(false)}
+            >
+              <button
+                onClick={() => onNavigateToServices?.()}
+                className="text-foreground/80 hover:text-accent text-sm font-medium tracking-wide transition-colors relative group flex items-center gap-1"
+              >
+                NOS SERVICES
+                <CaretDown size={14} className={`transition-transform ${servicesDropdownOpen ? 'rotate-180' : ''}`} />
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
+              </button>
+
+              <AnimatePresence>
+                {servicesDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full left-0 mt-2 w-64 bg-card border border-accent/20 shadow-lg overflow-hidden"
+                  >
+                    <div className="py-2">
+                      {services.map((service) => (
+                        <button
+                          key={service.id}
+                          onClick={() => {
+                            setServicesDropdownOpen(false)
+                            onNavigateToService?.(service.id)
+                          }}
+                          className="w-full px-4 py-2.5 text-left text-sm text-foreground/80 hover:bg-accent hover:text-accent-foreground transition-colors flex items-center gap-3"
+                        >
+                          <span className="text-lg">{service.icon}</span>
+                          <span className="font-medium">{service.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </nav>
 
           <div className="flex items-center space-x-4">
@@ -140,6 +200,45 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                   {item.label}
                 </button>
               ))}
+              
+              <div>
+                <button
+                  onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                  className="flex items-center justify-between w-full text-left text-foreground hover:text-accent text-sm font-medium tracking-wide transition-colors py-2"
+                >
+                  NOS SERVICES
+                  <CaretDown size={16} className={`transition-transform ${mobileServicesOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                <AnimatePresence>
+                  {mobileServicesOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pl-4 mt-2 space-y-2">
+                        {services.map((service) => (
+                          <button
+                            key={service.id}
+                            onClick={() => {
+                              setMobileMenuOpen(false)
+                              setMobileServicesOpen(false)
+                              onNavigateToService?.(service.id)
+                            }}
+                            className="flex items-center gap-3 w-full text-left text-foreground/80 hover:text-accent text-sm py-2 transition-colors"
+                          >
+                            <span>{service.icon}</span>
+                            <span>{service.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               {userEmail && onLogout ? (
                 <div className="sm:hidden">
                   <div className="mb-4 p-4 bg-secondary rounded-lg">

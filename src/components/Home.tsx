@@ -11,9 +11,10 @@ interface HomeProps {
   onNavigateToServices?: () => void
   onNavigateToAbout?: () => void
   onNavigateToContact?: () => void
+  onNavigateToService?: (serviceId: string) => void
 }
 
-export default function Home({ onNavigateToLogin, onNavigateToClient, onNavigateToServices, onNavigateToAbout, onNavigateToContact }: HomeProps) {
+export default function Home({ onNavigateToLogin, onNavigateToClient, onNavigateToServices, onNavigateToAbout, onNavigateToContact, onNavigateToService }: HomeProps) {
   return (
     <>
       <Header 
@@ -23,6 +24,7 @@ export default function Home({ onNavigateToLogin, onNavigateToClient, onNavigate
         onNavigateToServices={onNavigateToServices}
         onNavigateToAbout={onNavigateToAbout}
         onNavigateToContact={onNavigateToContact}
+        onNavigateToService={onNavigateToService}
       />
       <div id="accueil">
         <Hero />

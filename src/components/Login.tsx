@@ -15,10 +15,11 @@ interface LoginProps {
   onNavigateToServices?: () => void
   onNavigateToAbout?: () => void
   onNavigateToContact?: () => void
+  onNavigateToService?: (serviceId: string) => void
   isAdminMode?: boolean
 }
 
-export default function Login({ onLogin, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact, isAdminMode = false }: LoginProps) {
+export default function Login({ onLogin, onNavigateToHome, onNavigateToServices, onNavigateToAbout, onNavigateToContact, onNavigateToService, isAdminMode = false }: LoginProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -56,6 +57,7 @@ export default function Login({ onLogin, onNavigateToHome, onNavigateToServices,
         onNavigateToServices={onNavigateToServices}
         onNavigateToAbout={onNavigateToAbout}
         onNavigateToContact={onNavigateToContact}
+        onNavigateToService={onNavigateToService}
       />
       <div className="min-h-screen bg-background flex items-center justify-center px-4 pt-20">
         <motion.div
