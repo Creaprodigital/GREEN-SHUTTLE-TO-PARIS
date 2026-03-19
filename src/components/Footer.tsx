@@ -12,9 +12,65 @@ export default function Footer({
   onNavigateToPrivacy, 
   onNavigateToCGV 
 }: FooterProps = {}) {
+  const cities = [
+    'Paris', 'Versailles', 'Saint-Denis', 'Montreuil', 'Boulogne-Billancourt',
+    'Nanterre', 'Créteil', 'Argenteuil', 'Colombes', 'Aulnay-sous-Bois',
+    'Saint-Maur-des-Fossés', 'Rueil-Malmaison', 'Aubervilliers', 'Champigny-sur-Marne', 'Asnières-sur-Seine',
+    'Courbevoie', 'Vitry-sur-Seine', 'Levallois-Perret', 'Issy-les-Moulineaux', 'Neuilly-sur-Seine',
+    'Clichy', 'Antony', 'Noisy-le-Grand', 'Suresnes', 'Clamart',
+    'Fontenay-sous-Bois', 'Maisons-Alfort', 'Pantin', 'Sevran', 'Ivry-sur-Seine',
+    'Villejuif', 'Épinay-sur-Seine', 'Meaux', 'Saint-Germain-en-Laye', 'Poissy',
+    'Évry', 'Cergy', 'Pontoise', 'Melun', 'Corbeil-Essonnes',
+    'Sarcelles', 'Mantes-la-Jolie', 'Vincennes', 'Drancy', 'Bondy'
+  ]
+
+  const column1 = cities.slice(0, 15)
+  const column2 = cities.slice(15, 30)
+  const column3 = cities.slice(30, 45)
+
   return (
-    <footer className="bg-primary border-t-2 border-accent text-foreground">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="bg-primary text-foreground">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-accent" style={{ fontFamily: 'var(--font-display)' }}>
+            Chauffeur Privé en Île-de-France
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+            <div>
+              <ul className="space-y-3">
+                {column1.map((city) => (
+                  <li key={city} className="text-sm text-muted-foreground hover:text-accent transition-colors font-light">
+                    Chauffeur privé {city}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <ul className="space-y-3">
+                {column2.map((city) => (
+                  <li key={city} className="text-sm text-muted-foreground hover:text-accent transition-colors font-light">
+                    Chauffeur privé {city}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <ul className="space-y-3">
+                {column3.map((city) => (
+                  <li key={city} className="text-sm text-muted-foreground hover:text-accent transition-colors font-light">
+                    Chauffeur privé {city}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <Separator className="bg-border mb-12" />
+      </div>
+
+      <div className="border-t-2 border-accent">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <h3 className="text-2xl font-bold mb-4 text-accent" style={{ fontFamily: 'var(--font-display)' }}>
@@ -104,6 +160,7 @@ export default function Footer({
               CGV
             </span>
           </div>
+        </div>
         </div>
       </div>
     </footer>
