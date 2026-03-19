@@ -32,6 +32,15 @@ export interface Booking {
   isSharedRide?: boolean
   sharedPassengers?: number
   stripePaymentIntentId?: string
+  stripeChargeId?: string
+  refundStatus?: 'none' | 'partial' | 'full'
+  refundAmount?: number
+  refundReason?: string
+  refundDate?: number
+  disputeStatus?: 'none' | 'pending' | 'won' | 'lost'
+  disputeReason?: string
+  disputeDate?: number
+  disputeEvidence?: string
 }
 
 export interface User {

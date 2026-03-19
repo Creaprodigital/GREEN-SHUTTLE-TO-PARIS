@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Car, MapPin, Calendar, Clock, User as UserIcon, UsersThree, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple, X, CurrencyCircleDollar, Sparkle, Info, EnvelopeSimple, CreditCard } from '@phosphor-icons/react'
+import { Car, MapPin, Calendar, Clock, User as UserIcon, UsersThree, Trash, ShieldCheck, Plus, Key, Upload, Image as ImageIcon, Check, MagnifyingGlassPlus, ArrowsOutSimple, X, CurrencyCircleDollar, Sparkle, Info, EnvelopeSimple, CreditCard, Warning } from '@phosphor-icons/react'
 import { Booking } from '@/types/booking'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 import { VehiclePricing, DEFAULT_PRICING, ServiceOption, DEFAULT_OPTIONS, PricingSettings } from '@/types/pricing'
@@ -22,6 +22,7 @@ import CircuitManager from '@/components/CircuitManager'
 import ZoneForfaitManager from '@/components/ZoneForfaitManager'
 import PromoCodeManager from '@/components/PromoCodeManager'
 import SharedRideManager from '@/components/SharedRideManager'
+import RefundDisputeManager from '@/components/RefundDisputeManager'
 import { useKV } from '@github/spark/hooks'
 import { TelegramSettings, DEFAULT_TELEGRAM_SETTINGS } from '@/types/telegram'
 import { RoundTripDiscount, DEFAULT_ROUNDTRIP_DISCOUNT } from '@/types/promo'
@@ -1744,6 +1745,15 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                           />
                         </div>
                       </div>
+
+                      {booking.paymentMethod === 'card' && booking.stripePaymentIntentId && (
+                        <div className="pt-3 border-t border-border">
+                          <RefundDisputeManager 
+                            booking={booking}
+                            onUpdate={onUpdateBooking}
+                          />
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -2786,6 +2796,144 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                     </div>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-accent/20">
+              <CardHeader className="border-b border-border">
+                <CardTitle className="text-xl font-semibold uppercase tracking-wide flex items-center gap-2">
+                  <CurrencyCircleDollar size={24} className="text-accent" />
+                  Remboursements & Litiges
+                </CardTitle>
+                <CardDescription>
+                  Statistiques des remboursements et litiges Stripe
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                {(() => {
+                  const allBookings = bookings || []
+                  const refundedBookings = allBookings.filter(b => b.refundStatus && b.refundStatus !== 'none')
+                  const disputedBookings = allBookings.filter(b => b.disputeStatus && b.disputeStatus !== 'none')
+                  const totalRefunded = refundedBookings.reduce((sum, b) => sum + (b.refundAmount || 0), 0)
+                  const fullRefunds = refundedBookings.filter(b => b.refundStatus === 'full').length
+                  const partialRefunds = refundedBookings.filter(b => b.refundStatus === 'partial').length
+                  const pendingDisputes = disputedBookings.filter(b => b.disputeStatus === 'pending').length
+                  const wonDisputes = disputedBookings.filter(b => b.disputeStatus === 'won').length
+                  const lostDisputes = disputedBookings.filter(b => b.disputeStatus === 'lost').length
+
+                  return (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <Card className="border-accent/20">
+                          <CardContent className="pt-6">
+                            <div className="space-y-2">
+                              <p className="text-sm text-muted-foreground uppercase tracking-wide">Total Remboursé</p>
+                              <p className="text-3xl font-bold text-foreground">{totalRefunded.toFixed(2)}€</p>
+                              <p className="text-xs text-muted-foreground">{refundedBookings.length} réservation(s)</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="border-accent/20">
+                          <CardContent className="pt-6">
+                            <div className="space-y-2">
+                              <p className="text-sm text-muted-foreground uppercase tracking-wide">Remboursements</p>
+                              <div className="flex items-baseline gap-2">
+                                <p className="text-3xl font-bold text-foreground">{refundedBookings.length}</p>
+                              </div>
+                              <div className="flex gap-2 text-xs">
+                                <span className="text-muted-foreground">Total: {fullRefunds}</span>
+                                <span className="text-muted-foreground">•</span>
+                                <span className="text-muted-foreground">Partiel: {partialRefunds}</span>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="border-accent/20">
+                          <CardContent className="pt-6">
+                            <div className="space-y-2">
+                              <p className="text-sm text-muted-foreground uppercase tracking-wide">Litiges</p>
+                              <p className="text-3xl font-bold text-foreground">{disputedBookings.length}</p>
+                              <div className="flex gap-2 text-xs">
+                                <span className="text-yellow-500">En cours: {pendingDisputes}</span>
+                                <span className="text-green-500">Gagnés: {wonDisputes}</span>
+                                <span className="text-red-500">Perdus: {lostDisputes}</span>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      {refundedBookings.length === 0 && disputedBookings.length === 0 ? (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <Warning size={48} className="mx-auto mb-3 opacity-50" />
+                          <p className="text-sm">Aucun remboursement ou litige enregistré</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {refundedBookings.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-semibold uppercase tracking-wide mb-3 text-foreground">Derniers remboursements</h4>
+                              <div className="space-y-2">
+                                {refundedBookings.slice(-5).reverse().map((booking) => (
+                                  <Card key={booking.id} className="border-accent/10">
+                                    <CardContent className="py-3 px-4">
+                                      <div className="flex items-center justify-between gap-3">
+                                        <div className="flex-1 min-w-0">
+                                          <p className="text-sm font-medium text-foreground truncate">{booking.userEmail}</p>
+                                          <p className="text-xs text-muted-foreground">{booking.refundReason}</p>
+                                        </div>
+                                        <div className="text-right flex-shrink-0">
+                                          <p className="text-sm font-bold text-accent">{booking.refundAmount}€</p>
+                                          <p className="text-xs text-muted-foreground">
+                                            {booking.refundDate ? new Date(booking.refundDate).toLocaleDateString('fr-FR') : '-'}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {disputedBookings.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-semibold uppercase tracking-wide mb-3 text-foreground">Derniers litiges</h4>
+                              <div className="space-y-2">
+                                {disputedBookings.slice(-5).reverse().map((booking) => (
+                                  <Card key={booking.id} className="border-yellow-500/20 bg-yellow-500/5">
+                                    <CardContent className="py-3 px-4">
+                                      <div className="flex items-center justify-between gap-3">
+                                        <div className="flex-1 min-w-0">
+                                          <p className="text-sm font-medium text-foreground truncate">{booking.userEmail}</p>
+                                          <p className="text-xs text-muted-foreground">{booking.disputeReason}</p>
+                                        </div>
+                                        <div className="text-right flex-shrink-0">
+                                          <p className={`text-xs font-bold uppercase ${
+                                            booking.disputeStatus === 'pending' ? 'text-yellow-500' : 
+                                            booking.disputeStatus === 'won' ? 'text-green-500' : 'text-red-500'
+                                          }`}>
+                                            {booking.disputeStatus === 'pending' ? 'En cours' : 
+                                             booking.disputeStatus === 'won' ? 'Gagné' : 'Perdu'}
+                                          </p>
+                                          <p className="text-xs text-muted-foreground">
+                                            {booking.disputeDate ? new Date(booking.disputeDate).toLocaleDateString('fr-FR') : '-'}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })()}
               </CardContent>
             </Card>
           </TabsContent>
