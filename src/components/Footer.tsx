@@ -8,25 +8,25 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <h3 className="text-2xl font-bold mb-4 text-accent" style={{ fontFamily: 'var(--font-display)' }}>
-              Véloce Express
+              ELGOH
             </h3>
             <p className="text-muted-foreground text-sm font-light mb-4">
               Service de chauffeur privé VTC premium à Paris et en Île-de-France depuis 2010.
             </p>
             <div className="space-y-2">
               <a 
-                href="tel:+33XXXXXXXXX" 
+                href="tel:+33609613721" 
                 className="flex items-center gap-2 text-foreground hover:text-accent transition-colors font-medium"
               >
                 <Phone size={20} weight="fill" />
-                <span>+33 X XX XX XX XX</span>
+                <span>+33 6 09 61 37 21</span>
               </a>
               <a 
-                href="mailto:contact@veloce-express.fr" 
+                href="mailto:contact@elgoh.fr" 
                 className="flex items-center gap-2 text-foreground hover:text-accent transition-colors font-medium"
               >
                 <Envelope size={20} weight="fill" />
-                <span>contact@veloce-express.fr</span>
+                <span>contact@elgoh.fr</span>
               </a>
             </div>
           </div>
@@ -73,7 +73,7 @@ export default function Footer() {
         <Separator className="bg-border mb-8" />
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground font-light">
-          <p>&copy; 2010-2024 Véloce Express. Tous droits réservés.</p>
+          <p>&copy; 2010-2024 ELGOH. Tous droits réservés.</p>
           <div className="flex gap-6">
             <span className="hover:text-accent transition-colors cursor-pointer">Mentions légales</span>
             <span className="hover:text-accent transition-colors cursor-pointer">Confidentialité</span>

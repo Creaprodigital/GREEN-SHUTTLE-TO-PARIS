@@ -79,7 +79,7 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
               </div>
               <div className="hidden sm:block">
                 <div className="text-foreground font-bold text-xl leading-tight" style={{ fontFamily: 'var(--font-display)' }}>
-                  Véloce Express
+                  ELGOH
                 </div>
                 <div className="text-accent text-xs uppercase tracking-wider font-medium">
                   VTC Premium

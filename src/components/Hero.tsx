@@ -31,7 +31,7 @@ export default function Hero() {
           <div className="w-16 sm:w-24 h-0.5 bg-accent mx-auto mb-6" />
           <div className="max-w-4xl mx-auto space-y-4 text-base sm:text-lg text-white/90 font-light px-4">
             <p>
-              Voyagez avec <span className="text-accent font-medium">élégance</span>, <span className="text-accent font-medium">confort</span> et <span className="text-accent font-medium">ponctualité</span> grâce à Véloce Express, votre service de chauffeur privé VTC à Paris et en Île-de-France.
+              Voyagez avec <span className="text-accent font-medium">élégance</span>, <span className="text-accent font-medium">confort</span> et <span className="text-accent font-medium">ponctualité</span> grâce à ELGOH, votre service de chauffeur privé VTC à Paris et en Île-de-France.
             </p>
             <p>
               Depuis 2010, nous accompagnons particuliers et professionnels pour tous leurs déplacements avec un service de transport fiable, discret et haut de gamme.

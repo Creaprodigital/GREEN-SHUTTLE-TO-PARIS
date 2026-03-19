@@ -62,12 +62,12 @@ export default function Contact({
     {
       icon: Phone,
       title: 'Téléphone',
-      content: '+33 X XX XX XX XX'
+      content: '+33 6 09 61 37 21'
     },
     {
       icon: EnvelopeSimple,
       title: 'Email',
-      content: 'contact@veloce-express.fr'
+      content: 'contact@elgoh.fr'
     },
     {
       icon: Clock,
