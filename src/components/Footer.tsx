@@ -1,5 +1,5 @@
 import { Separator } from '@/components/ui/separator'
-import { Phone, Envelope } from '@phosphor-icons/react'
+import { Phone, Envelope, InstagramLogo } from '@phosphor-icons/react'
 
 export default function Footer() {
   return (
@@ -8,25 +8,25 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <h3 className="text-2xl font-bold mb-4 text-accent" style={{ fontFamily: 'var(--font-display)' }}>
-              Green Shuttle To Paris
+              Véloce Express
             </h3>
             <p className="text-muted-foreground text-sm font-light mb-4">
-              Premier chauffeur service delivering excellence to Paris and beyond.
+              Service de chauffeur privé VTC premium à Paris et en Île-de-France depuis 2010.
             </p>
             <div className="space-y-2">
               <a 
-                href="tel:+33199990000" 
+                href="tel:+33XXXXXXXXX" 
                 className="flex items-center gap-2 text-foreground hover:text-accent transition-colors font-medium"
               >
                 <Phone size={20} weight="fill" />
-                <span>+33 1 99 99 00 00</span>
+                <span>+33 X XX XX XX XX</span>
               </a>
               <a 
-                href="mailto:contact@greenshuttletoparis.com" 
+                href="mailto:contact@veloce-express.fr" 
                 className="flex items-center gap-2 text-foreground hover:text-accent transition-colors font-medium"
               >
                 <Envelope size={20} weight="fill" />
-                <span>contact@greenshuttletoparis.com</span>
+                <span>contact@veloce-express.fr</span>
               </a>
             </div>
           </div>
@@ -34,42 +34,50 @@ export default function Footer() {
           <div>
             <h4 className="font-medium mb-4 uppercase tracking-widest text-sm">Services</h4>
             <ul className="space-y-2 text-sm text-muted-foreground font-light">
-              <li className="hover:text-accent transition-colors cursor-pointer">Airport Transfers</li>
-              <li className="hover:text-accent transition-colors cursor-pointer">Business Travel</li>
-              <li className="hover:text-accent transition-colors cursor-pointer">City Rides</li>
-              <li className="hover:text-accent transition-colors cursor-pointer">Hourly Bookings</li>
+              <li className="hover:text-accent transition-colors cursor-pointer">Transferts Aéroports</li>
+              <li className="hover:text-accent transition-colors cursor-pointer">Déplacements Professionnels</li>
+              <li className="hover:text-accent transition-colors cursor-pointer">Événements & Sorties</li>
+              <li className="hover:text-accent transition-colors cursor-pointer">Mise à Disposition</li>
+              <li className="hover:text-accent transition-colors cursor-pointer">Circuits Touristiques</li>
+              <li className="hover:text-accent transition-colors cursor-pointer">Longue Distance</li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-medium mb-4 uppercase tracking-widest text-sm">Company</h4>
+            <h4 className="font-medium mb-4 uppercase tracking-widest text-sm">À Propos</h4>
             <ul className="space-y-2 text-sm text-muted-foreground font-light">
-              <li className="hover:text-accent transition-colors cursor-pointer">About Us</li>
-              <li className="hover:text-accent transition-colors cursor-pointer">Careers</li>
-              <li className="hover:text-accent transition-colors cursor-pointer">Press</li>
-              <li className="hover:text-accent transition-colors cursor-pointer">Partners</li>
+              <li className="hover:text-accent transition-colors cursor-pointer">Qui sommes-nous</li>
+              <li className="hover:text-accent transition-colors cursor-pointer">Nos valeurs</li>
+              <li className="hover:text-accent transition-colors cursor-pointer">Notre flotte</li>
+              <li className="hover:text-accent transition-colors cursor-pointer">Nos chauffeurs</li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-medium mb-4 uppercase tracking-widest text-sm">Support</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground font-light">
-              <li className="hover:text-accent transition-colors cursor-pointer">Help Center</li>
-              <li className="hover:text-accent transition-colors cursor-pointer">Contact</li>
-              <li className="hover:text-accent transition-colors cursor-pointer">Safety</li>
-              <li className="hover:text-accent transition-colors cursor-pointer">Terms of Service</li>
-            </ul>
+            <h4 className="font-medium mb-4 uppercase tracking-widest text-sm">Suivez-nous</h4>
+            <div className="space-y-3">
+              <a 
+                href="#" 
+                className="flex items-center gap-2 text-foreground hover:text-accent transition-colors font-medium"
+              >
+                <InstagramLogo size={20} weight="fill" />
+                <span>Instagram</span>
+              </a>
+              <p className="text-sm text-muted-foreground font-light">
+                Service disponible 24h/24 - 7j/7
+              </p>
+            </div>
           </div>
         </div>
 
         <Separator className="bg-border mb-8" />
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground font-light">
-          <p>&copy; 2024 Green Shuttle To Paris. All rights reserved.</p>
+          <p>&copy; 2010-2024 Véloce Express. Tous droits réservés.</p>
           <div className="flex gap-6">
-            <span className="hover:text-accent transition-colors cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-accent transition-colors cursor-pointer">Cookie Policy</span>
-            <span className="hover:text-accent transition-colors cursor-pointer">Accessibility</span>
+            <span className="hover:text-accent transition-colors cursor-pointer">Mentions légales</span>
+            <span className="hover:text-accent transition-colors cursor-pointer">Confidentialité</span>
+            <span className="hover:text-accent transition-colors cursor-pointer">CGV</span>
           </div>
         </div>
       </div>
