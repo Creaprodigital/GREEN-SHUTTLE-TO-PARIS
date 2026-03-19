@@ -4,22 +4,22 @@ import { Car, Users, ShieldCheck, Sparkle } from '@phosphor-icons/react'
 export default function FleetShowcase() {
   const vehicles = [
     {
-      name: 'Berline Premium',
+      name: 'Business Class',
       image: 'https://images.unsplash.com/photo-1563720360172-67b8f3dce741?auto=format&fit=crop&q=80&w=800',
       capacity: '1-3 passagers',
-      description: 'Véhicules haut de gamme pour vos déplacements en toute élégance'
+      description: 'Berline premium haut de gamme pour vos déplacements en toute élégance'
     },
     {
-      name: 'SUV Luxe',
+      name: 'First Class',
       image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&q=80&w=800',
       capacity: '1-4 passagers',
-      description: 'Espace et confort pour vos trajets en famille ou entre amis'
+      description: 'SUV de luxe spacieux et raffiné, espace et confort pour vos trajets en famille ou entre amis'
     },
     {
-      name: 'Van Premium',
+      name: 'Van Class',
       image: 'https://images.unsplash.com/photo-1527027746999-4243c27bcbb0?auto=format&fit=crop&q=80&w=800',
       capacity: '4-7 passagers',
-      description: 'Idéal pour les groupes et les trajets avec bagages'
+      description: 'Van premium idéal pour les groupes et les trajets avec bagages'
     }
   ]
 

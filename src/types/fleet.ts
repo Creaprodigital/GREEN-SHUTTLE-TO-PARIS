@@ -15,31 +15,24 @@ export interface VehicleClass {
 
 export const DEFAULT_FLEET: VehicleClass[] = [
   {
-    id: 'berline',
-    title: 'BERLINE',
-    description: 'Berline confortable pour vos déplacements professionnels et personnels. Idéale pour 1 à 3 passagers avec bagages.',
-    image: '',
-    order: 1
-  },
-  {
-    id: 'van',
-    title: 'VAN',
-    description: 'Van spacieux jusqu\'à 7 passagers. Parfait pour les groupes, familles et déplacements avec bagages volumineux.',
-    image: '',
-    order: 2
-  },
-  {
     id: 'business',
     title: 'BUSINESS CLASS',
-    description: 'Véhicule haut de gamme pour vos rendez-vous d\'affaires. Confort et élégance pour une expérience premium.',
+    description: 'Berline premium confortable pour vos déplacements professionnels et personnels. Idéale pour 1 à 3 passagers avec bagages.',
     image: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=800&auto=format&fit=crop',
-    order: 3
+    order: 1
   },
   {
     id: 'first',
     title: 'FIRST CLASS',
-    description: 'Le summum du luxe et du raffinement. Service VIP avec véhicules d\'exception pour une expérience inoubliable.',
+    description: 'SUV de luxe spacieux et raffiné. Le summum du confort et de l\'élégance pour une expérience premium.',
     image: '',
-    order: 4
+    order: 2
+  },
+  {
+    id: 'van',
+    title: 'VAN CLASS',
+    description: 'Van premium spacieux jusqu\'à 7 passagers. Parfait pour les groupes, familles et déplacements avec bagages volumineux.',
+    image: '',
+    order: 3
   }
 ]
