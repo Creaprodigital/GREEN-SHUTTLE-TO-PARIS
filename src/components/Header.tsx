@@ -1,7 +1,10 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { User, List, X, SignOut, CaretDown } from '@phosphor-icons/react'
+import { User, List, X, SignOut, CaretDown, Phone } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 
 interface HeaderProps {
   onNavigateToLogin?: (isAdmin: boolean) => void
@@ -20,7 +23,17 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false)
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const isMobile = useIsMobile()
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const services = [
     { id: 'cdg', label: 'Aéroport CDG', icon: '✈️' },
@@ -67,25 +80,30 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-primary/95 backdrop-blur-sm border-b border-accent/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      scrolled ? 'bg-primary/98 backdrop-blur-md shadow-lg' : 'bg-primary/95 backdrop-blur-sm'
+    } border-b border-accent/20`}>
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 md:h-20">
           <div className="flex items-center">
-            <a href="#accueil" className="flex items-center space-x-3 group">
-              <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center transition-transform group-hover:scale-105">
-                <span className="text-2xl font-bold text-accent-foreground" style={{ fontFamily: 'var(--font-display)' }}>
+            <button 
+              onClick={onNavigateToHome}
+              className="flex items-center space-x-2 md:space-x-3 group"
+            >
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-accent rounded-full flex items-center justify-center transition-transform group-hover:scale-105">
+                <span className="text-xl md:text-2xl font-bold text-accent-foreground" style={{ fontFamily: 'var(--font-display)' }}>
                   E
                 </span>
               </div>
-              <div className="hidden sm:block">
-                <div className="text-foreground font-bold text-xl leading-tight" style={{ fontFamily: 'var(--font-display)' }}>
+              <div className="hidden xs:block">
+                <div className="text-foreground font-bold text-lg md:text-xl leading-tight" style={{ fontFamily: 'var(--font-display)' }}>
                   ELGOH
                 </div>
-                <div className="text-accent text-xs uppercase tracking-wider font-medium">
-                  VTC Premium
+                <div className="text-accent text-[10px] md:text-xs uppercase tracking-wider font-medium">
+                  Chauffeur Privé
                 </div>
               </div>
-            </a>
+            </button>
           </div>
 
           <nav className="hidden lg:flex items-center space-x-8">
@@ -147,43 +165,51 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
             </div>
           </nav>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2 md:gap-4">
+            <a href="tel:+33609613721" className="hidden sm:flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors">
+              <Phone size={18} weight="fill" />
+              <span className="text-sm font-medium">+33 6 09 61 37 21</span>
+            </a>
+
             {userEmail && onLogout ? (
               <>
-                <div className="hidden sm:flex items-center gap-3">
+                <div className="hidden md:flex items-center gap-3">
                   <div className="text-right">
                     <p className="text-xs text-foreground/70 uppercase tracking-wide">
                       {isAdmin ? 'Admin' : 'Client'}
                     </p>
-                    <p className="text-sm text-foreground font-medium">{userEmail}</p>
+                    <p className="text-sm text-foreground font-medium truncate max-w-[150px]">{userEmail}</p>
                   </div>
                   <Button
                     onClick={onLogout}
                     variant="outline"
+                    size={isMobile ? "sm" : "default"}
                     className="border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
                   >
-                    <SignOut className="mr-2" size={18} />
-                    Déconnexion
+                    <SignOut className="md:mr-2" size={18} />
+                    <span className="hidden md:inline">Déconnexion</span>
                   </Button>
                 </div>
               </>
             ) : (
-              <div className="hidden sm:flex items-center gap-2">
+              <div className="hidden md:flex items-center gap-2">
                 <Button
                   onClick={() => onNavigateToClient?.()}
                   variant="outline"
+                  size={isMobile ? "sm" : "default"}
                   className="border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
                 >
-                  <User className="mr-2" size={18} />
-                  Client
+                  <User className="md:mr-2" size={16} />
+                  <span className="hidden lg:inline">Client</span>
                 </Button>
                 <Button
                   onClick={() => onNavigateToLogin?.(true)}
                   variant="outline"
+                  size={isMobile ? "sm" : "default"}
                   className="border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
                 >
-                  <User className="mr-2" size={18} />
-                  Admin
+                  <User className="md:mr-2" size={16} />
+                  <span className="hidden lg:inline">Admin</span>
                 </Button>
               </div>
             )}
@@ -206,9 +232,14 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-primary border-t border-accent/20 overflow-hidden"
+            className="lg:hidden bg-primary border-t border-accent/20 overflow-hidden max-h-[calc(100vh-4rem)] overflow-y-auto"
           >
-            <nav className="px-4 py-6 space-y-4">
+            <nav className="px-3 py-4 md:px-4 md:py-6 space-y-3">
+              <a href="tel:+33609613721" className="flex sm:hidden items-center gap-2 text-foreground/80 hover:text-accent transition-colors py-2">
+                <Phone size={18} weight="fill" />
+                <span className="text-sm font-medium">+33 6 09 61 37 21</span>
+              </a>
+
               {menuItems.map((item, index) => (
                 <button
                   key={index}
@@ -218,7 +249,7 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                       item.onClick()
                     }
                   }}
-                  className="block w-full text-left text-foreground hover:text-accent text-sm font-medium tracking-wide transition-colors py-2"
+                  className="block w-full text-left text-foreground hover:text-accent text-sm font-medium tracking-wide transition-colors py-2.5 px-2 hover:bg-accent/10 rounded"
                 >
                   {item.label}
                 </button>
@@ -227,7 +258,7 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
               <div>
                 <button
                   onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
-                  className="flex items-center justify-between w-full text-left text-foreground hover:text-accent text-sm font-medium tracking-wide transition-colors py-2"
+                  className="flex items-center justify-between w-full text-left text-foreground hover:text-accent text-sm font-medium tracking-wide transition-colors py-2.5 px-2 hover:bg-accent/10 rounded"
                 >
                   NOS SERVICES
                   <CaretDown size={16} className={`transition-transform ${mobileServicesOpen ? 'rotate-180' : ''}`} />
@@ -241,7 +272,7 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                       exit={{ opacity: 0, height: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="pl-4 mt-2 space-y-2">
+                      <div className="pl-3 mt-2 space-y-1.5">
                         {services.map((service) => (
                           <button
                             key={service.id}
@@ -250,10 +281,10 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                               setMobileServicesOpen(false)
                               onNavigateToService?.(service.id)
                             }}
-                            className="flex items-center gap-3 w-full text-left text-foreground/80 hover:text-accent text-sm py-2 transition-colors"
+                            className="flex items-center gap-2.5 w-full text-left text-foreground/80 hover:text-accent text-sm py-2 px-2 transition-colors hover:bg-accent/10 rounded"
                           >
-                            <span>{service.icon}</span>
-                            <span>{service.label}</span>
+                            <span className="text-base">{service.icon}</span>
+                            <span className="text-sm">{service.label}</span>
                           </button>
                         ))}
                       </div>
@@ -263,12 +294,12 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
               </div>
 
               {userEmail && onLogout ? (
-                <div className="sm:hidden">
-                  <div className="mb-4 p-4 bg-secondary rounded-lg">
+                <div className="md:hidden border-t border-accent/20 pt-4 mt-4">
+                  <div className="mb-4 p-3 bg-secondary/50 rounded-lg">
                     <p className="text-xs text-foreground/70 uppercase tracking-wide mb-1">
                       {isAdmin ? 'Admin' : 'Client'}
                     </p>
-                    <p className="text-sm text-foreground font-medium">{userEmail}</p>
+                    <p className="text-sm text-foreground font-medium truncate">{userEmail}</p>
                   </div>
                   <Button
                     onClick={() => {
@@ -285,7 +316,7 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                   </Button>
                 </div>
               ) : (
-                <div className="sm:hidden space-y-2">
+                <div className="md:hidden space-y-2 border-t border-accent/20 pt-4 mt-4">
                   <Button
                     onClick={() => {
                       setMobileMenuOpen(false)
@@ -295,7 +326,7 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                     className="w-full border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
                   >
                     <User className="mr-2" size={18} />
-                    Client
+                    Espace Client
                   </Button>
                   <Button
                     onClick={() => {
@@ -306,7 +337,7 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                     className="w-full border-accent text-foreground hover:bg-accent hover:text-accent-foreground"
                   >
                     <User className="mr-2" size={18} />
-                    Admin
+                    Espace Admin
                   </Button>
                 </div>
               )}
