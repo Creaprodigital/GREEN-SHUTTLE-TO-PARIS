@@ -9,8 +9,8 @@ export default function Hero() {
         className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage: `
-            linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.7)),
-            url('https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?auto=format&fit=crop&q=90&w=2400')
+            linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.65)),
+            url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=90&w=2400')
           `
         }}
       />
