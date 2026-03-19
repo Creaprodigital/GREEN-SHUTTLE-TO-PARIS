@@ -74,7 +74,7 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
             <a href="#accueil" className="flex items-center space-x-3 group">
               <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center transition-transform group-hover:scale-105">
                 <span className="text-2xl font-bold text-accent-foreground" style={{ fontFamily: 'var(--font-display)' }}>
-                  V
+                  E
                 </span>
               </div>
               <div className="hidden sm:block">
