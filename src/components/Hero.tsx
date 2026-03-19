@@ -3,19 +3,13 @@ import { Check } from '@phosphor-icons/react'
 
 export default function Hero() {
   return (
-    <div className="relative min-h-[600px] sm:min-h-[700px] flex items-center justify-center overflow-hidden bg-primary pt-20">
+    <div className="relative min-h-[600px] sm:min-h-[700px] flex items-center justify-center overflow-hidden pt-20">
       <div 
-        className="absolute inset-0"
+        className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage: `
-            linear-gradient(135deg, oklch(0.15 0 0) 0%, oklch(0.18 0 0) 50%, oklch(0.15 0 0) 100%),
-            repeating-linear-gradient(
-              0deg,
-              transparent,
-              transparent 2px,
-              oklch(0.75 0.14 75 / 0.02) 2px,
-              oklch(0.75 0.14 75 / 0.02) 4px
-            )
+            linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.7)),
+            url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=2000')
           `
         }}
       />
@@ -29,13 +23,13 @@ export default function Hero() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 tracking-tight leading-tight" style={{ fontFamily: 'var(--font-display)' }}>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight leading-tight" style={{ fontFamily: 'var(--font-display)' }}>
             Service de chauffeur privé premium
             <br />
             à Paris et en Île-de-France
           </h1>
           <div className="w-16 sm:w-24 h-0.5 bg-accent mx-auto mb-6" />
-          <div className="max-w-4xl mx-auto space-y-4 text-base sm:text-lg text-foreground/80 font-light px-4">
+          <div className="max-w-4xl mx-auto space-y-4 text-base sm:text-lg text-white/90 font-light px-4">
             <p>
               Voyagez avec <span className="text-accent font-medium">élégance</span>, <span className="text-accent font-medium">confort</span> et <span className="text-accent font-medium">ponctualité</span> grâce à Véloce Express, votre service de chauffeur privé VTC à Paris et en Île-de-France.
             </p>
@@ -50,7 +44,7 @@ export default function Hero() {
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-4 mt-8 mb-8 text-foreground/90">
+          <div className="flex flex-wrap justify-center gap-4 mt-8 mb-8 text-white/95">
             <div className="flex items-center gap-2">
               <Check size={20} className="text-accent" weight="bold" />
               <span className="text-sm sm:text-base">Service disponible 24h/24 – 7j/7</span>

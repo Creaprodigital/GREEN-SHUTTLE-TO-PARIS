@@ -2,6 +2,7 @@ import Header from '@/components/Header'
 import Hero from '@/components/Hero'
 import BookingForm from '@/components/BookingForm'
 import ServiceCards from '@/components/ServiceCards'
+import FleetShowcase from '@/components/FleetShowcase'
 import Footer from '@/components/Footer'
 
 interface HomeProps {
@@ -28,6 +29,7 @@ export default function Home({ onNavigateToLogin, onNavigateToClient, onNavigate
         <BookingForm />
         <div className="h-[150px]" />
       </div>
+      <FleetShowcase />
       <div id="services">
         <ServiceCards />
       </div>

@@ -1,5 +1,6 @@
 import Header from './Header'
 import Footer from './Footer'
+import FleetShowcase from './FleetShowcase'
 import { CheckCircle, Clock, Shield, Users } from '@phosphor-icons/react'
 
 interface AboutProps {
@@ -62,17 +63,30 @@ export default function About({
         isAdmin={isAdmin}
       />
       
-      <main className="pt-32 pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-6" style={{ fontFamily: 'var(--font-display)' }}>
+      <div 
+        className="relative h-[400px] bg-cover bg-center pt-20"
+        style={{
+          backgroundImage: `
+            linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.7)),
+            url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&q=80&w=2000')
+          `
+        }}
+      >
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6" style={{ fontFamily: 'var(--font-display)' }}>
               Qui sommes-nous
             </h1>
-            <div className="w-24 h-0.5 bg-accent mx-auto mb-8" />
-            <p className="text-xl text-accent font-medium uppercase tracking-wider mb-8">
+            <div className="w-24 h-0.5 bg-accent mx-auto mb-4" />
+            <p className="text-xl text-white/90 font-medium uppercase tracking-wider">
               Tout ce que vous voulez savoir
             </p>
           </div>
+        </div>
+      </div>
+      
+      <main className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="max-w-4xl mx-auto space-y-8 mb-16">
             <div className="bg-card border border-border p-8">
@@ -128,6 +142,8 @@ export default function About({
           </div>
         </div>
       </main>
+
+      <FleetShowcase />
 
       <Footer />
     </div>

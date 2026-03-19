@@ -88,18 +88,30 @@ export default function Contact({
         isAdmin={isAdmin}
       />
       
-      <main className="pt-32 pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-6" style={{ fontFamily: 'var(--font-display)' }}>
+      <div 
+        className="relative h-[400px] bg-cover bg-center pt-20"
+        style={{
+          backgroundImage: `
+            linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.7)),
+            url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?auto=format&fit=crop&q=80&w=2000')
+          `
+        }}
+      >
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6" style={{ fontFamily: 'var(--font-display)' }}>
               Contactez-nous
             </h1>
-            <div className="w-24 h-0.5 bg-accent mx-auto mb-8" />
-            <p className="text-lg text-foreground/70 max-w-2xl mx-auto">
-              Nous sommes là pour répondre à toutes vos questions et organiser vos trajets sur mesure. N'hésitez pas à nous contacter !
+            <div className="w-24 h-0.5 bg-accent mx-auto mb-4" />
+            <p className="text-lg text-white/90 max-w-2xl mx-auto px-4">
+              Nous sommes là pour répondre à toutes vos questions et organiser vos trajets sur mesure
             </p>
           </div>
-
+        </div>
+      </div>
+      
+      <main className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 mb-16">
             <div>
               <h2 className="text-3xl font-bold text-foreground mb-8" style={{ fontFamily: 'var(--font-display)' }}>

@@ -7,11 +7,34 @@ import AdminDashboard from '@/components/AdminDashboard'
 import Services from '@/components/Services'
 import About from '@/components/About'
 import Contact from '@/components/Contact'
+import ServiceCDG from '@/components/ServiceCDG'
+import ServiceOrly from '@/components/ServiceOrly'
+import ServiceCityTour from '@/components/ServiceCityTour'
+import ServiceVersailles from '@/components/ServiceVersailles'
 import { useKV } from '@github/spark/hooks'
 import { Booking } from '@/types/booking'
 import { useSharedRideNotifications } from '@/hooks/useSharedRideNotifications'
 
-type View = 'home' | 'login' | 'client' | 'admin' | 'services' | 'about' | 'contact'
+type View = 
+  | 'home' 
+  | 'login' 
+  | 'client' 
+  | 'admin' 
+  | 'services' 
+  | 'about' 
+  | 'contact'
+  | 'service-cdg'
+  | 'service-orly'
+  | 'service-beauvais'
+  | 'service-city-tour'
+  | 'service-events'
+  | 'service-versailles'
+  | 'service-wine'
+  | 'service-normandy'
+  | 'service-mont-saint-michel'
+  | 'service-long-distance'
+  | 'service-travel-agency'
+  | 'service-fashion-week'
 
 function App() {
   const [view, setView] = useState<View>('home')
@@ -62,6 +85,22 @@ function App() {
     setBookings((current) => (current || []).filter((booking) => booking.id !== id))
   }
 
+  const handleNavigateToService = (serviceId: string) => {
+    setView(`service-${serviceId}` as View)
+  }
+
+  const commonServiceProps = {
+    onNavigateToLogin: handleNavigateToLogin,
+    onNavigateToClient: handleNavigateToClient,
+    onNavigateToHome: () => setView('home'),
+    onNavigateToServices: () => setView('services'),
+    onNavigateToAbout: () => setView('about'),
+    onNavigateToContact: () => setView('contact'),
+    userEmail: currentUser?.email,
+    isAdmin: currentUser?.isAdmin,
+    onLogout: handleLogout
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Toaster />
@@ -92,11 +131,16 @@ function App() {
           onNavigateToServices={() => setView('services')}
           onNavigateToAbout={() => setView('about')}
           onNavigateToContact={() => setView('contact')}
+          onNavigateToService={handleNavigateToService}
           userEmail={currentUser?.email}
           isAdmin={currentUser?.isAdmin}
           onLogout={handleLogout}
         />
       )}
+      {view === 'service-cdg' && <ServiceCDG {...commonServiceProps} />}
+      {view === 'service-orly' && <ServiceOrly {...commonServiceProps} />}
+      {view === 'service-city-tour' && <ServiceCityTour {...commonServiceProps} />}
+      {view === 'service-versailles' && <ServiceVersailles {...commonServiceProps} />}
       {view === 'about' && (
         <About
           onNavigateToLogin={handleNavigateToLogin}

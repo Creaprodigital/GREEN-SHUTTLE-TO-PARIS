@@ -1,5 +1,6 @@
 import Header from './Header'
 import Footer from './Footer'
+import { Button } from '@/components/ui/button'
 import { 
   Airplane, 
   MapTrifold, 
@@ -7,7 +8,8 @@ import {
   GlobeHemisphereWest,
   Landmark,
   Briefcase,
-  Sparkle
+  Sparkle,
+  ArrowRight
 } from '@phosphor-icons/react'
 
 interface ServicesProps {
@@ -17,6 +19,7 @@ interface ServicesProps {
   onNavigateToServices?: () => void
   onNavigateToAbout?: () => void
   onNavigateToContact?: () => void
+  onNavigateToService?: (serviceId: string) => void
   userEmail?: string
   isAdmin?: boolean
   onLogout?: () => void
@@ -29,12 +32,14 @@ export default function Services({
   onNavigateToServices,
   onNavigateToAbout,
   onNavigateToContact,
+  onNavigateToService,
   userEmail,
   isAdmin,
   onLogout
 }: ServicesProps) {
   const services = [
     {
+      id: 'cdg',
       icon: Airplane,
       title: 'Transfert Aéroport Charles de Gaulle',
       description: 'Voyagez sereinement entre l\'aéroport Charles de Gaulle (CDG) et Paris avec Véloce Express, votre service de chauffeur privé VTC.',
@@ -47,6 +52,7 @@ export default function Services({
       tarif: 'à partir de 55€'
     },
     {
+      id: 'orly',
       icon: Airplane,
       title: 'Transfert Aéroport Orly',
       description: 'Voyagez en toute sérénité entre l\'Aéroport de Paris-Orly et Paris grâce à notre service de transfert VTC privé.',
@@ -58,6 +64,7 @@ export default function Services({
       ]
     },
     {
+      id: 'beauvais',
       icon: Airplane,
       title: 'Transfert Aéroport Paris-Beauvais',
       description: 'Voyagez confortablement entre l\'Aéroport de Paris-Beauvais et Paris (80 km) grâce à notre service de transfert VTC privé.',
@@ -69,6 +76,7 @@ export default function Services({
       ]
     },
     {
+      id: 'city-tour',
       icon: MapTrifold,
       title: 'City Tour Paris avec Chauffeur Privé',
       description: 'Découvrez la beauté de Paris grâce à un City Tour panoramique avec chauffeur privé de jour ou de nuit.',
@@ -80,6 +88,7 @@ export default function Services({
       ]
     },
     {
+      id: 'events',
       icon: Briefcase,
       title: 'VTC pour Événements et Salons',
       description: 'Participez à vos événements professionnels en toute sérénité avec notre service VTC dédié aux salons à Paris.',
@@ -91,6 +100,7 @@ export default function Services({
       ]
     },
     {
+      id: 'versailles',
       icon: Landmark,
       title: 'Excursions Château de Versailles',
       description: 'Profitez d\'une excursion privée avec chauffeur pour visiter le prestigieux Château de Versailles.',
@@ -102,6 +112,7 @@ export default function Services({
       ]
     },
     {
+      id: 'wine',
       icon: Champagne,
       title: 'Dégustation Vins et Champagne',
       description: 'Partez à la découverte des vignobles français avec un chauffeur privé (Champagne, Loire, Bourgogne).',
@@ -113,6 +124,7 @@ export default function Services({
       ]
     },
     {
+      id: 'normandy',
       icon: GlobeHemisphereWest,
       title: 'Transfert Privé vers la Normandie',
       description: 'Voyagez confortablement vers la Normandie avec notre service de chauffeur privé VTC (Deauville, Honfleur, Étretat, Mont Saint-Michel).',
@@ -124,6 +136,7 @@ export default function Services({
       ]
     },
     {
+      id: 'mont-saint-michel',
       icon: GlobeHemisphereWest,
       title: 'Transfert Mont Saint-Michel',
       description: 'Découvrez le Mont Saint-Michel, l\'un des sites les plus emblématiques de France, avec notre chauffeur privé VTC.',
@@ -135,6 +148,7 @@ export default function Services({
       ]
     },
     {
+      id: 'long-distance',
       icon: GlobeHemisphereWest,
       title: 'Transferts Longue Distance',
       description: 'Voyagez sur de longues distances avec notre service de chauffeur privé VTC (Bruxelles, Luxembourg, Marseille, Lyon).',
@@ -146,6 +160,7 @@ export default function Services({
       ]
     },
     {
+      id: 'travel-agency',
       icon: Briefcase,
       title: 'VTC pour Agence de Voyage',
       description: 'Partenariat de transport fiable pour vos clients : transferts aéroports, excursions touristiques, trajets longue distance.',
@@ -157,6 +172,7 @@ export default function Services({
       ]
     },
     {
+      id: 'fashion-week',
       icon: Sparkle,
       title: 'VTC Premium Fashion Week Paris',
       description: 'Transport VIP pendant la Fashion Week avec service ponctuel, sécurisé et confortable pour défilés et soirées.',
@@ -200,7 +216,7 @@ export default function Services({
               return (
                 <div
                   key={index}
-                  className="bg-card border border-border p-6 hover:border-accent/50 transition-all duration-300 group"
+                  className="bg-card border border-border p-6 hover:border-accent/50 transition-all duration-300 group flex flex-col"
                 >
                   <div className="flex items-start gap-4 mb-4">
                     <div className="w-12 h-12 bg-accent flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
@@ -210,10 +226,10 @@ export default function Services({
                       {service.title}
                     </h3>
                   </div>
-                  <p className="text-foreground/70 mb-4 text-sm">
+                  <p className="text-foreground/70 mb-4 text-sm flex-grow">
                     {service.description}
                   </p>
-                  <ul className="space-y-2">
+                  <ul className="space-y-2 mb-4">
                     {service.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start gap-2 text-foreground/80 text-sm">
                         <div className="w-1.5 h-1.5 bg-accent rounded-full mt-1.5 shrink-0" />
@@ -222,10 +238,18 @@ export default function Services({
                     ))}
                   </ul>
                   {service.tarif && (
-                    <div className="mt-4 pt-4 border-t border-border">
+                    <div className="mb-4 pb-4 border-b border-border">
                       <p className="text-accent font-semibold">{service.tarif}</p>
                     </div>
                   )}
+                  <Button
+                    onClick={() => onNavigateToService?.(service.id)}
+                    variant="outline"
+                    className="w-full border-accent text-foreground hover:bg-accent hover:text-accent-foreground group/btn"
+                  >
+                    En savoir plus
+                    <ArrowRight size={16} className="ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                  </Button>
                 </div>
               )
             })}
