@@ -9,8 +9,16 @@ import About from '@/components/About'
 import Contact from '@/components/Contact'
 import ServiceCDG from '@/components/ServiceCDG'
 import ServiceOrly from '@/components/ServiceOrly'
+import ServiceBeauvais from '@/components/ServiceBeauvais'
 import ServiceCityTour from '@/components/ServiceCityTour'
 import ServiceVersailles from '@/components/ServiceVersailles'
+import ServiceWineTour from '@/components/ServiceWineTour'
+import ServiceNormandy from '@/components/ServiceNormandy'
+import ServiceMontStMichel from '@/components/ServiceMontStMichel'
+import ServiceLongDistance from '@/components/ServiceLongDistance'
+import ServiceTravelAgency from '@/components/ServiceTravelAgency'
+import ServiceFashionWeek from '@/components/ServiceFashionWeek'
+import ServiceEvents from '@/components/ServiceEvents'
 import { useKV } from '@github/spark/hooks'
 import { Booking } from '@/types/booking'
 import { useSharedRideNotifications } from '@/hooks/useSharedRideNotifications'
@@ -139,8 +147,16 @@ function App() {
       )}
       {view === 'service-cdg' && <ServiceCDG {...commonServiceProps} />}
       {view === 'service-orly' && <ServiceOrly {...commonServiceProps} />}
+      {view === 'service-beauvais' && <ServiceBeauvais {...commonServiceProps} />}
       {view === 'service-city-tour' && <ServiceCityTour {...commonServiceProps} />}
+      {view === 'service-events' && <ServiceEvents {...commonServiceProps} />}
       {view === 'service-versailles' && <ServiceVersailles {...commonServiceProps} />}
+      {view === 'service-wine' && <ServiceWineTour {...commonServiceProps} />}
+      {view === 'service-normandy' && <ServiceNormandy {...commonServiceProps} />}
+      {view === 'service-mont-saint-michel' && <ServiceMontStMichel {...commonServiceProps} />}
+      {view === 'service-long-distance' && <ServiceLongDistance {...commonServiceProps} />}
+      {view === 'service-travel-agency' && <ServiceTravelAgency {...commonServiceProps} />}
+      {view === 'service-fashion-week' && <ServiceFashionWeek {...commonServiceProps} />}
       {view === 'about' && (
         <About
           onNavigateToLogin={handleNavigateToLogin}
