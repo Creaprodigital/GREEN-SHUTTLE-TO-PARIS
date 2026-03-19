@@ -11,6 +11,9 @@ interface AboutProps {
   onNavigateToAbout?: () => void
   onNavigateToContact?: () => void
   onNavigateToService?: (serviceId: string) => void
+  onNavigateToLegalMentions?: () => void
+  onNavigateToPrivacy?: () => void
+  onNavigateToCGV?: () => void
   onLogout?: () => void
   userEmail?: string
   isAdmin?: boolean
@@ -24,6 +27,9 @@ export default function About({
   onNavigateToAbout,
   onNavigateToContact,
   onNavigateToService,
+  onNavigateToLegalMentions,
+  onNavigateToPrivacy,
+  onNavigateToCGV,
   onLogout,
   userEmail,
   isAdmin
@@ -148,7 +154,11 @@ export default function About({
 
       <FleetShowcase />
 
-      <Footer />
+      <Footer 
+        onNavigateToLegalMentions={onNavigateToLegalMentions}
+        onNavigateToPrivacy={onNavigateToPrivacy}
+        onNavigateToCGV={onNavigateToCGV}
+      />
     </div>
   )
 }

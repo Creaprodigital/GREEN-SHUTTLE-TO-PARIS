@@ -11,6 +11,10 @@ interface ServicePageProps {
   onNavigateToServices?: () => void
   onNavigateToAbout?: () => void
   onNavigateToContact?: () => void
+  onNavigateToService?: (serviceId: string) => void
+  onNavigateToLegalMentions?: () => void
+  onNavigateToPrivacy?: () => void
+  onNavigateToCGV?: () => void
   userEmail?: string
   isAdmin?: boolean
   onLogout?: () => void
@@ -32,6 +36,10 @@ export default function ServicePage({
   onNavigateToServices,
   onNavigateToAbout,
   onNavigateToContact,
+  onNavigateToService,
+  onNavigateToLegalMentions,
+  onNavigateToPrivacy,
+  onNavigateToCGV,
   userEmail,
   isAdmin,
   onLogout,
@@ -53,6 +61,7 @@ export default function ServicePage({
         onNavigateToServices={onNavigateToServices}
         onNavigateToAbout={onNavigateToAbout}
         onNavigateToContact={onNavigateToContact}
+        onNavigateToService={onNavigateToService}
         userEmail={userEmail}
         isAdmin={isAdmin}
         onLogout={onLogout}
@@ -158,7 +167,11 @@ export default function ServicePage({
         </div>
       </main>
 
-      <Footer />
+      <Footer 
+        onNavigateToLegalMentions={onNavigateToLegalMentions}
+        onNavigateToPrivacy={onNavigateToPrivacy}
+        onNavigateToCGV={onNavigateToCGV}
+      />
     </div>
   )
 }

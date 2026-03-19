@@ -16,6 +16,9 @@ interface ContactProps {
   onNavigateToAbout?: () => void
   onNavigateToContact?: () => void
   onNavigateToService?: (serviceId: string) => void
+  onNavigateToLegalMentions?: () => void
+  onNavigateToPrivacy?: () => void
+  onNavigateToCGV?: () => void
   onLogout?: () => void
   userEmail?: string
   isAdmin?: boolean
@@ -29,6 +32,9 @@ export default function Contact({
   onNavigateToAbout,
   onNavigateToContact,
   onNavigateToService,
+  onNavigateToLegalMentions,
+  onNavigateToPrivacy,
+  onNavigateToCGV,
   onLogout,
   userEmail,
   isAdmin
@@ -228,7 +234,11 @@ export default function Contact({
         </div>
       </main>
 
-      <Footer />
+      <Footer 
+        onNavigateToLegalMentions={onNavigateToLegalMentions}
+        onNavigateToPrivacy={onNavigateToPrivacy}
+        onNavigateToCGV={onNavigateToCGV}
+      />
     </div>
   )
 }

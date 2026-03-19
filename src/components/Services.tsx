@@ -20,6 +20,9 @@ interface ServicesProps {
   onNavigateToAbout?: () => void
   onNavigateToContact?: () => void
   onNavigateToService?: (serviceId: string) => void
+  onNavigateToLegalMentions?: () => void
+  onNavigateToPrivacy?: () => void
+  onNavigateToCGV?: () => void
   userEmail?: string
   isAdmin?: boolean
   onLogout?: () => void
@@ -33,6 +36,9 @@ export default function Services({
   onNavigateToAbout,
   onNavigateToContact,
   onNavigateToService,
+  onNavigateToLegalMentions,
+  onNavigateToPrivacy,
+  onNavigateToCGV,
   userEmail,
   isAdmin,
   onLogout
@@ -258,7 +264,11 @@ export default function Services({
         </div>
       </main>
 
-      <Footer />
+      <Footer 
+        onNavigateToLegalMentions={onNavigateToLegalMentions}
+        onNavigateToPrivacy={onNavigateToPrivacy}
+        onNavigateToCGV={onNavigateToCGV}
+      />
     </div>
   )
 }

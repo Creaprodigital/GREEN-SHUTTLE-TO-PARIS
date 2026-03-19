@@ -1,7 +1,17 @@
 import { Separator } from '@/components/ui/separator'
 import { Phone, Envelope, InstagramLogo } from '@phosphor-icons/react'
 
-export default function Footer() {
+interface FooterProps {
+  onNavigateToLegalMentions?: () => void
+  onNavigateToPrivacy?: () => void
+  onNavigateToCGV?: () => void
+}
+
+export default function Footer({ 
+  onNavigateToLegalMentions, 
+  onNavigateToPrivacy, 
+  onNavigateToCGV 
+}: FooterProps = {}) {
   return (
     <footer className="bg-primary border-t-2 border-accent text-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -75,9 +85,24 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground font-light">
           <p>&copy; 2010-2024 ELGOH. Tous droits réservés.</p>
           <div className="flex gap-6">
-            <span className="hover:text-accent transition-colors cursor-pointer">Mentions légales</span>
-            <span className="hover:text-accent transition-colors cursor-pointer">Confidentialité</span>
-            <span className="hover:text-accent transition-colors cursor-pointer">CGV</span>
+            <span 
+              onClick={onNavigateToLegalMentions}
+              className="hover:text-accent transition-colors cursor-pointer"
+            >
+              Mentions légales
+            </span>
+            <span 
+              onClick={onNavigateToPrivacy}
+              className="hover:text-accent transition-colors cursor-pointer"
+            >
+              Confidentialité
+            </span>
+            <span 
+              onClick={onNavigateToCGV}
+              className="hover:text-accent transition-colors cursor-pointer"
+            >
+              CGV
+            </span>
           </div>
         </div>
       </div>

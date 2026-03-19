@@ -12,9 +12,22 @@ interface HomeProps {
   onNavigateToAbout?: () => void
   onNavigateToContact?: () => void
   onNavigateToService?: (serviceId: string) => void
+  onNavigateToLegalMentions?: () => void
+  onNavigateToPrivacy?: () => void
+  onNavigateToCGV?: () => void
 }
 
-export default function Home({ onNavigateToLogin, onNavigateToClient, onNavigateToServices, onNavigateToAbout, onNavigateToContact, onNavigateToService }: HomeProps) {
+export default function Home({ 
+  onNavigateToLogin, 
+  onNavigateToClient, 
+  onNavigateToServices, 
+  onNavigateToAbout, 
+  onNavigateToContact, 
+  onNavigateToService,
+  onNavigateToLegalMentions,
+  onNavigateToPrivacy,
+  onNavigateToCGV
+}: HomeProps) {
   return (
     <>
       <Header 
@@ -36,7 +49,11 @@ export default function Home({ onNavigateToLogin, onNavigateToClient, onNavigate
         <ServiceCards />
       </div>
       <div id="contact">
-        <Footer />
+        <Footer 
+          onNavigateToLegalMentions={onNavigateToLegalMentions}
+          onNavigateToPrivacy={onNavigateToPrivacy}
+          onNavigateToCGV={onNavigateToCGV}
+        />
       </div>
     </>
   )

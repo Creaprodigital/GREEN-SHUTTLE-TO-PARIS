@@ -19,6 +19,9 @@ import ServiceLongDistance from '@/components/ServiceLongDistance'
 import ServiceTravelAgency from '@/components/ServiceTravelAgency'
 import ServiceFashionWeek from '@/components/ServiceFashionWeek'
 import ServiceEvents from '@/components/ServiceEvents'
+import LegalMentions from '@/components/LegalMentions'
+import Privacy from '@/components/Privacy'
+import CGV from '@/components/CGV'
 import { useKV } from '@github/spark/hooks'
 import { Booking } from '@/types/booking'
 import { useSharedRideNotifications } from '@/hooks/useSharedRideNotifications'
@@ -43,6 +46,9 @@ type View =
   | 'service-long-distance'
   | 'service-travel-agency'
   | 'service-fashion-week'
+  | 'legal-mentions'
+  | 'privacy'
+  | 'cgv'
 
 function App() {
   const [view, setView] = useState<View>('home')
@@ -111,7 +117,10 @@ function App() {
     onNavigateToService: handleNavigateToService,
     userEmail: currentUser?.email,
     isAdmin: currentUser?.isAdmin,
-    onLogout: handleLogout
+    onLogout: handleLogout,
+    onNavigateToLegalMentions: () => setView('legal-mentions'),
+    onNavigateToPrivacy: () => setView('privacy'),
+    onNavigateToCGV: () => setView('cgv')
   }
 
   return (
@@ -125,6 +134,9 @@ function App() {
           onNavigateToAbout={() => setView('about')}
           onNavigateToContact={() => setView('contact')}
           onNavigateToService={handleNavigateToService}
+          onNavigateToLegalMentions={() => setView('legal-mentions')}
+          onNavigateToPrivacy={() => setView('privacy')}
+          onNavigateToCGV={() => setView('cgv')}
         />
       )}
       {view === 'login' && (
@@ -147,6 +159,9 @@ function App() {
           onNavigateToAbout={() => setView('about')}
           onNavigateToContact={() => setView('contact')}
           onNavigateToService={handleNavigateToService}
+          onNavigateToLegalMentions={() => setView('legal-mentions')}
+          onNavigateToPrivacy={() => setView('privacy')}
+          onNavigateToCGV={() => setView('cgv')}
           userEmail={currentUser?.email}
           isAdmin={currentUser?.isAdmin}
           onLogout={handleLogout}
@@ -173,6 +188,9 @@ function App() {
           onNavigateToAbout={() => setView('about')}
           onNavigateToContact={() => setView('contact')}
           onNavigateToService={handleNavigateToService}
+          onNavigateToLegalMentions={() => setView('legal-mentions')}
+          onNavigateToPrivacy={() => setView('privacy')}
+          onNavigateToCGV={() => setView('cgv')}
           userEmail={currentUser?.email}
           isAdmin={currentUser?.isAdmin}
           onLogout={handleLogout}
@@ -187,6 +205,9 @@ function App() {
           onNavigateToAbout={() => setView('about')}
           onNavigateToContact={() => setView('contact')}
           onNavigateToService={handleNavigateToService}
+          onNavigateToLegalMentions={() => setView('legal-mentions')}
+          onNavigateToPrivacy={() => setView('privacy')}
+          onNavigateToCGV={() => setView('cgv')}
           userEmail={currentUser?.email}
           isAdmin={currentUser?.isAdmin}
           onLogout={handleLogout}
@@ -214,6 +235,57 @@ function App() {
           onNavigateToAbout={() => setView('about')}
           onNavigateToContact={() => setView('contact')}
           onNavigateToService={handleNavigateToService}
+        />
+      )}
+      {view === 'legal-mentions' && (
+        <LegalMentions
+          onNavigateToLogin={handleNavigateToLogin}
+          onNavigateToClient={handleNavigateToClient}
+          onNavigateToHome={() => setView('home')}
+          onNavigateToServices={() => setView('services')}
+          onNavigateToAbout={() => setView('about')}
+          onNavigateToContact={() => setView('contact')}
+          onNavigateToService={handleNavigateToService}
+          onNavigateToLegalMentions={() => setView('legal-mentions')}
+          onNavigateToPrivacy={() => setView('privacy')}
+          onNavigateToCGV={() => setView('cgv')}
+          userEmail={currentUser?.email}
+          isAdmin={currentUser?.isAdmin}
+          onLogout={handleLogout}
+        />
+      )}
+      {view === 'privacy' && (
+        <Privacy
+          onNavigateToLogin={handleNavigateToLogin}
+          onNavigateToClient={handleNavigateToClient}
+          onNavigateToHome={() => setView('home')}
+          onNavigateToServices={() => setView('services')}
+          onNavigateToAbout={() => setView('about')}
+          onNavigateToContact={() => setView('contact')}
+          onNavigateToService={handleNavigateToService}
+          onNavigateToLegalMentions={() => setView('legal-mentions')}
+          onNavigateToPrivacy={() => setView('privacy')}
+          onNavigateToCGV={() => setView('cgv')}
+          userEmail={currentUser?.email}
+          isAdmin={currentUser?.isAdmin}
+          onLogout={handleLogout}
+        />
+      )}
+      {view === 'cgv' && (
+        <CGV
+          onNavigateToLogin={handleNavigateToLogin}
+          onNavigateToClient={handleNavigateToClient}
+          onNavigateToHome={() => setView('home')}
+          onNavigateToServices={() => setView('services')}
+          onNavigateToAbout={() => setView('about')}
+          onNavigateToContact={() => setView('contact')}
+          onNavigateToService={handleNavigateToService}
+          onNavigateToLegalMentions={() => setView('legal-mentions')}
+          onNavigateToPrivacy={() => setView('privacy')}
+          onNavigateToCGV={() => setView('cgv')}
+          userEmail={currentUser?.email}
+          isAdmin={currentUser?.isAdmin}
+          onLogout={handleLogout}
         />
       )}
     </div>
