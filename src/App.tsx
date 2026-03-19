@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Toaster } from '@/components/ui/sonner'
 import Home from '@/components/Home'
 import Login from '@/components/Login'
@@ -55,6 +55,10 @@ function App() {
     userEmail: currentUser?.email,
     enabled: !!currentUser && !currentUser.isAdmin
   })
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [view])
 
   const handleNavigateToLogin = (isAdmin: boolean) => {
     if (isAdmin) {
