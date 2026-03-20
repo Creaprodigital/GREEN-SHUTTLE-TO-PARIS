@@ -36,18 +36,18 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
   }, [])
 
   const services = [
-    { id: 'cdg', label: 'Aéroport CDG', icon: '✈️' },
-    { id: 'orly', label: 'Aéroport Orly', icon: '✈️' },
-    { id: 'beauvais', label: 'Aéroport Beauvais', icon: '✈️' },
-    { id: 'city-tour', label: 'Visite de Paris', icon: '🗼' },
-    { id: 'versailles', label: 'Château de Versailles', icon: '👑' },
-    { id: 'wine', label: 'Route des Vins', icon: '🍷' },
-    { id: 'normandy', label: 'Normandie', icon: '🏰' },
-    { id: 'mont-saint-michel', label: 'Mont Saint-Michel', icon: '⛪' },
-    { id: 'long-distance', label: 'Longue Distance', icon: '🚗' },
-    { id: 'travel-agency', label: 'Agences de Voyage', icon: '🏢' },
-    { id: 'fashion-week', label: 'Fashion Week', icon: '👗' },
-    { id: 'events', label: 'Événements', icon: '🎭' }
+    { id: 'cdg', label: 'Aéroport CDG' },
+    { id: 'orly', label: 'Aéroport Orly' },
+    { id: 'beauvais', label: 'Aéroport Beauvais' },
+    { id: 'city-tour', label: 'Visite de Paris' },
+    { id: 'versailles', label: 'Château de Versailles' },
+    { id: 'wine', label: 'Route des Vins' },
+    { id: 'normandy', label: 'Normandie' },
+    { id: 'mont-saint-michel', label: 'Mont Saint-Michel' },
+    { id: 'long-distance', label: 'Longue Distance' },
+    { id: 'travel-agency', label: 'Agences de Voyage' },
+    { id: 'fashion-week', label: 'Fashion Week' },
+    { id: 'events', label: 'Événements' }
   ]
 
   const menuItems = [
@@ -152,9 +152,8 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                         <button
                           key={service.id}
                           onClick={() => handleServiceClick(service.id)}
-                          className="w-full px-4 py-2.5 text-left text-sm text-foreground/80 hover:bg-accent hover:text-accent-foreground transition-colors flex items-center gap-3"
+                          className="w-full px-4 py-2.5 text-left text-sm text-foreground/80 hover:bg-accent hover:text-accent-foreground transition-colors"
                         >
-                          <span className="text-lg">{service.icon}</span>
                           <span className="font-medium">{service.label}</span>
                         </button>
                       ))}
@@ -281,9 +280,8 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                               setMobileServicesOpen(false)
                               onNavigateToService?.(service.id)
                             }}
-                            className="flex items-center gap-2.5 w-full text-left text-foreground/80 hover:text-accent text-sm py-2 px-2 transition-colors hover:bg-accent/10 rounded"
+                            className="flex items-center w-full text-left text-foreground/80 hover:text-accent text-sm py-2 px-2 transition-colors hover:bg-accent/10 rounded"
                           >
-                            <span className="text-base">{service.icon}</span>
                             <span className="text-sm">{service.label}</span>
                           </button>
                         ))}
