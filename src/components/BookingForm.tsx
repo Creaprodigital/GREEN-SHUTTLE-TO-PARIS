@@ -1033,22 +1033,38 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                   )}
 
                   {serviceType === 'hourly' && (
-                    <div className="mb-3">
-                      <Label htmlFor="hourlyDuration" className="text-xs font-medium uppercase tracking-wide">Nombre d'Heures</Label>
-                      <div className="relative mt-1.5">
-                        <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-                        <Select value={hourlyDuration} onValueChange={setHourlyDuration}>
-                          <SelectTrigger id="hourlyDuration" className="pl-10 h-10 bg-secondary border-border text-sm">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Array.from({ length: 23 }, (_, i) => i + 2).map((num) => (
-                              <SelectItem key={num} value={num.toString()}>
-                                {num} {num === 1 ? 'Heure' : 'Heures'}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                    <div className="mb-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="pickup-hourly" className="text-xs font-medium uppercase tracking-wide">Lieu de Départ</Label>
+                        <PlacesAutocomplete
+                          id="pickup-hourly"
+                          value={pickup}
+                          onChange={(value, coords) => {
+                            setPickup(value)
+                            setPickupCoords(coords || null)
+                          }}
+                          placeholder="Adresse de départ"
+                          className="h-10 bg-secondary border-border text-sm"
+                          icon={<MapPin size={18} />}
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="hourlyDuration" className="text-xs font-medium uppercase tracking-wide">Nombre d'Heures</Label>
+                        <div className="relative">
+                          <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                          <Select value={hourlyDuration} onValueChange={setHourlyDuration}>
+                            <SelectTrigger id="hourlyDuration" className="pl-10 h-10 bg-secondary border-border text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Array.from({ length: 23 }, (_, i) => i + 2).map((num) => (
+                                <SelectItem key={num} value={num.toString()}>
+                                  {num} {num === 1 ? 'Heure' : 'Heures'}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -1104,20 +1120,22 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                   )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="pickup" className="text-xs font-medium uppercase tracking-wide">Lieu de Départ</Label>
-                      <PlacesAutocomplete
-                        id="pickup"
-                        value={pickup}
-                        onChange={(value, coords) => {
-                          setPickup(value)
-                          setPickupCoords(coords || null)
-                        }}
-                        placeholder="Adresse de départ"
-                        className="h-10 bg-secondary border-border text-sm"
-                        icon={<MapPin size={18} />}
-                      />
-                    </div>
+                    {serviceType !== 'hourly' && (
+                      <div className="space-y-1.5">
+                        <Label htmlFor="pickup" className="text-xs font-medium uppercase tracking-wide">Lieu de Départ</Label>
+                        <PlacesAutocomplete
+                          id="pickup"
+                          value={pickup}
+                          onChange={(value, coords) => {
+                            setPickup(value)
+                            setPickupCoords(coords || null)
+                          }}
+                          placeholder="Adresse de départ"
+                          className="h-10 bg-secondary border-border text-sm"
+                          icon={<MapPin size={18} />}
+                        />
+                      </div>
+                    )}
 
                     {(serviceType === 'transfer' || serviceType === 'shared') && (
                       <div className="space-y-1.5">
