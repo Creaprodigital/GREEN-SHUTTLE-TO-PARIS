@@ -1184,7 +1184,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                       </div>
                     </div>
 
-                    {serviceType === 'transfer' && (
+                    {(serviceType === 'transfer' || serviceType === 'shared' || serviceType === 'hourly') && (
                       <div className="space-y-1.5">
                         <Label htmlFor="luggage" className="text-xs font-medium uppercase tracking-wide">Nombre de Valises</Label>
                         <div className="relative">
