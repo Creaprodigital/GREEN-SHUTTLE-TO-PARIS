@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { Toaster } from '@/components/ui/sonner'
 import Home from '@/components/Home'
 import Login from '@/components/Login'
@@ -27,33 +28,9 @@ import { useKV } from '@github/spark/hooks'
 import { Booking } from '@/types/booking'
 import { useSharedRideNotifications } from '@/hooks/useSharedRideNotifications'
 
-type View = 
-  | 'home' 
-  | 'login' 
-  | 'client' 
-  | 'admin' 
-  | 'services' 
-  | 'about' 
-  | 'contact'
-  | 'service-cdg'
-  | 'service-orly'
-  | 'service-beauvais'
-  | 'service-city-tour'
-  | 'service-events'
-  | 'service-versailles'
-  | 'service-wine'
-  | 'service-normandy'
-  | 'service-mont-saint-michel'
-  | 'service-long-distance'
-  | 'service-travel-agency'
-  | 'service-fashion-week'
-  | 'legal-mentions'
-  | 'privacy'
-  | 'cgv'
-  | '404'
-
-function App() {
-  const [view, setView] = useState<View>('home')
+function AppContent() {
+  const navigate = useNavigate()
+  const location = useLocation()
   const [currentUser, setCurrentUser] = useState<{ email: string; isAdmin: boolean } | null>(null)
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [])
   const [isAdminMode, setIsAdminMode] = useState(false)
@@ -66,31 +43,31 @@ function App() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [view])
+  }, [location.pathname])
 
   const handleNavigateToLogin = (isAdmin: boolean) => {
     if (isAdmin) {
       setCurrentUser({ email: 'admin@admin.fr', isAdmin: true })
-      setView('admin')
+      navigate('/admin')
     } else {
       setIsAdminMode(isAdmin)
-      setView('login')
+      navigate('/login')
     }
   }
 
   const handleNavigateToClient = () => {
     setCurrentUser({ email: 'creaprodigital@gmail.com', isAdmin: false })
-    setView('client')
+    navigate('/client')
   }
 
   const handleLogin = (email: string, isAdmin: boolean) => {
     setCurrentUser({ email, isAdmin })
-    setView(isAdmin ? 'admin' : 'client')
+    navigate(isAdmin ? '/admin' : '/client')
   }
 
   const handleLogout = () => {
     setCurrentUser(null)
-    setView('home')
+    navigate('/')
   }
 
   const handleUpdateBooking = (id: string, updates: Partial<Booking>) => {
@@ -106,198 +83,138 @@ function App() {
   }
 
   const handleNavigateToService = (serviceId: string) => {
-    setView(`service-${serviceId}` as View)
+    navigate(`/services/${serviceId}`)
   }
 
   const commonServiceProps = {
     onNavigateToLogin: handleNavigateToLogin,
     onNavigateToClient: handleNavigateToClient,
-    onNavigateToHome: () => setView('home'),
-    onNavigateToServices: () => setView('services'),
-    onNavigateToAbout: () => setView('about'),
-    onNavigateToContact: () => setView('contact'),
+    onNavigateToHome: () => navigate('/'),
+    onNavigateToServices: () => navigate('/services'),
+    onNavigateToAbout: () => navigate('/about'),
+    onNavigateToContact: () => navigate('/contact'),
     onNavigateToService: handleNavigateToService,
     userEmail: currentUser?.email,
     isAdmin: currentUser?.isAdmin,
     onLogout: handleLogout,
-    onNavigateToLegalMentions: () => setView('legal-mentions'),
-    onNavigateToPrivacy: () => setView('privacy'),
-    onNavigateToCGV: () => setView('cgv')
+    onNavigateToLegalMentions: () => navigate('/legal-mentions'),
+    onNavigateToPrivacy: () => navigate('/privacy'),
+    onNavigateToCGV: () => navigate('/cgv')
   }
 
   return (
     <div className="min-h-screen bg-background">
       <Toaster />
-      {view === 'home' && (
-        <Home 
-          onNavigateToLogin={handleNavigateToLogin}
-          onNavigateToClient={handleNavigateToClient}
-          onNavigateToServices={() => setView('services')}
-          onNavigateToAbout={() => setView('about')}
-          onNavigateToContact={() => setView('contact')}
-          onNavigateToService={handleNavigateToService}
-          onNavigateToLegalMentions={() => setView('legal-mentions')}
-          onNavigateToPrivacy={() => setView('privacy')}
-          onNavigateToCGV={() => setView('cgv')}
-        />
-      )}
-      {view === 'login' && (
-        <Login 
-          onLogin={handleLogin} 
-          onNavigateToHome={() => setView('home')}
-          onNavigateToServices={() => setView('services')}
-          onNavigateToAbout={() => setView('about')}
-          onNavigateToContact={() => setView('contact')}
-          onNavigateToService={handleNavigateToService}
-          isAdminMode={isAdminMode} 
-        />
-      )}
-      {view === 'services' && (
-        <Services
-          onNavigateToLogin={handleNavigateToLogin}
-          onNavigateToClient={handleNavigateToClient}
-          onNavigateToHome={() => setView('home')}
-          onNavigateToServices={() => setView('services')}
-          onNavigateToAbout={() => setView('about')}
-          onNavigateToContact={() => setView('contact')}
-          onNavigateToService={handleNavigateToService}
-          onNavigateToLegalMentions={() => setView('legal-mentions')}
-          onNavigateToPrivacy={() => setView('privacy')}
-          onNavigateToCGV={() => setView('cgv')}
-          userEmail={currentUser?.email}
-          isAdmin={currentUser?.isAdmin}
-          onLogout={handleLogout}
-        />
-      )}
-      {view === 'service-cdg' && <ServiceCDG {...commonServiceProps} />}
-      {view === 'service-orly' && <ServiceOrly {...commonServiceProps} />}
-      {view === 'service-beauvais' && <ServiceBeauvais {...commonServiceProps} />}
-      {view === 'service-city-tour' && <ServiceCityTour {...commonServiceProps} />}
-      {view === 'service-events' && <ServiceEvents {...commonServiceProps} />}
-      {view === 'service-versailles' && <ServiceVersailles {...commonServiceProps} />}
-      {view === 'service-wine' && <ServiceWineTour {...commonServiceProps} />}
-      {view === 'service-normandy' && <ServiceNormandy {...commonServiceProps} />}
-      {view === 'service-mont-saint-michel' && <ServiceMontStMichel {...commonServiceProps} />}
-      {view === 'service-long-distance' && <ServiceLongDistance {...commonServiceProps} />}
-      {view === 'service-travel-agency' && <ServiceTravelAgency {...commonServiceProps} />}
-      {view === 'service-fashion-week' && <ServiceFashionWeek {...commonServiceProps} />}
-      {view === 'about' && (
-        <About
-          onNavigateToLogin={handleNavigateToLogin}
-          onNavigateToClient={handleNavigateToClient}
-          onNavigateToHome={() => setView('home')}
-          onNavigateToServices={() => setView('services')}
-          onNavigateToAbout={() => setView('about')}
-          onNavigateToContact={() => setView('contact')}
-          onNavigateToService={handleNavigateToService}
-          onNavigateToLegalMentions={() => setView('legal-mentions')}
-          onNavigateToPrivacy={() => setView('privacy')}
-          onNavigateToCGV={() => setView('cgv')}
-          userEmail={currentUser?.email}
-          isAdmin={currentUser?.isAdmin}
-          onLogout={handleLogout}
-        />
-      )}
-      {view === 'contact' && (
-        <Contact
-          onNavigateToLogin={handleNavigateToLogin}
-          onNavigateToClient={handleNavigateToClient}
-          onNavigateToHome={() => setView('home')}
-          onNavigateToServices={() => setView('services')}
-          onNavigateToAbout={() => setView('about')}
-          onNavigateToContact={() => setView('contact')}
-          onNavigateToService={handleNavigateToService}
-          onNavigateToLegalMentions={() => setView('legal-mentions')}
-          onNavigateToPrivacy={() => setView('privacy')}
-          onNavigateToCGV={() => setView('cgv')}
-          userEmail={currentUser?.email}
-          isAdmin={currentUser?.isAdmin}
-          onLogout={handleLogout}
-        />
-      )}
-      {view === 'client' && currentUser && (
-        <ClientDashboard
-          userEmail={currentUser.email}
-          onLogout={handleLogout}
-          onNavigateToHome={() => setView('home')}
-          onNavigateToServices={() => setView('services')}
-          onNavigateToAbout={() => setView('about')}
-          onNavigateToContact={() => setView('contact')}
-          onNavigateToService={handleNavigateToService}
-        />
-      )}
-      {view === 'admin' && currentUser && (
-        <AdminDashboard
-          userEmail={currentUser.email}
-          onLogout={handleLogout}
-          onUpdateBooking={handleUpdateBooking}
-          onDeleteBooking={handleDeleteBooking}
-          onNavigateToHome={() => setView('home')}
-          onNavigateToServices={() => setView('services')}
-          onNavigateToAbout={() => setView('about')}
-          onNavigateToContact={() => setView('contact')}
-          onNavigateToService={handleNavigateToService}
-        />
-      )}
-      {view === 'legal-mentions' && (
-        <LegalMentions
-          onNavigateToLogin={handleNavigateToLogin}
-          onNavigateToClient={handleNavigateToClient}
-          onNavigateToHome={() => setView('home')}
-          onNavigateToServices={() => setView('services')}
-          onNavigateToAbout={() => setView('about')}
-          onNavigateToContact={() => setView('contact')}
-          onNavigateToService={handleNavigateToService}
-          onNavigateToLegalMentions={() => setView('legal-mentions')}
-          onNavigateToPrivacy={() => setView('privacy')}
-          onNavigateToCGV={() => setView('cgv')}
-          userEmail={currentUser?.email}
-          isAdmin={currentUser?.isAdmin}
-          onLogout={handleLogout}
-        />
-      )}
-      {view === 'privacy' && (
-        <Privacy
-          onNavigateToLogin={handleNavigateToLogin}
-          onNavigateToClient={handleNavigateToClient}
-          onNavigateToHome={() => setView('home')}
-          onNavigateToServices={() => setView('services')}
-          onNavigateToAbout={() => setView('about')}
-          onNavigateToContact={() => setView('contact')}
-          onNavigateToService={handleNavigateToService}
-          onNavigateToLegalMentions={() => setView('legal-mentions')}
-          onNavigateToPrivacy={() => setView('privacy')}
-          onNavigateToCGV={() => setView('cgv')}
-          userEmail={currentUser?.email}
-          isAdmin={currentUser?.isAdmin}
-          onLogout={handleLogout}
-        />
-      )}
-      {view === 'cgv' && (
-        <CGV
-          onNavigateToLogin={handleNavigateToLogin}
-          onNavigateToClient={handleNavigateToClient}
-          onNavigateToHome={() => setView('home')}
-          onNavigateToServices={() => setView('services')}
-          onNavigateToAbout={() => setView('about')}
-          onNavigateToContact={() => setView('contact')}
-          onNavigateToService={handleNavigateToService}
-          onNavigateToLegalMentions={() => setView('legal-mentions')}
-          onNavigateToPrivacy={() => setView('privacy')}
-          onNavigateToCGV={() => setView('cgv')}
-          userEmail={currentUser?.email}
-          isAdmin={currentUser?.isAdmin}
-          onLogout={handleLogout}
-        />
-      )}
-      {view === '404' && (
-        <NotFound
-          onNavigateToHome={() => setView('home')}
-          onNavigateToServices={() => setView('services')}
-          onNavigateToContact={() => setView('contact')}
-        />
-      )}
+      <Routes>
+        <Route path="/" element={
+          <Home 
+            onNavigateToLogin={handleNavigateToLogin}
+            onNavigateToClient={handleNavigateToClient}
+            onNavigateToServices={() => navigate('/services')}
+            onNavigateToAbout={() => navigate('/about')}
+            onNavigateToContact={() => navigate('/contact')}
+            onNavigateToService={handleNavigateToService}
+            onNavigateToLegalMentions={() => navigate('/legal-mentions')}
+            onNavigateToPrivacy={() => navigate('/privacy')}
+            onNavigateToCGV={() => navigate('/cgv')}
+          />
+        } />
+        <Route path="/login" element={
+          <Login 
+            onLogin={handleLogin} 
+            onNavigateToHome={() => navigate('/')}
+            onNavigateToServices={() => navigate('/services')}
+            onNavigateToAbout={() => navigate('/about')}
+            onNavigateToContact={() => navigate('/contact')}
+            onNavigateToService={handleNavigateToService}
+            isAdminMode={isAdminMode} 
+          />
+        } />
+        <Route path="/services" element={
+          <Services {...commonServiceProps} />
+        } />
+        <Route path="/services/cdg" element={<ServiceCDG {...commonServiceProps} />} />
+        <Route path="/services/orly" element={<ServiceOrly {...commonServiceProps} />} />
+        <Route path="/services/beauvais" element={<ServiceBeauvais {...commonServiceProps} />} />
+        <Route path="/services/city-tour" element={<ServiceCityTour {...commonServiceProps} />} />
+        <Route path="/services/events" element={<ServiceEvents {...commonServiceProps} />} />
+        <Route path="/services/versailles" element={<ServiceVersailles {...commonServiceProps} />} />
+        <Route path="/services/wine" element={<ServiceWineTour {...commonServiceProps} />} />
+        <Route path="/services/normandy" element={<ServiceNormandy {...commonServiceProps} />} />
+        <Route path="/services/mont-saint-michel" element={<ServiceMontStMichel {...commonServiceProps} />} />
+        <Route path="/services/long-distance" element={<ServiceLongDistance {...commonServiceProps} />} />
+        <Route path="/services/travel-agency" element={<ServiceTravelAgency {...commonServiceProps} />} />
+        <Route path="/services/fashion-week" element={<ServiceFashionWeek {...commonServiceProps} />} />
+        <Route path="/about" element={<About {...commonServiceProps} />} />
+        <Route path="/contact" element={<Contact {...commonServiceProps} />} />
+        <Route path="/client" element={
+          currentUser ? (
+            <ClientDashboard
+              userEmail={currentUser.email}
+              onLogout={handleLogout}
+              onNavigateToHome={() => navigate('/')}
+              onNavigateToServices={() => navigate('/services')}
+              onNavigateToAbout={() => navigate('/about')}
+              onNavigateToContact={() => navigate('/contact')}
+              onNavigateToService={handleNavigateToService}
+            />
+          ) : (
+            <Login 
+              onLogin={handleLogin} 
+              onNavigateToHome={() => navigate('/')}
+              onNavigateToServices={() => navigate('/services')}
+              onNavigateToAbout={() => navigate('/about')}
+              onNavigateToContact={() => navigate('/contact')}
+              onNavigateToService={handleNavigateToService}
+              isAdminMode={false} 
+            />
+          )
+        } />
+        <Route path="/admin" element={
+          currentUser?.isAdmin ? (
+            <AdminDashboard
+              userEmail={currentUser.email}
+              onLogout={handleLogout}
+              onUpdateBooking={handleUpdateBooking}
+              onDeleteBooking={handleDeleteBooking}
+              onNavigateToHome={() => navigate('/')}
+              onNavigateToServices={() => navigate('/services')}
+              onNavigateToAbout={() => navigate('/about')}
+              onNavigateToContact={() => navigate('/contact')}
+              onNavigateToService={handleNavigateToService}
+            />
+          ) : (
+            <Login 
+              onLogin={handleLogin} 
+              onNavigateToHome={() => navigate('/')}
+              onNavigateToServices={() => navigate('/services')}
+              onNavigateToAbout={() => navigate('/about')}
+              onNavigateToContact={() => navigate('/contact')}
+              onNavigateToService={handleNavigateToService}
+              isAdminMode={true} 
+            />
+          )
+        } />
+        <Route path="/legal-mentions" element={<LegalMentions {...commonServiceProps} />} />
+        <Route path="/privacy" element={<Privacy {...commonServiceProps} />} />
+        <Route path="/cgv" element={<CGV {...commonServiceProps} />} />
+        <Route path="*" element={
+          <NotFound
+            onNavigateToHome={() => navigate('/')}
+            onNavigateToServices={() => navigate('/services')}
+            onNavigateToContact={() => navigate('/contact')}
+          />
+        } />
+      </Routes>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   )
 }
 
