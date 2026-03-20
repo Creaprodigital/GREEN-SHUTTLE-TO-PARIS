@@ -909,30 +909,30 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
       </Dialog>
 
       <Card className="shadow-2xl border-2 border-accent/20 bg-card">
-        <CardHeader className="pb-4 border-b border-border px-4 sm:px-6">
-          <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-4 overflow-x-auto">
+        <CardHeader className="pb-2 sm:pb-3 border-b border-border px-3 sm:px-4 pt-3 sm:pt-4">
+          <div className="flex items-center justify-center gap-1 sm:gap-1.5 mb-2 sm:mb-3 overflow-x-auto">
             {[1, 2, 3, 4].map((step) => (
               <div key={step} className="flex items-center flex-shrink-0">
-                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold text-xs sm:text-sm ${
+                <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-semibold text-xs ${
                   step === currentStep 
                     ? 'bg-accent text-accent-foreground' 
                     : step < currentStep 
                     ? 'bg-accent/50 text-accent-foreground' 
                     : 'bg-secondary text-muted-foreground'
                 }`}>
-                  {step < currentStep ? <Check size={16} weight="bold" className="sm:w-5 sm:h-5" /> : step}
+                  {step < currentStep ? <Check size={14} weight="bold" className="sm:w-4 sm:h-4" /> : step}
                 </div>
                 {step < 4 && (
-                  <div className={`w-8 sm:w-12 h-1 ${step < currentStep ? 'bg-accent/50' : 'bg-secondary'}`} />
+                  <div className={`w-6 sm:w-8 h-0.5 ${step < currentStep ? 'bg-accent/50' : 'bg-secondary'}`} />
                 )}
               </div>
             ))}
           </div>
-          <CardTitle className="text-lg sm:text-2xl font-semibold text-center uppercase tracking-widest" style={{ fontFamily: 'var(--font-body)' }}>
+          <CardTitle className="text-sm sm:text-lg font-semibold text-center uppercase tracking-wide" style={{ fontFamily: 'var(--font-body)' }}>
             {getStepTitle()}
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-6 px-4 sm:px-6">
+        <CardContent className="pt-3 sm:pt-4 px-3 sm:px-4 pb-3 sm:pb-4">
           <form onSubmit={handleSubmit}>
             <AnimatePresence mode="wait">
               {currentStep === 1 && (
@@ -942,40 +942,40 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="space-y-5"
+                  className="space-y-3"
                 >
-                  <div className="w-full mb-6">
+                  <div className="w-full mb-3">
                     <Tabs value={serviceType} onValueChange={(v) => setServiceType(v as 'transfer' | 'hourly' | 'tour' | 'shared')} className="w-full">
                       <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 bg-secondary gap-1 h-auto p-1">
-                        <TabsTrigger value="transfer" className="text-xs sm:text-sm px-2 sm:px-4 py-2.5">Transfert</TabsTrigger>
-                        <TabsTrigger value="shared" className="text-xs sm:text-sm px-2 sm:px-4 py-2.5">Partagé</TabsTrigger>
-                        <TabsTrigger value="hourly" className="text-xs sm:text-sm px-2 sm:px-4 py-2.5">Mise à Dispo</TabsTrigger>
-                        <TabsTrigger value="tour" className="text-xs sm:text-sm px-2 sm:px-4 py-2.5">Circuit</TabsTrigger>
+                        <TabsTrigger value="transfer" className="text-xs px-1.5 sm:px-2 py-1.5 sm:py-2">Transfert</TabsTrigger>
+                        <TabsTrigger value="shared" className="text-xs px-1.5 sm:px-2 py-1.5 sm:py-2">Partagé</TabsTrigger>
+                        <TabsTrigger value="hourly" className="text-xs px-1.5 sm:px-2 py-1.5 sm:py-2">Mise à Dispo</TabsTrigger>
+                        <TabsTrigger value="tour" className="text-xs px-1.5 sm:px-2 py-1.5 sm:py-2">Circuit</TabsTrigger>
                       </TabsList>
                     </Tabs>
                   </div>
 
                   {serviceType === 'shared' && (
-                    <div className="mb-6 bg-accent/10 border-2 border-accent/30 rounded-lg p-5">
-                      <h4 className="text-base font-semibold uppercase tracking-wide mb-3 text-accent flex items-center gap-2">
-                        <Users size={20} weight="fill" />
+                    <div className="mb-3 bg-accent/10 border border-accent/30 rounded-lg p-3">
+                      <h4 className="text-xs sm:text-sm font-semibold uppercase tracking-wide mb-2 text-accent flex items-center gap-1.5">
+                        <Users size={16} weight="fill" />
                         Transfert Partagé - Comment ça marche ?
                       </h4>
-                      <div className="space-y-3 text-sm text-foreground/80">
-                        <p className="flex items-start gap-2">
-                          <span className="flex-shrink-0 w-6 h-6 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-xs">1</span>
+                      <div className="space-y-1.5 text-xs text-foreground/80">
+                        <p className="flex items-start gap-1.5">
+                          <span className="flex-shrink-0 w-5 h-5 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-[10px]">1</span>
                           <span>Vous réservez un trajet (ex : aéroport → centre-ville)</span>
                         </p>
-                        <p className="flex items-start gap-2">
-                          <span className="flex-shrink-0 w-6 h-6 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-xs">2</span>
+                        <p className="flex items-start gap-1.5">
+                          <span className="flex-shrink-0 w-5 h-5 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-[10px]">2</span>
                           <span>L'application cherche d'autres passagers avec le même trajet ou une direction similaire</span>
                         </p>
-                        <p className="flex items-start gap-2">
-                          <span className="flex-shrink-0 w-6 h-6 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-xs">3</span>
+                        <p className="flex items-start gap-1.5">
+                          <span className="flex-shrink-0 w-5 h-5 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-[10px]">3</span>
                           <span>Les passagers montent dans le même taxi ou VTC</span>
                         </p>
-                        <p className="flex items-start gap-2">
-                          <span className="flex-shrink-0 w-6 h-6 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-xs">4</span>
+                        <p className="flex items-start gap-1.5">
+                          <span className="flex-shrink-0 w-5 h-5 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-[10px]">4</span>
                           <span className="font-semibold text-accent">Le prix est divisé entre les passagers - Économisez jusqu'à 70% !</span>
                         </p>
                       </div>
@@ -983,10 +983,10 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                   )}
 
                   {serviceType === 'transfer' && (
-                    <div className="mb-4">
-                      <Label className="text-sm font-medium uppercase tracking-wide mb-3 block">Type de Transfert</Label>
+                    <div className="mb-3">
+                      <Label className="text-xs font-medium uppercase tracking-wide mb-2 block">Type de Transfert</Label>
                       <RadioGroup value={transferType} onValueChange={(v) => setTransferType(v as 'oneway' | 'roundtrip')}>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-2">
                           <div>
                             <RadioGroupItem
                               value="oneway"
@@ -995,7 +995,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                             />
                             <Label
                               htmlFor="oneway"
-                              className="flex items-center justify-center rounded-lg border-2 border-border bg-secondary p-3 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all font-medium uppercase tracking-wide text-sm"
+                              className="flex items-center justify-center rounded-lg border-2 border-border bg-secondary p-2 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all font-medium uppercase tracking-wide text-xs"
                             >
                               Aller Simple
                             </Label>
@@ -1008,7 +1008,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                             />
                             <Label
                               htmlFor="roundtrip"
-                              className="flex flex-col items-center justify-center rounded-lg border-2 border-border bg-secondary p-3 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all font-medium uppercase tracking-wide text-sm relative"
+                              className="flex flex-col items-center justify-center rounded-lg border-2 border-border bg-secondary p-2 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all font-medium uppercase tracking-wide text-xs relative"
                             >
                               Aller-Retour
                               {roundTripDiscount?.enabled && roundTripDiscount.value > 0 && (
@@ -1033,12 +1033,12 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                   )}
 
                   {serviceType === 'hourly' && (
-                    <div className="mb-4">
-                      <Label htmlFor="hourlyDuration" className="text-sm font-medium uppercase tracking-wide">Nombre d'Heures</Label>
-                      <div className="relative mt-2">
-                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                    <div className="mb-3">
+                      <Label htmlFor="hourlyDuration" className="text-xs font-medium uppercase tracking-wide">Nombre d'Heures</Label>
+                      <div className="relative mt-1.5">
+                        <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <Select value={hourlyDuration} onValueChange={setHourlyDuration}>
-                          <SelectTrigger id="hourlyDuration" className="pl-11 h-12 bg-secondary border-border">
+                          <SelectTrigger id="hourlyDuration" className="pl-10 h-10 bg-secondary border-border text-sm">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -1054,12 +1054,12 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                   )}
 
                   {serviceType === 'tour' && (
-                    <div className="mb-4">
-                      <Label htmlFor="circuit-select" className="text-sm font-medium uppercase tracking-wide">Choisissez votre Circuit</Label>
-                      <div className="relative mt-2">
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} weight="fill" />
+                    <div className="mb-3">
+                      <Label htmlFor="circuit-select" className="text-xs font-medium uppercase tracking-wide">Choisissez votre Circuit</Label>
+                      <div className="relative mt-1.5">
+                        <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} weight="fill" />
                         <Select value={selectedCircuitId} onValueChange={setSelectedCircuitId}>
-                          <SelectTrigger id="circuit-select" className="pl-11 h-12 bg-secondary border-border">
+                          <SelectTrigger id="circuit-select" className="pl-10 h-10 bg-secondary border-border text-sm">
                             <SelectValue placeholder="Sélectionnez un circuit..." />
                           </SelectTrigger>
                           <SelectContent>
@@ -1103,9 +1103,9 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <Label htmlFor="pickup" className="text-sm font-medium uppercase tracking-wide">Lieu de Départ</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="pickup" className="text-xs font-medium uppercase tracking-wide">Lieu de Départ</Label>
                       <PlacesAutocomplete
                         id="pickup"
                         value={pickup}
@@ -1114,14 +1114,14 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                           setPickupCoords(coords || null)
                         }}
                         placeholder="Adresse de départ"
-                        className="h-12 bg-secondary border-border"
-                        icon={<MapPin size={20} />}
+                        className="h-10 bg-secondary border-border text-sm"
+                        icon={<MapPin size={18} />}
                       />
                     </div>
 
                     {(serviceType === 'transfer' || serviceType === 'shared') && (
-                      <div className="space-y-2">
-                        <Label htmlFor="destination" className="text-sm font-medium uppercase tracking-wide">Destination</Label>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="destination" className="text-xs font-medium uppercase tracking-wide">Destination</Label>
                         <PlacesAutocomplete
                           id="destination"
                           value={destination}
@@ -1130,47 +1130,47 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                             setDestinationCoords(coords || null)
                           }}
                           placeholder="Adresse d'arrivée"
-                          className="h-12 bg-secondary border-border"
-                          icon={<MapPin size={20} weight="fill" />}
+                          className="h-10 bg-secondary border-border text-sm"
+                          icon={<MapPin size={18} weight="fill" />}
                         />
                       </div>
                     )}
 
-                    <div className="space-y-2">
-                      <Label htmlFor="date" className="text-sm font-medium uppercase tracking-wide">Date de Départ</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="date" className="text-xs font-medium uppercase tracking-wide">Date de Départ</Label>
                       <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                        <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <Input
                           id="date"
                           type="date"
                           value={date}
                           onChange={(e) => setDate(e.target.value)}
                           min={new Date().toISOString().split('T')[0]}
-                          className="pl-11 h-12 bg-secondary border-border"
+                          className="pl-10 h-10 bg-secondary border-border text-sm"
                         />
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="time" className="text-sm font-medium uppercase tracking-wide">Heure de Départ</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="time" className="text-xs font-medium uppercase tracking-wide">Heure de Départ</Label>
                       <div className="relative">
-                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                        <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <Input
                           id="time"
                           type="time"
                           value={time}
                           onChange={(e) => setTime(e.target.value)}
-                          className="pl-11 h-12 bg-secondary border-border"
+                          className="pl-10 h-10 bg-secondary border-border text-sm"
                         />
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="passengers" className="text-sm font-medium uppercase tracking-wide">Passagers</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="passengers" className="text-xs font-medium uppercase tracking-wide">Passagers</Label>
                       <div className="relative">
-                        <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                        <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <Select value={passengers} onValueChange={setPassengers}>
-                          <SelectTrigger id="passengers" className="pl-11 h-12 bg-secondary border-border">
+                          <SelectTrigger id="passengers" className="pl-10 h-10 bg-secondary border-border text-sm">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -1185,12 +1185,12 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                     </div>
 
                     {serviceType === 'transfer' && (
-                      <div className="space-y-2">
-                        <Label htmlFor="luggage" className="text-sm font-medium uppercase tracking-wide">Nombre de Valises</Label>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="luggage" className="text-xs font-medium uppercase tracking-wide">Nombre de Valises</Label>
                         <div className="relative">
-                          <Suitcase className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                          <Suitcase className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                           <Select value={luggage} onValueChange={setLuggage}>
-                            <SelectTrigger id="luggage" className="pl-11 h-12 bg-secondary border-border">
+                            <SelectTrigger id="luggage" className="pl-10 h-10 bg-secondary border-border text-sm">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -1317,34 +1317,34 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                   )}
 
                   {serviceType === 'transfer' && transferType === 'roundtrip' && (
-                    <div className="border-t border-border pt-5 mt-2">
-                      <h4 className="text-sm font-medium uppercase tracking-wide mb-4 text-accent">Informations de Retour</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div className="space-y-2">
-                          <Label htmlFor="returnDate" className="text-sm font-medium uppercase tracking-wide">Date de Retour</Label>
+                    <div className="border-t border-border pt-3 mt-2">
+                      <h4 className="text-xs font-medium uppercase tracking-wide mb-2 text-accent">Informations de Retour</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <Label htmlFor="returnDate" className="text-xs font-medium uppercase tracking-wide">Date de Retour</Label>
                           <div className="relative">
-                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                            <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                             <Input
                               id="returnDate"
                               type="date"
                               value={returnDate}
                               onChange={(e) => setReturnDate(e.target.value)}
                               min={date || new Date().toISOString().split('T')[0]}
-                              className="pl-11 h-12 bg-secondary border-border"
+                              className="pl-10 h-10 bg-secondary border-border text-sm"
                             />
                           </div>
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="returnTime" className="text-sm font-medium uppercase tracking-wide">Heure de Retour</Label>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="returnTime" className="text-xs font-medium uppercase tracking-wide">Heure de Retour</Label>
                           <div className="relative">
-                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                            <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                             <Input
                               id="returnTime"
                               type="time"
                               value={returnTime}
                               onChange={(e) => setReturnTime(e.target.value)}
-                              className="pl-11 h-12 bg-secondary border-border"
+                              className="pl-10 h-10 bg-secondary border-border text-sm"
                             />
                           </div>
                         </div>
@@ -1352,10 +1352,10 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                     </div>
                   )}
 
-                  <div className="flex justify-end pt-4">
-                    <Button type="button" onClick={handleNext} className="w-full sm:w-auto h-12 px-6 sm:px-8 text-sm sm:text-base bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-widest">
+                  <div className="flex justify-end pt-3">
+                    <Button type="button" onClick={handleNext} className="w-full sm:w-auto h-10 px-4 sm:px-6 text-xs sm:text-sm bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-wide">
                       Continuer
-                      <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
+                      <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={16} />
                     </Button>
                   </div>
                 </motion.div>
@@ -1368,10 +1368,10 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="space-y-5"
+                  className="space-y-3"
                 >
                   {(serviceType === 'transfer' || serviceType === 'shared') && (
-                    <div className="bg-accent/5 border-2 border-accent/20 rounded-lg p-4 mb-5">
+                    <div className="bg-accent/5 border border-accent/20 rounded-lg p-3 mb-3">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <MapPin size={18} weight="fill" className="text-accent" />
@@ -1481,10 +1481,10 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                     </div>
                   )}
 
-                  <div className="space-y-4">
-                    <Label className="text-sm font-medium uppercase tracking-wide">Sélectionnez votre véhicule</Label>
+                  <div className="space-y-3">
+                    <Label className="text-xs font-medium uppercase tracking-wide">Sélectionnez votre véhicule</Label>
                     <RadioGroup value={vehicleType} onValueChange={setVehicleType}>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {fleet && fleet.length > 0 ? (
                           fleet.sort((a, b) => a.order - b.order).map((vehicle) => {
                             const vehiclePrice = calculatePrice(vehicle.id)
@@ -1497,10 +1497,10 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                                 />
                                 <Label
                                   htmlFor={vehicle.id}
-                                  className="flex flex-col items-center gap-3 rounded-lg border-2 border-border bg-secondary p-4 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all"
+                                  className="flex flex-col items-center gap-2 rounded-lg border-2 border-border bg-secondary p-3 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all"
                                 >
                                   {vehicle.image && (
-                                    <div className="w-full h-32 rounded-md overflow-hidden bg-background">
+                                    <div className="w-full h-24 rounded-md overflow-hidden bg-background">
                                       <img 
                                         src={vehicle.image} 
                                         alt={vehicle.title}
@@ -1513,18 +1513,18 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                                     </div>
                                   )}
                                   <div className="text-center w-full">
-                                    <div className="font-semibold uppercase tracking-wide">{vehicle.title}</div>
-                                    <div className="text-xs text-muted-foreground mt-1">{vehicle.description}</div>
+                                    <div className="font-semibold uppercase tracking-wide text-sm">{vehicle.title}</div>
+                                    <div className="text-xs text-muted-foreground mt-0.5">{vehicle.description}</div>
                                     {vehiclePrice > 0 && (
-                                      <div className="mt-3 pt-3 border-t border-border">
-                                        <div className="flex items-center justify-center gap-1 text-accent font-bold text-lg">
-                                          <CurrencyEur size={20} weight="bold" />
+                                      <div className="mt-2 pt-2 border-t border-border">
+                                        <div className="flex items-center justify-center gap-1 text-accent font-bold text-base">
+                                          <CurrencyEur size={18} weight="bold" />
                                           <span>{vehiclePrice.toFixed(2)}</span>
                                           {appliedForfaits[vehicle.id] && (
-                                            <Tag size={18} weight="fill" className="text-accent ml-1" />
+                                            <Tag size={16} weight="fill" className="text-accent ml-1" />
                                           )}
                                         </div>
-                                        <div className="text-[10px] text-muted-foreground mt-1">
+                                        <div className="text-[10px] text-muted-foreground mt-0.5">
                                           {serviceType === 'shared' 
                                             ? `Prix par personne (${passengers} ${parseInt(passengers) > 1 ? 'passagers' : 'passager'})` 
                                             : appliedForfaits[vehicle.id] 
@@ -1540,7 +1540,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                             )
                           })
                         ) : (
-                          <div className="col-span-2 text-center text-muted-foreground py-8">
+                          <div className="col-span-2 text-center text-muted-foreground py-6">
                             Aucun véhicule disponible
                           </div>
                         )}
@@ -1549,11 +1549,11 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                   </div>
 
                   {serviceOptions && serviceOptions.length > 0 && (
-                    <div className="space-y-4 pt-6 border-t border-border">
-                      <Label className="text-sm font-medium uppercase tracking-wide">Options Supplémentaires</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="space-y-3 pt-3 border-t border-border">
+                      <Label className="text-xs font-medium uppercase tracking-wide">Options Supplémentaires</Label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         {serviceOptions.map((option) => (
-                          <div key={option.id} className="flex items-start space-x-3 p-4 border-2 border-border rounded-lg hover:border-accent/50 transition-colors">
+                          <div key={option.id} className="flex items-start space-x-2 p-2.5 border border-border rounded-lg hover:border-accent/50 transition-colors">
                             <Checkbox
                               id={option.id}
                               checked={selectedOptions.includes(option.id)}
@@ -1564,17 +1564,17 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                                   setSelectedOptions(selectedOptions.filter(id => id !== option.id))
                                 }
                               }}
-                              className="mt-1"
+                              className="mt-0.5"
                             />
                             <div className="flex-1 cursor-pointer" onClick={() => {
                               const checkbox = document.getElementById(option.id) as HTMLButtonElement
                               if (checkbox) checkbox.click()
                             }}>
-                              <Label htmlFor={option.id} className="font-semibold text-sm cursor-pointer">
+                              <Label htmlFor={option.id} className="font-semibold text-xs cursor-pointer">
                                 {option.name}
-                                {option.price > 0 && <span className="text-accent ml-2">+{option.price}€</span>}
+                                {option.price > 0 && <span className="text-accent ml-1.5">+{option.price}€</span>}
                               </Label>
-                              <p className="text-xs text-muted-foreground mt-1">{option.description}</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">{option.description}</p>
                             </div>
                           </div>
                         ))}
@@ -1582,14 +1582,14 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                     </div>
                   )}
 
-                  <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4">
-                    <Button type="button" onClick={handleBack} variant="outline" className="w-full sm:w-auto h-12 px-6 sm:px-8 text-sm sm:text-base font-medium uppercase tracking-widest order-2 sm:order-1">
-                      <ArrowLeft className="mr-2" size={18} />
+                  <div className="flex flex-col sm:flex-row justify-between gap-2 pt-3">
+                    <Button type="button" onClick={handleBack} variant="outline" className="w-full sm:w-auto h-10 px-4 sm:px-6 text-xs sm:text-sm font-medium uppercase tracking-wide order-2 sm:order-1">
+                      <ArrowLeft className="mr-2" size={16} />
                       Retour
                     </Button>
-                    <Button type="button" onClick={handleNext} className="w-full sm:w-auto h-12 px-6 sm:px-8 text-sm sm:text-base bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-widest order-1 sm:order-2">
+                    <Button type="button" onClick={handleNext} className="w-full sm:w-auto h-10 px-4 sm:px-6 text-xs sm:text-sm bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-wide order-1 sm:order-2">
                       Continuer
-                      <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
+                      <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={16} />
                     </Button>
                   </div>
                 </motion.div>
@@ -1602,89 +1602,89 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="space-y-5"
+                  className="space-y-3"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName" className="text-sm font-medium uppercase tracking-wide">Prénom *</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="firstName" className="text-xs font-medium uppercase tracking-wide">Prénom *</Label>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                        <User className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <Input
                           id="firstName"
                           type="text"
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
                           placeholder="Votre prénom"
-                          className="pl-11 h-12 bg-secondary border-border"
+                          className="pl-10 h-10 bg-secondary border-border text-sm"
                         />
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName" className="text-sm font-medium uppercase tracking-wide">Nom *</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="lastName" className="text-xs font-medium uppercase tracking-wide">Nom *</Label>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                        <User className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <Input
                           id="lastName"
                           type="text"
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
                           placeholder="Votre nom"
-                          className="pl-11 h-12 bg-secondary border-border"
+                          className="pl-10 h-10 bg-secondary border-border text-sm"
                         />
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-sm font-medium uppercase tracking-wide">Téléphone *</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="phone" className="text-xs font-medium uppercase tracking-wide">Téléphone *</Label>
                       <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                        <Phone className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <Input
                           id="phone"
                           type="tel"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="+33 1 23 45 67 89"
-                          className="pl-11 h-12 bg-secondary border-border"
+                          className="pl-10 h-10 bg-secondary border-border text-sm"
                         />
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="text-sm font-medium uppercase tracking-wide">Email *</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="email" className="text-xs font-medium uppercase tracking-wide">Email *</Label>
                       <div className="relative">
-                        <EnvelopeSimple className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                        <EnvelopeSimple className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <Input
                           id="email"
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="votre@email.com"
-                          className="pl-11 h-12 bg-secondary border-border"
+                          className="pl-10 h-10 bg-secondary border-border text-sm"
                         />
                       </div>
                     </div>
 
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="notes" className="text-sm font-medium uppercase tracking-wide">Notes (Optionnel)</Label>
+                    <div className="space-y-1.5 md:col-span-2">
+                      <Label htmlFor="notes" className="text-xs font-medium uppercase tracking-wide">Notes (Optionnel)</Label>
                       <Textarea
                         id="notes"
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         placeholder="Informations supplémentaires (bagages, besoins spéciaux, etc.)"
-                        className="min-h-24 bg-secondary border-border resize-none"
+                        className="min-h-20 bg-secondary border-border resize-none text-sm"
                       />
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4">
-                    <Button type="button" onClick={handleBack} variant="outline" className="w-full sm:w-auto h-12 px-6 sm:px-8 text-sm sm:text-base font-medium uppercase tracking-widest order-2 sm:order-1">
-                      <ArrowLeft className="mr-2" size={18} />
+                  <div className="flex flex-col sm:flex-row justify-between gap-2 pt-3">
+                    <Button type="button" onClick={handleBack} variant="outline" className="w-full sm:w-auto h-10 px-4 sm:px-6 text-xs sm:text-sm font-medium uppercase tracking-wide order-2 sm:order-1">
+                      <ArrowLeft className="mr-2" size={16} />
                       Retour
                     </Button>
-                    <Button type="button" onClick={handleNext} className="w-full sm:w-auto h-12 px-6 sm:px-8 text-sm sm:text-base bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-widest order-1 sm:order-2">
+                    <Button type="button" onClick={handleNext} className="w-full sm:w-auto h-10 px-4 sm:px-6 text-xs sm:text-sm bg-accent text-accent-foreground hover:bg-accent/90 group font-medium uppercase tracking-wide order-1 sm:order-2">
                       Continuer
-                      <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
+                      <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={16} />
                     </Button>
                   </div>
                 </motion.div>
@@ -1697,12 +1697,12 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="space-y-5"
+                  className="space-y-3"
                 >
-                  <div className="space-y-4">
-                    <Label className="text-sm font-medium uppercase tracking-wide">Mode de paiement</Label>
+                  <div className="space-y-3">
+                    <Label className="text-xs font-medium uppercase tracking-wide">Mode de paiement</Label>
                     <RadioGroup value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as 'card' | 'cash' | 'transfer')}>
-                      <div className="space-y-3">
+                      <div className="space-y-2">
                         <div>
                           <RadioGroupItem
                             value="card"
@@ -1712,25 +1712,25 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                           />
                           <Label
                             htmlFor="card"
-                            className={`flex items-center gap-4 rounded-lg border-2 border-border bg-secondary p-4 transition-all ${
+                            className={`flex items-center gap-3 rounded-lg border-2 border-border bg-secondary p-3 transition-all ${
                               stripeSettings?.enabled 
                                 ? 'cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20' 
                                 : 'opacity-50 cursor-not-allowed'
                             }`}
                           >
-                            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-background">
-                              <CreditCard size={24} className={stripeSettings?.enabled ? 'text-accent' : 'text-muted-foreground'} />
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-background">
+                              <CreditCard size={20} className={stripeSettings?.enabled ? 'text-accent' : 'text-muted-foreground'} />
                             </div>
                             <div className="flex-1">
-                              <div className="font-semibold uppercase tracking-wide flex items-center gap-2">
+                              <div className="font-semibold uppercase tracking-wide flex items-center gap-2 text-sm">
                                 Carte Bancaire
                                 {stripeSettings?.enabled && (
-                                  <span className="text-[10px] px-2 py-0.5 bg-green-500/20 text-green-500 border border-green-500/30 rounded-full font-normal">
+                                  <span className="text-[10px] px-1.5 py-0.5 bg-green-500/20 text-green-500 border border-green-500/30 rounded-full font-normal">
                                     Stripe
                                   </span>
                                 )}
                               </div>
-                              <div className="text-xs text-muted-foreground mt-1">
+                              <div className="text-xs text-muted-foreground mt-0.5">
                                 {stripeSettings?.enabled 
                                   ? 'Paiement sécurisé par carte via Stripe'
                                   : 'Non disponible - Stripe non configuré'
@@ -1748,14 +1748,14 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                           />
                           <Label
                             htmlFor="cash"
-                            className="flex items-center gap-4 rounded-lg border-2 border-border bg-secondary p-4 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all"
+                            className="flex items-center gap-3 rounded-lg border-2 border-border bg-secondary p-3 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all"
                           >
-                            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-background">
-                              <Money size={24} className="text-accent" />
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-background">
+                              <Money size={20} className="text-accent" />
                             </div>
                             <div className="flex-1">
-                              <div className="font-semibold uppercase tracking-wide">Espèces</div>
-                              <div className="text-xs text-muted-foreground mt-1">Paiement en espèces au chauffeur</div>
+                              <div className="font-semibold uppercase tracking-wide text-sm">Espèces</div>
+                              <div className="text-xs text-muted-foreground mt-0.5">Paiement en espèces au chauffeur</div>
                             </div>
                           </Label>
                         </div>
@@ -1768,14 +1768,14 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                           />
                           <Label
                             htmlFor="transfer"
-                            className="flex items-center gap-4 rounded-lg border-2 border-border bg-secondary p-4 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all"
+                            className="flex items-center gap-3 rounded-lg border-2 border-border bg-secondary p-3 cursor-pointer hover:bg-accent/10 peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/20 transition-all"
                           >
-                            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-background">
-                              <Bank size={24} className="text-accent" />
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-background">
+                              <Bank size={20} className="text-accent" />
                             </div>
                             <div className="flex-1">
-                              <div className="font-semibold uppercase tracking-wide">Virement Bancaire</div>
-                              <div className="text-xs text-muted-foreground mt-1">Paiement par virement</div>
+                              <div className="font-semibold uppercase tracking-wide text-sm">Virement Bancaire</div>
+                              <div className="text-xs text-muted-foreground mt-0.5">Paiement par virement</div>
                             </div>
                           </Label>
                         </div>
@@ -1783,11 +1783,11 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                     </RadioGroup>
                   </div>
 
-                  <div className="space-y-4 pb-5 border-b border-border">
-                    <Label className="text-sm font-medium uppercase tracking-wide">Code Promo</Label>
-                    <div className="flex gap-3">
+                  <div className="space-y-3 pb-3 border-b border-border">
+                    <Label className="text-xs font-medium uppercase tracking-wide">Code Promo</Label>
+                    <div className="flex gap-2">
                       <div className="flex-1 relative">
-                        <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                        <Tag className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <Input
                           id="promo-code"
                           type="text"
@@ -1797,7 +1797,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                             setPromoCodeError('')
                           }}
                           placeholder="Entrez votre code promo"
-                          className="pl-11 h-12 bg-secondary border-border uppercase"
+                          className="pl-10 h-10 bg-secondary border-border uppercase text-sm"
                           disabled={!!appliedPromoCode}
                         />
                       </div>
@@ -1818,7 +1818,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                             }
                           }}
                           variant="outline"
-                          className="h-12 px-6 font-medium uppercase tracking-widest whitespace-nowrap"
+                          className="h-10 px-4 font-medium uppercase tracking-wide whitespace-nowrap text-xs"
                         >
                           Appliquer
                         </Button>
@@ -1831,7 +1831,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                             toast.info('Code promo retiré')
                           }}
                           variant="outline"
-                          className="h-12 px-6 font-medium uppercase tracking-widest whitespace-nowrap"
+                          className="h-10 px-4 font-medium uppercase tracking-wide whitespace-nowrap text-xs"
                         >
                           Retirer
                         </Button>
@@ -1841,20 +1841,20 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                       <p className="text-xs text-destructive">{promoCodeError}</p>
                     )}
                     {appliedPromoCode && (
-                      <div className="bg-accent/20 border-2 border-accent rounded-lg p-3 flex items-center gap-3">
-                        <Tag size={20} weight="fill" className="text-accent" />
+                      <div className="bg-accent/20 border-2 border-accent rounded-lg p-2.5 flex items-center gap-2">
+                        <Tag size={18} weight="fill" className="text-accent" />
                         <div className="flex-1">
-                          <div className="font-semibold text-sm text-accent">Code promo appliqué !</div>
-                          <div className="text-xs text-muted-foreground">{appliedPromoCode.description}</div>
+                          <div className="font-semibold text-xs text-accent">Code promo appliqué !</div>
+                          <div className="text-[10px] text-muted-foreground">{appliedPromoCode.description}</div>
                         </div>
-                        <div className="font-bold text-accent">
+                        <div className="font-bold text-accent text-sm">
                           -{appliedPromoCode.value}{appliedPromoCode.type === 'percentage' ? '%' : '€'}
                         </div>
                       </div>
                     )}
                   </div>
 
-                  <div className="bg-accent/10 border-2 border-accent/30 rounded-lg p-4 space-y-2">
+                  <div className="bg-accent/10 border border-accent/30 rounded-lg p-3 space-y-1.5">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-semibold uppercase tracking-wide text-sm">Récapitulatif</h4>
                       <Button
