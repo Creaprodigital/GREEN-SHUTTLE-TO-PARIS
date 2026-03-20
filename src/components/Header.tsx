@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { User, List, X, SignOut, CaretDown, Phone } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -51,9 +52,9 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
   ]
 
   const menuItems = [
-    { label: 'ACCUEIL', onClick: onNavigateToHome || (() => {}) },
-    { label: 'QUI SOMMES-NOUS', onClick: onNavigateToAbout || (() => {}) },
-    { label: 'CONTACT', onClick: onNavigateToContact || (() => {}) }
+    { label: 'ACCUEIL', path: '/' },
+    { label: 'QUI SOMMES-NOUS', path: '/about' },
+    { label: 'CONTACT', path: '/contact' }
   ]
 
   const handleMouseEnter = () => {
@@ -70,15 +71,6 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
     }, 300)
   }
 
-  const handleServiceClick = (serviceId: string) => {
-    if (closeTimeoutRef.current) {
-      clearTimeout(closeTimeoutRef.current)
-      closeTimeoutRef.current = null
-    }
-    setServicesDropdownOpen(false)
-    onNavigateToService?.(serviceId)
-  }
-
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       scrolled ? 'bg-primary/98 backdrop-blur-md shadow-lg' : 'bg-primary/95 backdrop-blur-sm'
@@ -86,8 +78,8 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           <div className="flex items-center">
-            <button 
-              onClick={onNavigateToHome}
+            <Link 
+              to="/"
               className="flex items-center space-x-2 md:space-x-3 group"
             >
               <div className="w-10 h-10 md:w-12 md:h-12 bg-accent rounded-full flex items-center justify-center transition-transform group-hover:scale-105">
@@ -103,23 +95,19 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                   Chauffeur Privé
                 </div>
               </div>
-            </button>
+            </Link>
           </div>
 
           <nav className="hidden lg:flex items-center space-x-8">
             {menuItems.map((item, index) => (
-              <button
+              <Link
                 key={index}
-                onClick={() => {
-                  if (item.onClick) {
-                    item.onClick()
-                  }
-                }}
+                to={item.path}
                 className="text-foreground/80 hover:text-accent text-sm font-medium tracking-wide transition-colors relative group"
               >
                 {item.label}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
-              </button>
+              </Link>
             ))}
             
             <div 
@@ -127,14 +115,14 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-              <button
-                onClick={() => onNavigateToServices?.()}
+              <Link
+                to="/services"
                 className="text-foreground/80 hover:text-accent text-sm font-medium tracking-wide transition-colors relative group flex items-center gap-1"
               >
                 NOS SERVICES
                 <CaretDown size={14} className={`transition-transform ${servicesDropdownOpen ? 'rotate-180' : ''}`} />
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
-              </button>
+              </Link>
 
               <AnimatePresence>
                 {servicesDropdownOpen && (
@@ -149,13 +137,20 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                   >
                     <div className="py-2">
                       {services.map((service) => (
-                        <button
+                        <Link
                           key={service.id}
-                          onClick={() => handleServiceClick(service.id)}
-                          className="w-full px-4 py-2.5 text-left text-sm text-foreground/80 hover:bg-accent hover:text-accent-foreground transition-colors"
+                          to={`/services/${service.id}`}
+                          onClick={() => {
+                            if (closeTimeoutRef.current) {
+                              clearTimeout(closeTimeoutRef.current)
+                              closeTimeoutRef.current = null
+                            }
+                            setServicesDropdownOpen(false)
+                          }}
+                          className="block w-full px-4 py-2.5 text-left text-sm text-foreground/80 hover:bg-accent hover:text-accent-foreground transition-colors"
                         >
                           <span className="font-medium">{service.label}</span>
-                        </button>
+                        </Link>
                       ))}
                     </div>
                   </motion.div>
@@ -240,18 +235,14 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
               </a>
 
               {menuItems.map((item, index) => (
-                <button
+                <Link
                   key={index}
-                  onClick={() => {
-                    setMobileMenuOpen(false)
-                    if (item.onClick) {
-                      item.onClick()
-                    }
-                  }}
+                  to={item.path}
+                  onClick={() => setMobileMenuOpen(false)}
                   className="block w-full text-left text-foreground hover:text-accent text-sm font-medium tracking-wide transition-colors py-2.5 px-2 hover:bg-accent/10 rounded"
                 >
                   {item.label}
-                </button>
+                </Link>
               ))}
               
               <div>
@@ -273,17 +264,17 @@ export default function Header({ onNavigateToLogin, onNavigateToHome, onNavigate
                     >
                       <div className="pl-3 mt-2 space-y-1.5">
                         {services.map((service) => (
-                          <button
+                          <Link
                             key={service.id}
+                            to={`/services/${service.id}`}
                             onClick={() => {
                               setMobileMenuOpen(false)
                               setMobileServicesOpen(false)
-                              onNavigateToService?.(service.id)
                             }}
                             className="flex items-center w-full text-left text-foreground/80 hover:text-accent text-sm py-2 px-2 transition-colors hover:bg-accent/10 rounded"
                           >
                             <span className="text-sm">{service.label}</span>
-                          </button>
+                          </Link>
                         ))}
                       </div>
                     </motion.div>
