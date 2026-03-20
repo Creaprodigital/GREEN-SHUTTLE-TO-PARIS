@@ -22,6 +22,7 @@ import ServiceEvents from '@/components/ServiceEvents'
 import LegalMentions from '@/components/LegalMentions'
 import Privacy from '@/components/Privacy'
 import CGV from '@/components/CGV'
+import NotFound from '@/components/NotFound'
 import { useKV } from '@github/spark/hooks'
 import { Booking } from '@/types/booking'
 import { useSharedRideNotifications } from '@/hooks/useSharedRideNotifications'
@@ -49,6 +50,7 @@ type View =
   | 'legal-mentions'
   | 'privacy'
   | 'cgv'
+  | '404'
 
 function App() {
   const [view, setView] = useState<View>('home')
@@ -286,6 +288,13 @@ function App() {
           userEmail={currentUser?.email}
           isAdmin={currentUser?.isAdmin}
           onLogout={handleLogout}
+        />
+      )}
+      {view === '404' && (
+        <NotFound
+          onNavigateToHome={() => setView('home')}
+          onNavigateToServices={() => setView('services')}
+          onNavigateToContact={() => setView('contact')}
         />
       )}
     </div>

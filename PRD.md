@@ -68,6 +68,13 @@ This is a comprehensive booking platform with multi-step forms, client/admin aut
 - Progression: User views hero → Reads service benefits → Explores service types → Initiates booking
 - Success criteria: Compelling content presentation, smooth scroll experience
 
+**404 Error Page**
+- Functionality: Elegant error page displayed when users navigate to non-existent routes
+- Purpose: Maintain brand experience even during errors and guide users back to valid pages
+- Trigger: User attempts to access invalid URL or broken link
+- Progression: View 404 message → See helpful navigation options → Return to home, services, or contact
+- Success criteria: Clear error communication, maintains luxury aesthetic, provides easy navigation back to site
+
 ## Edge Case Handling
 
 - **Empty Form Submission**: Validate all required fields (including email) before submission, highlight missing inputs with clear error messages
@@ -81,6 +88,7 @@ This is a comprehensive booking platform with multi-step forms, client/admin aut
 - **Past Date/Time Selection**: Prevent selection of past dates in booking form, default to current date/time + 1 hour minimum
 - **Logout Confirmation**: Clear user session and redirect to home when logging out
 - **Incomplete Booking**: Persist partial form data so users can return to complete booking
+- **Invalid Navigation**: Display 404 page for broken links or non-existent routes with branded design and easy navigation back to site
 
 ## Design Direction
 
