@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef } from 'react'
-
+import { useKV } from '@github/spark/hooks'
 
 interface SyncMetadata {
   lastSyncTimestamp: number
@@ -16,35 +16,32 @@ interface CloudSyncOptions {
 
 export function useCloudSync<T>(
   key: string,
-  })
+  initialValue: T,
   enabled: boolean = true,
   options?: CloudSyncOptions
 ) {
   const syncInterval = options?.syncInterval || 5000
   const [data, setData] = useKV<T>(key, initialValue)
-        setSyncMeta(cloudMeta)
-        options?.onSyncCo
-    } catch (error
-    
-    }
+  const [syncMeta, setSyncMeta] = useKV<SyncMetadata | null>(`${key}-sync-meta`, null)
+  const isSyncing = useRef(false)
+  const lastKnownVersion = useRef(syncMeta?.syncVersion || 0)
 
+  const syncFromCloud = useCallback(async () => {
+    if (!enabled || isSyncing.current) return
+
+    isSyncing.current = true
 
     try {
-      
+      const cloudData = await spark.kv.get<T>(key)
+      const cloudMeta = await spark.kv.get<SyncMetadata>(`${key}-sync-meta`)
 
-        s
-      })
-
-        syncVersion: newVersion,
-      })
-
-      options?.onSyncError?.(error as Error)
-  }, [key, enabled, syncMeta, setSyncMeta, options])
-  useEffect(() => {
-
-    
-
-  }, [ena
+      if (cloudMeta && cloudMeta.syncVersion > lastKnownVersion.current) {
+        if (options?.onConflict && cloudData !== undefined) {
+          const resolvedData = options.onConflict(data, cloudData)
+          setData(resolvedData)
+        } else if (cloudData !== undefined) {
+          setData(cloudData)
+        }
 
         setSyncMeta(cloudMeta)
         lastKnownVersion.current = cloudMeta.syncVersion
@@ -55,7 +52,7 @@ export function useCloudSync<T>(
     } finally {
       isSyncing.current = false
     }
-  }, [key, enabled, data, setData, setSyncMeta, initialValue, options])
+  }, [key, enabled, data, setData, setSyncMeta, options])
 
   const syncToCloud = useCallback(async (newData: T, modifiedBy?: string) => {
     if (!enabled) return
@@ -94,9 +91,10 @@ export function useCloudSync<T>(
 
   return {
     data,
-
+    setData,
     syncToCloud,
-
+    syncFromCloud,
+    isSyncing: isSyncing.current,
     lastSync: syncMeta?.lastSyncTimestamp || 0
-
+  }
 }
