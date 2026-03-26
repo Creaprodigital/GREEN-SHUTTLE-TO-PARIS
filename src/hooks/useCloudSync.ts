@@ -1,15 +1,15 @@
 import { useEffect, useCallback, useRef } from 'react'
 import { useKV } from '@github/spark/hooks'
 
-interface SyncMetadata {
-  lastSyncTimestamp: number
-  syncVersion: number
-  lastModifiedBy?: string
-}
+  lastModifiedBy?: strin
 
-export function useCloudSync<T>(
   key: string,
-  defaultValue: T,
+  options?: {
+ 
+
+) {
+  const enable
+  const [data, set
   options?: {
     onSyncComplete?: (data: T) => void
     onSyncError?: (error: Error) => void
@@ -24,7 +24,7 @@ export function useCloudSync<T>(
   const [syncMeta, setSyncMeta] = useKV<SyncMetadata>(`${key}-sync-meta`, {
     lastSyncTimestamp: Date.now(),
     syncVersion: 0
-  })
+    
   
   const lastKnownVersion = useRef<number>(syncMeta?.syncVersion || 0)
   const isSyncing = useRef(false)
@@ -44,9 +44,9 @@ export function useCloudSync<T>(
           setData(cloudData)
           lastKnownVersion.current = cloudMeta.syncVersion
           
-          options?.onSyncComplete?.(cloudData)
+      setSyncMeta({
         }
-      }
+       
     } catch (error) {
       options?.onSyncError?.(error as Error)
     } finally {
@@ -60,23 +60,23 @@ export function useCloudSync<T>(
     try {
       const newVersion = (syncMeta?.syncVersion || 0) + 1
       
-      await spark.kv.set(key, newData)
+    setData,
       await spark.kv.set(`${key}-sync-meta`, {
-        lastSyncTimestamp: Date.now(),
+    syncMeta,
         syncVersion: newVersion,
         lastModifiedBy: modifiedBy
       })
-      
+
       setSyncMeta({
         lastSyncTimestamp: Date.now(),
         syncVersion: newVersion,
         lastModifiedBy: modifiedBy
       })
-      
+
       lastKnownVersion.current = newVersion
     } catch (error) {
       options?.onSyncError?.(error as Error)
-    }
+
   }, [key, enabled, syncMeta, setSyncMeta, options])
 
   useEffect(() => {
@@ -84,17 +84,17 @@ export function useCloudSync<T>(
 
     const interval = setInterval(syncFromCloud, syncInterval)
     
-    syncFromCloud()
 
-    return () => clearInterval(interval)
+
+
   }, [enabled, syncInterval, syncFromCloud])
 
   return {
-    data,
+
     setData,
     syncToCloud,
     syncFromCloud,
-    syncMeta,
-    isLatestVersion: syncMeta?.syncVersion === lastKnownVersion.current
-  }
-}
+
+
+
+
