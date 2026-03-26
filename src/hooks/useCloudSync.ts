@@ -1,58 +1,61 @@
 import { useEffect, useCallback, useRef } from 'react'
-
+import { useKV } from '@github/spark/hooks'
 
 interface SyncMetadata {
   lastSyncTimestamp: number
   syncVersion: number
-  options?: {
- 
+  lastModifiedBy?: string
+}
 
+interface CloudSyncOptions {
+  syncInterval?: number
+  onSyncComplete?: (data: any) => void
+  onSyncError?: (error: Error) => void
+  onConflict?: (localData: any, cloudData: any) => any
+}
+
+export function useCloudSync<T>(
+  key: string,
+  initialValue: T,
+  enabled: boolean = true,
+  options?: CloudSyncOptions
 ) {
-  const enable
-  const [data, set
-    lastSyncT
+  const syncInterval = options?.syncInterval || 5000
+  const [data, setData] = useKV<T>(key, initialValue)
+  const [syncMeta, setSyncMeta] = useKV<SyncMetadata>(`${key}-sync-meta`, {
+    lastSyncTimestamp: 0,
+    syncVersion: 0
   })
-  const lastKnownVersion = useRef<number
+  const lastKnownVersion = useRef<number>(syncMeta?.syncVersion || 0)
+  const isSyncing = useRef(false)
 
-    if (!enabled || i
-   
-   
-      
-        const cloudData = await spark.kv.get
-  
-          lastKnownVersion.current = cloudMeta.syncVe
-          options?.onSyncComplete?.(cloudData)
-      }
-      options?.onS
-    
-  
-  const syncToCloud = useCallback(async (newData: T, modifiedBy?: str
+  const syncFromCloud = useCallback(async () => {
+    if (!enabled || isSyncing.current) return
 
+    try {
+      isSyncing.current = true
 
-      await spark.kv.set(key, newData)
-        lastSyncTimestamp: Date.now(),
+      const cloudData = await spark.kv.get<T>(key)
+      const cloudMeta = await spark.kv.get<SyncMetadata>(`${key}-sync-meta`)
 
+      if (cloudMeta && cloudMeta.syncVersion > lastKnownVersion.current) {
+        if (options?.onConflict && data !== cloudData) {
+          const resolvedData = options.onConflict(data, cloudData)
+          setData(resolvedData)
+        } else {
+          setData(cloudData || initialValue)
+        }
 
-        lastSyncTimestamp: Dat
-      
-
-    } 
-    }
-
-    if (
-    const interval = setInterval(syncF
-    syncFromCloud()
-    return () => clearInterval(interval)
-
-    data,
-    syncT
+        setSyncMeta(cloudMeta)
+        lastKnownVersion.current = cloudMeta.syncVersion
+        options?.onSyncComplete?.(cloudData)
       }
     } catch (error) {
       options?.onSyncError?.(error as Error)
     } finally {
       isSyncing.current = false
     }
-  }, [key, enabled, setData, options])
+  }, [key, enabled, data, setData, setSyncMeta, initialValue, options])
 
   const syncToCloud = useCallback(async (newData: T, modifiedBy?: string) => {
     if (!enabled) return
@@ -87,13 +90,13 @@ interface SyncMetadata {
     syncFromCloud()
 
     return () => clearInterval(interval)
+  }, [enabled, syncFromCloud, syncInterval])
 
-
-
-
-
-
-
-
-
-
+  return {
+    data,
+    setData,
+    syncToCloud,
+    syncFromCloud,
+    lastSync: syncMeta?.lastSyncTimestamp || 0
+  }
+}
