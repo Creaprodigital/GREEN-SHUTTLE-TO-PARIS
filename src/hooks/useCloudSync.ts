@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef } from 'react'
-import { useKV } from '@github/spark/hooks'
+
 
 interface SyncMetadata {
   lastSyncTimestamp: number
@@ -16,35 +16,35 @@ interface CloudSyncOptions {
 
 export function useCloudSync<T>(
   key: string,
-  initialValue: T,
+  })
   enabled: boolean = true,
   options?: CloudSyncOptions
 ) {
   const syncInterval = options?.syncInterval || 5000
   const [data, setData] = useKV<T>(key, initialValue)
-  const [syncMeta, setSyncMeta] = useKV<SyncMetadata>(`${key}-sync-meta`, {
-    lastSyncTimestamp: 0,
-    syncVersion: 0
-  })
-  const lastKnownVersion = useRef<number>(syncMeta?.syncVersion || 0)
-  const isSyncing = useRef(false)
+        setSyncMeta(cloudMeta)
+        options?.onSyncCo
+    } catch (error
+    
+    }
 
-  const syncFromCloud = useCallback(async () => {
-    if (!enabled || isSyncing.current) return
 
     try {
-      isSyncing.current = true
+      
 
-      const cloudData = await spark.kv.get<T>(key)
-      const cloudMeta = await spark.kv.get<SyncMetadata>(`${key}-sync-meta`)
+        s
+      })
 
-      if (cloudMeta && cloudMeta.syncVersion > lastKnownVersion.current) {
-        if (options?.onConflict && data !== cloudData) {
-          const resolvedData = options.onConflict(data, cloudData)
-          setData(resolvedData)
-        } else {
-          setData(cloudData || initialValue)
-        }
+        syncVersion: newVersion,
+      })
+
+      options?.onSyncError?.(error as Error)
+  }, [key, enabled, syncMeta, setSyncMeta, options])
+  useEffect(() => {
+
+    
+
+  }, [ena
 
         setSyncMeta(cloudMeta)
         lastKnownVersion.current = cloudMeta.syncVersion
@@ -94,9 +94,9 @@ export function useCloudSync<T>(
 
   return {
     data,
-    setData,
+
     syncToCloud,
-    syncFromCloud,
+
     lastSync: syncMeta?.lastSyncTimestamp || 0
-  }
+
 }
