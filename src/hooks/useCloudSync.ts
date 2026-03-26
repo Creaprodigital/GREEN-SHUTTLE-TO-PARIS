@@ -1,15 +1,15 @@
 import { useEffect, useCallback, useRef } from 'react'
 import { useKV } from '@github/spark/hooks'
 
-  lastModifiedBy?: strin
+interface SyncMetadata {
+  lastSyncTimestamp: number
+  syncVersion: number
+  lastModifiedBy?: string
+}
 
+export function useCloudSync<T>(
   key: string,
-  options?: {
- 
-
-) {
-  const enable
-  const [data, set
+  defaultValue: T,
   options?: {
     onSyncComplete?: (data: T) => void
     onSyncError?: (error: Error) => void
@@ -24,7 +24,7 @@ import { useKV } from '@github/spark/hooks'
   const [syncMeta, setSyncMeta] = useKV<SyncMetadata>(`${key}-sync-meta`, {
     lastSyncTimestamp: Date.now(),
     syncVersion: 0
-    
+  })
   
   const lastKnownVersion = useRef<number>(syncMeta?.syncVersion || 0)
   const isSyncing = useRef(false)
@@ -44,9 +44,9 @@ import { useKV } from '@github/spark/hooks'
           setData(cloudData)
           lastKnownVersion.current = cloudMeta.syncVersion
           
-      setSyncMeta({
+          options?.onSyncComplete?.(cloudData)
         }
-       
+      }
     } catch (error) {
       options?.onSyncError?.(error as Error)
     } finally {
@@ -60,9 +60,9 @@ import { useKV } from '@github/spark/hooks'
     try {
       const newVersion = (syncMeta?.syncVersion || 0) + 1
       
-    setData,
+      await spark.kv.set(key, newData)
       await spark.kv.set(`${key}-sync-meta`, {
-    syncMeta,
+        lastSyncTimestamp: Date.now(),
         syncVersion: newVersion,
         lastModifiedBy: modifiedBy
       })
@@ -76,7 +76,7 @@ import { useKV } from '@github/spark/hooks'
       lastKnownVersion.current = newVersion
     } catch (error) {
       options?.onSyncError?.(error as Error)
-
+    }
   }, [key, enabled, syncMeta, setSyncMeta, options])
 
   useEffect(() => {
@@ -84,17 +84,16 @@ import { useKV } from '@github/spark/hooks'
 
     const interval = setInterval(syncFromCloud, syncInterval)
     
+    syncFromCloud()
 
-
-
+    return () => clearInterval(interval)
   }, [enabled, syncInterval, syncFromCloud])
 
   return {
-
+    data,
     setData,
     syncToCloud,
     syncFromCloud,
-
-
-
-
+    syncMeta
+  }
+}
