@@ -1351,34 +1351,20 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                                       <img 
                                         src={vehicle.image} 
                                         alt={vehicle.title}
-                                        className="w-full h-full"
-                                        style={{
-                      {isCalculatingDistance ? (
-                        <div className="flex justify-center items-center text-sm text-muted-foreground py-6">
-                          <div className="animate-spin rounded-full h-6 w-6 border-2 border-accent border-t-transparent mr-3"></div>
-                          Calcul de l'itinéraire en cours...
-                        </div>
-                      ) : distanceKm > 0 && durationMinutes > 0 ? (
-                        <div className="space-y-3">
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="flex flex-col items-center justify-center p-4 bg-background rounded-lg border-2 border-accent/30">
-                              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-medium">Distance</div>
-                              <div className="text-3xl font-bold text-accent flex items-center gap-1">
-                                {distanceKm.toFixed(1)} 
-                                <span className="text-lg">km</span>
-                              </div>
-                            </div>
-                            <div className="flex flex-col items-center justify-center p-4 bg-background rounded-lg border-2 border-accent/30">
-                              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-medium">Durée</div>
-                              <div className="text-3xl font-bold text-accent flex items-center gap-1">
-                                <Clock size={28} weight="fill" className="mr-1" />
-                                {durationMinutes} 
-                                <span className="text-lg">min</span>
-                              </div>
-                            </div>
-                          </div>
-                                              : 'Véhicule avec Chauffeur'
-                                            }
+                                        className="w-full h-full object-cover"
+                                      />
+                                    </div>
+                                  )}
+                                  <div className="w-full text-center">
+                                    <div className="font-semibold text-sm">{vehicle.title}</div>
+                                    <div className="text-xs text-muted-foreground mt-1">
+                                      {vehicle.capacity} passagers • {vehicle.luggage} bagages
+                                    </div>
+                                    <div className="mt-2">
+                                      {vehiclePrice !== null && vehiclePrice > 0 ? (
+                                        <>
+                                          <div className="text-xl font-bold text-accent">
+                                            {vehiclePrice.toFixed(2)}€
                                           </div>
                                           {(serviceType === 'transfer' || serviceType === 'shared') && !appliedForfaits[vehicle.id] && distanceKm > 0 && durationMinutes > 0 && (() => {
                                             const vehiclePricing = pricing?.find(p => p.vehicleId === vehicle.id)
