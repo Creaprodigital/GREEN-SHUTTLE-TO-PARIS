@@ -1135,27 +1135,27 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                               </div>
                             </div>
                           )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {serviceType !== 'hourly' && (
-                      <div className="space-y-1.5">
-                        <Label htmlFor="pickup" className="text-xs font-medium uppercase tracking-wide flex items-center gap-2">
-                          Lieu de Départ
-                          {pickup && pickupCoords && (
+                        <PlacesAutocomplete
+                          id="pickup"
+                          value={pickup}
+                          onChange={(value, coords) => {
+                            setPickup(value)
+                            setPickupCoords(coords || null)cols-2 gap-3">
+                          }}
+                          placeholder="Adresse de départ"
+                          className="h-10 bg-secondary border-border text-sm"
+                          icon={<MapPin size={18} />}
+                        />
                             <span className="text-[10px] text-accent font-normal flex items-center gap-1">
                               <Check size={12} weight="bold" />
                               Validée
                             </span>
                           )}
-                        </Label>
-                        <PlacesAutocomplete
-                          id="pickup"
-                          value={pickup}
-                          onChange={(value, coords) => {
+                      </div>
+                    )}
+
+                    {(serviceType === 'transfer' || serviceType === 'shared') && (
+                      <div className="space-y-1.5">
                             setPickup(value)
                             setPickupCoords(coords || null)
                           }}
@@ -1165,23 +1165,6 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                         />
                         {pickup && !pickupCoords && (
                           <p className="text-[10px] text-muted-foreground italic">
-                            ⚠️ Veuillez sélectionner l'adresse dans la liste déroulante
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {(serviceType === 'transfer' || serviceType === 'shared') && (
-                      <div className="space-y-1.5">
-                        <Label htmlFor="destination" className="text-xs font-medium uppercase tracking-wide flex items-center gap-2">
-                          Destination
-                          {destination && destinationCoords && (
-                            <span className="text-[10px] text-accent font-normal flex items-center gap-1">
-                              <Check size={12} weight="bold" />
-                              Validée
-                            </span>
-                          )}
-                        </Label>
                         <PlacesAutocomplete
                           id="destination"
                           value={destination}
@@ -1207,6 +1190,23 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                         <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <Input
                           id="date"
+                          type="date"
+                          icon={<MapPin size={18} weight="fill" />}
+                        />
+                        {destination && !destinationCoords && (
+                          <p className="text-[10px] text-muted-foreground italic">
+                            ⚠️ Veuillez sélectionner l'adresse dans la liste déroulante
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="space-y-1.5">
+                        <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                        <Input
+                          id="time">
+                          type="time"
+                          value={time}
                           type="date"
                           value={date}
                           onChange={(e) => setDate(e.target.value)}
