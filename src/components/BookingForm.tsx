@@ -1533,25 +1533,38 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                                   <div className="text-center w-full">
                                     <div className="font-semibold uppercase tracking-wide text-sm">{vehicle.title}</div>
                                     <div className="text-xs text-muted-foreground mt-0.5">{vehicle.description}</div>
-                                    {vehiclePrice > 0 && (
-                                      <div className="mt-2 pt-2 border-t border-border">
-                                        <div className="flex items-center justify-center gap-1 text-accent font-bold text-base">
-                                          <CurrencyEur size={18} weight="bold" />
-                                          <span>{vehiclePrice.toFixed(2)}</span>
-                                          {appliedForfaits[vehicle.id] && (
-                                            <Tag size={16} weight="fill" className="text-accent ml-1" />
-                                          )}
-                                        </div>
-                                        <div className="text-[10px] text-muted-foreground mt-0.5">
-                                          {serviceType === 'shared' 
-                                            ? `Prix par personne (${passengers} ${parseInt(passengers) > 1 ? 'passagers' : 'passager'})` 
-                                            : appliedForfaits[vehicle.id] 
-                                            ? 'Forfait Zone à Zone' 
-                                            : 'Véhicule avec Chauffeur'
+                                    <div className="mt-2 pt-2 border-t border-border">
+                                      {vehiclePrice > 0 ? (
+                                        <>
+                                          <div className="flex items-center justify-center gap-1 text-accent font-bold text-base">
+                                            <CurrencyEur size={18} weight="bold" />
+                                            <span>{vehiclePrice.toFixed(2)}</span>
+                                            {appliedForfaits[vehicle.id] && (
+                                              <Tag size={16} weight="fill" className="text-accent ml-1" />
+                                            )}
+                                          </div>
+                                          <div className="text-[10px] text-muted-foreground mt-0.5">
+                                            {serviceType === 'shared' 
+                                              ? `Prix par personne (${passengers} ${parseInt(passengers) > 1 ? 'passagers' : 'passager'})` 
+                                              : appliedForfaits[vehicle.id] 
+                                              ? 'Forfait Zone à Zone' 
+                                              : 'Véhicule avec Chauffeur'
+                                            }
+                                          </div>
+                                        </>
+                                      ) : (
+                                        <div className="text-[10px] text-muted-foreground italic">
+                                          {(serviceType === 'transfer' || serviceType === 'shared') && (!pickup || !destination) 
+                                            ? 'Saisissez départ et destination' 
+                                            : (serviceType === 'transfer' || serviceType === 'shared') && (!pickupCoords || !destinationCoords)
+                                            ? 'Calcul du tarif...'
+                                            : serviceType === 'tour' && !selectedCircuitId
+                                            ? 'Sélectionnez un circuit'
+                                            : 'Calcul du tarif en cours...'
                                           }
                                         </div>
-                                      </div>
-                                    )}
+                                      )}
+                                    </div>
                                   </div>
                                 </Label>
                               </div>
