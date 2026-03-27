@@ -303,14 +303,18 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
   const handleUpdateVehicle = (vehicleId: string, updates: Partial<VehicleClass>) => {
     setFleetData((current) => {
       const data = Array.isArray(current) ? current : DEFAULT_FLEET
-      return data.map((vehicle) =>
+      const updated = data.map((vehicle) =>
         vehicle.id === vehicleId
           ? { ...vehicle, ...updates }
           : vehicle
       )
+      return updated
     })
-    setEditingVehicle(null)
-    toast.success('Vehicle updated successfully')
+    
+    setTimeout(() => {
+      setEditingVehicle(null)
+      toast.success('Vehicle updated successfully')
+    }, 100)
   }
 
   const handleAddVehicle = () => {
