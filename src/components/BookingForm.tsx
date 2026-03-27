@@ -1150,37 +1150,36 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                               Validée
                             </span>
                           )}
-                        </Label>
                         <PlacesAutocomplete
                           id="pickup"
                           value={pickup}
                           onChange={(value, coords) => {
-                            setPickup(value)
                             setPickupCoords(coords || null)
                           }}
                           placeholder="Adresse de départ"
                           className="h-10 bg-secondary border-border text-sm"
                           icon={<MapPin size={18} />}
+                          icon={<MapPin size={18} />}
                         />
-                        {pickup && !pickupCoords && (
                           <p className="text-[10px] text-muted-foreground italic">
                             ⚠️ Veuillez sélectionner l'adresse dans la liste déroulante
                           </p>
-                        )}
+                          </p>
+                      </div>
                       </div>
                     )}
-
+iceType === 'shared') && (
                     {(serviceType === 'transfer' || serviceType === 'shared') && (
-                      <div className="space-y-1.5">
-                        <Label htmlFor="destination" className="text-xs font-medium uppercase tracking-wide flex items-center justify-between gap-2">
+                      <div className="space-y-1.5">ems-center justify-between gap-2">
                           <span>Adresse d'Arrivée</span>
                           {destination && destinationCoords && (
                             <span className="text-[10px] text-accent font-normal flex items-center gap-1">
                               <Check size={12} weight="bold" />
                               Validée
                             </span>
+                            </span>
                           )}
-                        </Label>
+                        <PlacesAutocomplete
                         <PlacesAutocomplete
                           id="destination"
                           value={destination}
@@ -1196,7 +1195,6 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                           <p className="text-[10px] text-muted-foreground italic">
                             ⚠️ Veuillez sélectionner l'adresse dans la liste déroulante
                           </p>
-                        )}
                       </div>
                     )}
 
@@ -1208,13 +1206,11 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                           id="date"
                           type="date"
                           value={date}
+                          value={date}
                           onChange={(e) => setDate(e.target.value)}
                           min={new Date().toISOString().split('T')[0]}
                           className="pl-10 h-10 bg-secondary border-border text-sm"
                         />
-                      </div>
-                    </div>
-
                     <div className="space-y-1.5">
                       <Label htmlFor="time" className="text-xs font-medium uppercase tracking-wide">Heure de Départ</Label>
                       <div className="relative">
@@ -1223,8 +1219,8 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                           id="time"
                           type="time"
                           value={time}
-                          onChange={(e) => setTime(e.target.value)}
-                          className="pl-10 h-10 bg-secondary border-border text-sm"
+                          value={time}
+                          type="date"
                         />
                       </div>
                     </div>
