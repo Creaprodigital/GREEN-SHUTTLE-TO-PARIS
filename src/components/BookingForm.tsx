@@ -283,12 +283,12 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
           console.log(`🗺️ Tour: prix de base par défaut = ${basePrice}€`)
         }
       } else if (serviceType === 'transfer' || serviceType === 'shared') {
-        const pricePerKm = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
-        const pricePerMinute = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
-        
-        console.log(`💰 CALCUL KM/MIN (pas de forfait disponible) - Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€`)
-        
         if (distanceKm > 0 && durationMinutes > 0) {
+          const pricePerKm = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
+          const pricePerMinute = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
+          
+          console.log(`💰 CALCUL KM/MIN (pas de forfait disponible) - Prix/km: ${pricePerKm}€, Prix/min: ${pricePerMinute}€`)
+          
           const kmPrice = pricePerKm * distanceKm
           const minutePrice = pricePerMinute * durationMinutes
           basePrice = kmPrice + minutePrice
@@ -298,17 +298,11 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
             basePrice *= 2
             console.log(`↔️ Aller-retour: × 2 = ${basePrice.toFixed(2)}€`)
           }
-        } else if (pickup && destination) {
-          basePrice = 0
-          console.log(`📍 Adresses saisies mais distance non calculée, prix = 0`)
-          
-          if (serviceType === 'transfer' && transferType === 'roundtrip') {
-            basePrice *= 2
-            console.log(`↔️ Aller-retour: × 2 = ${basePrice.toFixed(2)}€`)
-          }
         } else {
           basePrice = 0
-          console.log('⚠️ Départ ou destination manquante, prix = 0')
+          console.log(pickup && destination && pickupCoords && destinationCoords 
+            ? '📍 Calcul de distance en cours, prix = 0' 
+            : '⚠️ Départ ou destination manquante, prix = 0')
         }
       }
 
