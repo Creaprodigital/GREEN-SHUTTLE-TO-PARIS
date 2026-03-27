@@ -437,12 +437,20 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
       toast.error('Veuillez remplir tous les champs obligatoires')
       return false
     }
+    if (!pickupCoords) {
+      toast.error('Veuillez sélectionner l\'adresse de départ dans la liste de suggestions')
+      return false
+    }
     if (serviceType === 'tour' && !selectedCircuitId) {
       toast.error('Veuillez sélectionner un circuit touristique')
       return false
     }
     if ((serviceType === 'transfer' || serviceType === 'shared') && !destination) {
       toast.error('Veuillez indiquer la destination')
+      return false
+    }
+    if ((serviceType === 'transfer' || serviceType === 'shared') && !destinationCoords) {
+      toast.error('Veuillez sélectionner l\'adresse de destination dans la liste de suggestions')
       return false
     }
     if (serviceType === 'transfer' && transferType === 'roundtrip' && (!returnDate || !returnTime)) {
@@ -1035,7 +1043,15 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                   {serviceType === 'hourly' && (
                     <div className="mb-3 grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="space-y-1.5">
-                        <Label htmlFor="pickup-hourly" className="text-xs font-medium uppercase tracking-wide">Lieu de Départ</Label>
+                        <Label htmlFor="pickup-hourly" className="text-xs font-medium uppercase tracking-wide flex items-center gap-2">
+                          Lieu de Départ
+                          {pickup && pickupCoords && (
+                            <span className="text-[10px] text-accent font-normal flex items-center gap-1">
+                              <Check size={12} weight="bold" />
+                              Validée
+                            </span>
+                          )}
+                        </Label>
                         <PlacesAutocomplete
                           id="pickup-hourly"
                           value={pickup}
@@ -1047,6 +1063,11 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                           className="h-10 bg-secondary border-border text-sm"
                           icon={<MapPin size={18} />}
                         />
+                        {pickup && !pickupCoords && (
+                          <p className="text-[10px] text-muted-foreground italic">
+                            ⚠️ Veuillez sélectionner l'adresse dans la liste déroulante
+                          </p>
+                        )}
                       </div>
                       <div className="space-y-1.5">
                         <Label htmlFor="hourlyDuration" className="text-xs font-medium uppercase tracking-wide">Nombre d'Heures</Label>
@@ -1122,7 +1143,15 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {serviceType !== 'hourly' && (
                       <div className="space-y-1.5">
-                        <Label htmlFor="pickup" className="text-xs font-medium uppercase tracking-wide">Lieu de Départ</Label>
+                        <Label htmlFor="pickup" className="text-xs font-medium uppercase tracking-wide flex items-center gap-2">
+                          Lieu de Départ
+                          {pickup && pickupCoords && (
+                            <span className="text-[10px] text-accent font-normal flex items-center gap-1">
+                              <Check size={12} weight="bold" />
+                              Validée
+                            </span>
+                          )}
+                        </Label>
                         <PlacesAutocomplete
                           id="pickup"
                           value={pickup}
@@ -1134,12 +1163,25 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                           className="h-10 bg-secondary border-border text-sm"
                           icon={<MapPin size={18} />}
                         />
+                        {pickup && !pickupCoords && (
+                          <p className="text-[10px] text-muted-foreground italic">
+                            ⚠️ Veuillez sélectionner l'adresse dans la liste déroulante
+                          </p>
+                        )}
                       </div>
                     )}
 
                     {(serviceType === 'transfer' || serviceType === 'shared') && (
                       <div className="space-y-1.5">
-                        <Label htmlFor="destination" className="text-xs font-medium uppercase tracking-wide">Destination</Label>
+                        <Label htmlFor="destination" className="text-xs font-medium uppercase tracking-wide flex items-center gap-2">
+                          Destination
+                          {destination && destinationCoords && (
+                            <span className="text-[10px] text-accent font-normal flex items-center gap-1">
+                              <Check size={12} weight="bold" />
+                              Validée
+                            </span>
+                          )}
+                        </Label>
                         <PlacesAutocomplete
                           id="destination"
                           value={destination}
@@ -1151,6 +1193,11 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                           className="h-10 bg-secondary border-border text-sm"
                           icon={<MapPin size={18} weight="fill" />}
                         />
+                        {destination && !destinationCoords && (
+                          <p className="text-[10px] text-muted-foreground italic">
+                            ⚠️ Veuillez sélectionner l'adresse dans la liste déroulante
+                          </p>
+                        )}
                       </div>
                     )}
 
