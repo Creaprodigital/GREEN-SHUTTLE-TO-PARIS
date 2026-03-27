@@ -282,7 +282,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
           basePrice = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonTourBasePrice || vehiclePricing.tourBasePrice) : vehiclePricing.tourBasePrice
           console.log(`🗺️ Tour: prix de base par défaut = ${basePrice}€`)
         }
-      } else if (serviceType === 'transfer') {
+      } else if (serviceType === 'transfer' || serviceType === 'shared') {
         const pricePerKm = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
         const pricePerMinute = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
         
@@ -292,9 +292,9 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
           const kmPrice = pricePerKm * distanceKm
           const minutePrice = pricePerMinute * durationMinutes
           basePrice = kmPrice + minutePrice
-          console.log(`🚗 Transfer: (${distanceKm}km × ${pricePerKm}€) + (${durationMinutes}min × ${pricePerMinute}€) = ${kmPrice.toFixed(2)}€ + ${minutePrice.toFixed(2)}€ = ${basePrice.toFixed(2)}€`)
+          console.log(`🚗 ${serviceType === 'shared' ? 'Shared' : 'Transfer'}: (${distanceKm}km × ${pricePerKm}€) + (${durationMinutes}min × ${pricePerMinute}€) = ${kmPrice.toFixed(2)}€ + ${minutePrice.toFixed(2)}€ = ${basePrice.toFixed(2)}€`)
           
-          if (transferType === 'roundtrip') {
+          if (serviceType === 'transfer' && transferType === 'roundtrip') {
             basePrice *= 2
             console.log(`↔️ Aller-retour: × 2 = ${basePrice.toFixed(2)}€`)
           }
@@ -302,7 +302,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
           basePrice = 0
           console.log(`📍 Adresses saisies mais distance non calculée, prix = 0`)
           
-          if (transferType === 'roundtrip') {
+          if (serviceType === 'transfer' && transferType === 'roundtrip') {
             basePrice *= 2
             console.log(`↔️ Aller-retour: × 2 = ${basePrice.toFixed(2)}€`)
           }
@@ -345,7 +345,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
     console.log('🏷️ Forfaits appliqués:', forfaitFlags)
     setAppliedForfaits(forfaitFlags)
     return prices
-  }, [fleet, pricing, serviceType, hourlyDuration, activePricingMode, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions, pickup, destination, pricingSettings, pickupCoords, destinationCoords, selectedCircuitId, circuits, zoneForfaits, pricingZones])
+  }, [fleet, pricing, serviceType, hourlyDuration, activePricingMode, distanceKm, durationMinutes, transferType, selectedOptions, serviceOptions, pickup, destination, pricingSettings, pickupCoords, destinationCoords, selectedCircuitId, circuits, zoneForfaits, pricingZones, passengers])
 
   const calculatePrice = (vehicleId: string): number => {
     return vehiclePrices[vehicleId] || 0
@@ -379,7 +379,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
   }
 
   useEffect(() => {
-    if (serviceType !== 'transfer' || !pickupCoords || !destinationCoords) {
+    if ((serviceType !== 'transfer' && serviceType !== 'shared') || !pickupCoords || !destinationCoords) {
       setDistanceKm(0)
       setDurationMinutes(0)
       setIsCalculatingDistance(false)
@@ -394,7 +394,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
     }
 
     setIsCalculatingDistance(true)
-    console.log('Calcul de la distance entre:', pickupCoords, 'et', destinationCoords)
+    console.log('🚗 Calcul de la distance entre:', pickupCoords, 'et', destinationCoords)
 
     const service = new google.maps.DistanceMatrixService()
     service.getDistanceMatrix(
@@ -405,8 +405,8 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
         unitSystem: google.maps.UnitSystem.METRIC
       },
       (response: any, status: any) => {
-        console.log('Distance Matrix API Status:', status)
-        console.log('Distance Matrix API Response:', response)
+        console.log('📊 Distance Matrix API Status:', status)
+        console.log('📊 Distance Matrix API Response:', response)
         
         if (status === 'OK' && response.rows[0]?.elements[0]?.status === 'OK') {
           const element = response.rows[0].elements[0]
@@ -415,14 +415,14 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
           const km = distanceMeters / 1000
           const minutes = Math.ceil(durationSeconds / 60)
           
-          console.log('Distance calculée:', km, 'km')
-          console.log('Durée calculée:', minutes, 'minutes')
+          console.log('✅ Distance calculée:', km, 'km')
+          console.log('✅ Durée calculée:', minutes, 'minutes')
           
           setDistanceKm(km)
           setDurationMinutes(minutes)
           setIsCalculatingDistance(false)
         } else {
-          console.error('Erreur Distance Matrix:', status, response?.rows[0]?.elements[0]?.status)
+          console.error('❌ Erreur Distance Matrix:', status, response?.rows[0]?.elements[0]?.status)
           setDistanceKm(0)
           setDurationMinutes(0)
           setIsCalculatingDistance(false)

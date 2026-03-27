@@ -2,9 +2,11 @@ export interface VehiclePricing {
   vehicleId: string
   pricePerKm: number
   pricePerMinute: number
+  pricePerHour: number
   tourBasePrice: number
   lowSeasonPricePerKm?: number
   lowSeasonPricePerMinute?: number
+  lowSeasonPricePerHour?: number
   lowSeasonTourBasePrice?: number
 }
 
@@ -42,36 +44,44 @@ export const DEFAULT_PRICING: VehiclePricing[] = [
     vehicleId: 'berline',
     pricePerKm: 2,
     pricePerMinute: 0.30,
+    pricePerHour: 60,
     tourBasePrice: 350,
     lowSeasonPricePerKm: 2,
     lowSeasonPricePerMinute: 0.30,
+    lowSeasonPricePerHour: 60,
     lowSeasonTourBasePrice: 350
   },
   {
     vehicleId: 'business',
     pricePerKm: 2,
     pricePerMinute: 0.30,
+    pricePerHour: 80,
     tourBasePrice: 350,
     lowSeasonPricePerKm: 2,
     lowSeasonPricePerMinute: 0.30,
+    lowSeasonPricePerHour: 80,
     lowSeasonTourBasePrice: 350
   },
   {
     vehicleId: 'van',
     pricePerKm: 2,
     pricePerMinute: 0.30,
+    pricePerHour: 90,
     tourBasePrice: 350,
     lowSeasonPricePerKm: 2,
     lowSeasonPricePerMinute: 0.30,
+    lowSeasonPricePerHour: 90,
     lowSeasonTourBasePrice: 350
   },
   {
     vehicleId: 'first',
     pricePerKm: 2,
     pricePerMinute: 0.30,
+    pricePerHour: 100,
     tourBasePrice: 350,
     lowSeasonPricePerKm: 2,
     lowSeasonPricePerMinute: 0.30,
+    lowSeasonPricePerHour: 100,
     lowSeasonTourBasePrice: 350
   }
 ]
