@@ -1557,10 +1557,14 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                                           {(serviceType === 'transfer' || serviceType === 'shared') && (!pickup || !destination) 
                                             ? 'Saisissez départ et destination' 
                                             : (serviceType === 'transfer' || serviceType === 'shared') && (!pickupCoords || !destinationCoords)
+                                            ? 'Sélectionnez une adresse dans la liste'
+                                            : (serviceType === 'transfer' || serviceType === 'shared') && isCalculatingDistance
+                                            ? 'Calcul du tarif...'
+                                            : (serviceType === 'transfer' || serviceType === 'shared') && pickupCoords && destinationCoords && distanceKm === 0
                                             ? 'Calcul du tarif...'
                                             : serviceType === 'tour' && !selectedCircuitId
                                             ? 'Sélectionnez un circuit'
-                                            : 'Calcul du tarif en cours...'
+                                            : 'Prix non disponible'
                                           }
                                         </div>
                                       )}
