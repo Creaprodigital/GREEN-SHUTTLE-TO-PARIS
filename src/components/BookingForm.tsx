@@ -1198,18 +1198,20 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                     )}
 
                     <div className="space-y-1.5">
-el htmlFor="date" className="text-xs font-medium uppercase tracking-wide">Date de Départ</Label>
+                      <Label htmlFor="date" className="text-xs font-medium uppercase tracking-wide">Date de Départ</Label>
                       <div className="relative">
                         <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <Input
                           id="date"
                           type="date"
                           value={date}
-                          value={date}
                           onChange={(e) => setDate(e.target.value)}
                           min={new Date().toISOString().split('T')[0]}
                           className="pl-10 h-10 bg-secondary border-border text-sm"
                         />
+                      </div>
+                    </div>
+
                     <div className="space-y-1.5">
                       <Label htmlFor="time" className="text-xs font-medium uppercase tracking-wide">Heure de Départ</Label>
                       <div className="relative">
@@ -1218,8 +1220,8 @@ el htmlFor="date" className="text-xs font-medium uppercase tracking-wide">Date d
                           id="time"
                           type="time"
                           value={time}
-                          value={time}
-                          type="date"
+                          onChange={(e) => setTime(e.target.value)}
+                          className="pl-10 h-10 bg-secondary border-border text-sm"
                         />
                       </div>
                     </div>
