@@ -1155,6 +1155,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                           id="pickup"
                           value={pickup}
                           onChange={(value, coords) => {
+                            setPickup(value)
                             setPickupCoords(coords || null)
                           }}
                           placeholder="Adresse de départ"
