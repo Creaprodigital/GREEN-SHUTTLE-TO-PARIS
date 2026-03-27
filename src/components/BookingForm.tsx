@@ -1595,20 +1595,25 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                                             }
                                           </div>
                                         </>
+                                      ) : isCalculatingDistance ? (
+                                        <div className="text-[10px] text-muted-foreground italic">
+                                          Calcul du tarif...
+                                        </div>
+                                      ) : (serviceType === 'transfer' || serviceType === 'shared') && (!pickup || !destination) ? (
+                                        <div className="text-[10px] text-muted-foreground italic">
+                                          Saisissez départ et destination
+                                        </div>
+                                      ) : (serviceType === 'transfer' || serviceType === 'shared') && (!pickupCoords || !destinationCoords) ? (
+                                        <div className="text-[10px] text-muted-foreground italic">
+                                          Sélectionnez une adresse dans la liste
+                                        </div>
+                                      ) : serviceType === 'tour' && !selectedCircuitId ? (
+                                        <div className="text-[10px] text-muted-foreground italic">
+                                          Sélectionnez un circuit
+                                        </div>
                                       ) : (
                                         <div className="text-[10px] text-muted-foreground italic">
-                                          {(serviceType === 'transfer' || serviceType === 'shared') && (!pickup || !destination) 
-                                            ? 'Saisissez départ et destination' 
-                                            : (serviceType === 'transfer' || serviceType === 'shared') && (!pickupCoords || !destinationCoords)
-                                            ? 'Sélectionnez une adresse dans la liste'
-                                            : (serviceType === 'transfer' || serviceType === 'shared') && isCalculatingDistance
-                                            ? 'Calcul du tarif...'
-                                            : (serviceType === 'transfer' || serviceType === 'shared') && pickupCoords && destinationCoords && distanceKm === 0
-                                            ? 'Calcul du tarif...'
-                                            : serviceType === 'tour' && !selectedCircuitId
-                                            ? 'Sélectionnez un circuit'
-                                            : 'Prix non disponible'
-                                          }
+                                          Prix non disponible
                                         </div>
                                       )}
                                     </div>
