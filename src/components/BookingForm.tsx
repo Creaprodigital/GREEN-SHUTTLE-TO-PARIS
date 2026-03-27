@@ -1150,6 +1150,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                               Validée
                             </span>
                           )}
+                        </Label>
                         <PlacesAutocomplete
                           id="pickup"
                           value={pickup}
@@ -1159,31 +1160,26 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                           placeholder="Adresse de départ"
                           className="h-10 bg-secondary border-border text-sm"
                           icon={<MapPin size={18} />}
-                          icon={<MapPin size={18} />}
                         />
-                          <p className="text-[10px] text-muted-foreground italic">
-                            ⚠️ Veuillez sélectionner l'adresse dans la liste déroulante
-                          </p>
-                          </p>
+                          ⚠️ Veuillez sélectionner l'adresse dans la liste déroulante
+                        </p>
                       </div>
-                      </div>
+                    )}
                     )}
 iceType === 'shared') && (
                     {(serviceType === 'transfer' || serviceType === 'shared') && (
-                      <div className="space-y-1.5">ems-center justify-between gap-2">
+                        <Label htmlFor="destination" className="text-xs font-medium uppercase tracking-wide flex items-center justify-between gap-2">
+                          <span>Adresse d'Arrivée</span>
                           <span>Adresse d'Arrivée</span>
                           {destination && destinationCoords && (
-                            <span className="text-[10px] text-accent font-normal flex items-center gap-1">
                               <Check size={12} weight="bold" />
                               Validée
                             </span>
-                            </span>
                           )}
                         <PlacesAutocomplete
-                        <PlacesAutocomplete
-                          id="destination"
+                        </Label>
                           value={destination}
-                          onChange={(value, coords) => {
+                          id="destination"
                             setDestination(value)
                             setDestinationCoords(coords || null)
                           }}
@@ -1195,11 +1191,12 @@ iceType === 'shared') && (
                           <p className="text-[10px] text-muted-foreground italic">
                             ⚠️ Veuillez sélectionner l'adresse dans la liste déroulante
                           </p>
+                        )}
                       </div>
-                    )}
+                        )}
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="date" className="text-xs font-medium uppercase tracking-wide">Date de Départ</Label>
+el htmlFor="date" className="text-xs font-medium uppercase tracking-wide">Date de Départ</Label>
                       <div className="relative">
                         <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <Input
