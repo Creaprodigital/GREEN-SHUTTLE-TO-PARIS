@@ -1353,30 +1353,30 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                                         alt={vehicle.title}
                                         className="w-full h-full"
                                         style={{
-                                          objectFit: vehicle.imageSettings?.fit || 'cover',
-                                          objectPosition: `${vehicle.imageSettings?.positionX || 50}% ${vehicle.imageSettings?.positionY || 50}%`
-                                        }}
-                                      />
-                                    </div>
-                                  )}
-                                  <div className="text-center w-full">
-                                    <div className="font-semibold uppercase tracking-wide text-sm">{vehicle.title}</div>
-                                    <div className="text-xs text-muted-foreground mt-0.5">{vehicle.description}</div>
-                                    <div className="mt-2 pt-2 border-t border-border">
-                                      {vehiclePrice > 0 ? (
-                                        <>
-                                          <div className="flex items-center justify-center gap-1 text-accent font-bold text-base">
-                                            <CurrencyEur size={18} weight="bold" />
-                                            <span>{vehiclePrice.toFixed(2)}</span>
-                                            {appliedForfaits[vehicle.id] && (
-                                              <Tag size={16} weight="fill" className="text-accent ml-1" />
-                                            )}
-                                          </div>
-                                          <div className="text-[10px] text-muted-foreground mt-0.5">
-                                            {serviceType === 'shared' 
-                                              ? `Prix par personne (${passengers} ${parseInt(passengers) > 1 ? 'passagers' : 'passager'})` 
-                                              : appliedForfaits[vehicle.id] 
-                                              ? 'Forfait Zone à Zone' 
+                      {isCalculatingDistance ? (
+                        <div className="flex justify-center items-center text-sm text-muted-foreground py-6">
+                          <div className="animate-spin rounded-full h-6 w-6 border-2 border-accent border-t-transparent mr-3"></div>
+                          Calcul de l'itinéraire en cours...
+                        </div>
+                      ) : distanceKm > 0 && durationMinutes > 0 ? (
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="flex flex-col items-center justify-center p-4 bg-background rounded-lg border-2 border-accent/30">
+                              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-medium">Distance</div>
+                              <div className="text-3xl font-bold text-accent flex items-center gap-1">
+                                {distanceKm.toFixed(1)} 
+                                <span className="text-lg">km</span>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-center justify-center p-4 bg-background rounded-lg border-2 border-accent/30">
+                              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-medium">Durée</div>
+                              <div className="text-3xl font-bold text-accent flex items-center gap-1">
+                                <Clock size={28} weight="fill" className="mr-1" />
+                                {durationMinutes} 
+                                <span className="text-lg">min</span>
+                              </div>
+                            </div>
+                          </div>
                                               : 'Véhicule avec Chauffeur'
                                             }
                                           </div>
