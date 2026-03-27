@@ -1594,6 +1594,36 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                                               : 'Véhicule avec Chauffeur'
                                             }
                                           </div>
+                                          {(serviceType === 'transfer' || serviceType === 'shared') && !appliedForfaits[vehicle.id] && distanceKm > 0 && durationMinutes > 0 && (() => {
+                                            const vehiclePricing = pricing?.find(p => p.vehicleId === vehicle.id)
+                                            if (!vehiclePricing) return null
+                                            const pricePerKm = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerKm || vehiclePricing.pricePerKm) : vehiclePricing.pricePerKm
+                                            const pricePerMinute = activePricingMode === 'low-season' ? (vehiclePricing.lowSeasonPricePerMinute || vehiclePricing.pricePerMinute) : vehiclePricing.pricePerMinute
+                                            const kmPrice = pricePerKm * distanceKm
+                                            const minutePrice = pricePerMinute * durationMinutes
+                                            return (
+                                              <div className="text-[9px] text-muted-foreground/80 mt-1.5 pt-1.5 border-t border-border/50 space-y-0.5">
+                                                <div className="flex items-center justify-center gap-1">
+                                                  <span>{distanceKm.toFixed(1)} km × {pricePerKm.toFixed(2)}€ = {kmPrice.toFixed(2)}€</span>
+                                                </div>
+                                                <div className="flex items-center justify-center gap-1">
+                                                  <span>{durationMinutes} min × {pricePerMinute.toFixed(2)}€ = {minutePrice.toFixed(2)}€</span>
+                                                </div>
+                                                {selectedOptions.length > 0 && (() => {
+                                                  const optionsPrice = selectedOptions.reduce((sum, optionId) => {
+                                                    const option = serviceOptions?.find(o => o.id === optionId)
+                                                    return sum + (option?.price || 0)
+                                                  }, 0)
+                                                  if (optionsPrice > 0) {
+                                                    return <div className="flex items-center justify-center gap-1">
+                                                      <span>Options: +{optionsPrice.toFixed(2)}€</span>
+                                                    </div>
+                                                  }
+                                                  return null
+                                                })()}
+                                              </div>
+                                            )
+                                          })()}
                                         </>
                                       ) : isCalculatingDistance ? (
                                         <div className="text-[10px] text-muted-foreground italic">
