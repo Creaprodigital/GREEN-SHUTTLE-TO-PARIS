@@ -233,13 +233,12 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
 
       setFleetData((currentData) => {
         const data = Array.isArray(currentData) ? currentData : DEFAULT_FLEET
-        const updated = data.map((vehicle) => {
+        return data.map((vehicle) => {
           if (vehicle.id === vehicleId) {
             return { ...vehicle, image: result, imageName: uniqueFileName }
           }
           return vehicle
         })
-        return updated
       })
       
       setUploadingImage(null)
@@ -254,18 +253,15 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
   const handleUpdateVehicle = (vehicleId: string, updates: Partial<VehicleClass>) => {
     setFleetData((current) => {
       const data = Array.isArray(current) ? current : DEFAULT_FLEET
-      const updated = data.map((vehicle) =>
+      return data.map((vehicle) =>
         vehicle.id === vehicleId
           ? { ...vehicle, ...updates }
           : vehicle
       )
-      return updated
     })
     
-    setTimeout(() => {
-      setEditingVehicle(null)
-      toast.success('Vehicle updated successfully')
-    }, 100)
+    setEditingVehicle(null)
+    toast.success('Véhicule mis à jour avec succès')
   }
 
   const handleAddVehicle = () => {
