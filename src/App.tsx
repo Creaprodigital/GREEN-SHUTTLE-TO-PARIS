@@ -31,7 +31,7 @@ import { useSharedRideNotifications } from '@/hooks/useSharedRideNotifications'
 function AppContent() {
   const navigate = useNavigate()
   const location = useLocation()
-  const [currentUser, setCurrentUser] = useState<{ email: string; isAdmin: boolean } | null>(null)
+  const [currentUser, setCurrentUser] = useKV<{ email: string; isAdmin: boolean } | null>('current-user', null)
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [])
   const [isAdminMode, setIsAdminMode] = useState(false)
 
