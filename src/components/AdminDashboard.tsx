@@ -93,56 +93,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
   const [emailSettings, setEmailSettings] = useKV<EmailSettings>('email-settings', DEFAULT_EMAIL_SETTINGS)
   const [stripeSettings, setStripeSettings] = useKV<StripeSettings>('stripe-settings', DEFAULT_STRIPE_SETTINGS)
 
-  useEffect(() => {
-    if (!fleetData || !pricingData) return
-    
-    const validVehicleIds = fleetData.map(v => v.id)
-    const invalidPricings = pricingData.filter(p => !validVehicleIds.includes(p.vehicleId))
-    
-    if (invalidPricings.length > 0) {
-      const validPricings = pricingData.filter(p => validVehicleIds.includes(p.vehicleId))
-      const missingPricings = fleetData
-        .filter(v => !pricingData.some(p => p.vehicleId === v.id))
-        .map(v => {
-          const defaultPricing = DEFAULT_PRICING.find(p => p.vehicleId === v.id)
-          if (defaultPricing) return defaultPricing
-          
-          return {
-            vehicleId: v.id,
-            pricePerKm: 0,
-            pricePerMinute: 0,
-            tourBasePrice: 0,
-            lowSeasonPricePerKm: 0,
-            lowSeasonPricePerMinute: 0,
-            lowSeasonTourBasePrice: 0
-          }
-        })
-      
-      setPricingData([...validPricings, ...missingPricings])
-      toast.info(`Tarifs synchronisés avec la flotte: ${invalidPricings.length} supprimé(s), ${missingPricings.length} ajouté(s)`)
-    }
-    
-    const missingVehicles = fleetData.filter(v => !pricingData.some(p => p.vehicleId === v.id))
-    if (missingVehicles.length > 0 && invalidPricings.length === 0) {
-      const newPricings = missingVehicles.map(v => {
-        const defaultPricing = DEFAULT_PRICING.find(p => p.vehicleId === v.id)
-        if (defaultPricing) return defaultPricing
-        
-        return {
-          vehicleId: v.id,
-          pricePerKm: 0,
-          pricePerMinute: 0,
-          tourBasePrice: 0,
-          lowSeasonPricePerKm: 0,
-          lowSeasonPricePerMinute: 0,
-          lowSeasonTourBasePrice: 0
-        }
-      })
-      
-      setPricingData((current) => [...(current || []), ...newPricings])
-      toast.info(`${missingVehicles.length} tarif(s) créé(s) pour les nouveaux véhicules`)
-    }
-  }, [fleetData, pricingData, setPricingData])
+
 
   const filteredBookings = (bookings || []).filter(b => {
     const matchesStatus = filterStatus === 'all' || b.status === filterStatus
