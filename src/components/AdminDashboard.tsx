@@ -251,13 +251,14 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
   }
 
   const handleUpdateVehicle = (vehicleId: string, updates: Partial<VehicleClass>) => {
-    setFleetData((current) => {
-      const data = Array.isArray(current) ? current : DEFAULT_FLEET
-      return data.map((vehicle) =>
+    setFleetData((currentFleet) => {
+      const data = Array.isArray(currentFleet) ? currentFleet : DEFAULT_FLEET
+      const updatedFleet = data.map((vehicle) =>
         vehicle.id === vehicleId
           ? { ...vehicle, ...updates }
           : vehicle
       )
+      return updatedFleet
     })
     
     setEditingVehicle(null)
@@ -266,39 +267,39 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
 
   const handleAddVehicle = () => {
     if (!newVehicleTitle || !newVehicleDescription) {
-      toast.error('Please enter both title and description')
+      toast.error('Veuillez remplir le titre et la description')
       return
     }
 
-    setFleetData((current) => {
-      const data = Array.isArray(current) ? current : DEFAULT_FLEET
+    setFleetData((currentFleet) => {
+      const data = Array.isArray(currentFleet) ? currentFleet : DEFAULT_FLEET
       const maxOrder = Math.max(...data.map(v => v.order), 0)
       const newId = `vehicle-${Date.now()}`
       
-      return [
-        ...data,
-        {
-          id: newId,
-          title: newVehicleTitle,
-          description: newVehicleDescription,
-          image: '',
-          order: maxOrder + 1
-        }
-      ]
+      const newVehicle: VehicleClass = {
+        id: newId,
+        title: newVehicleTitle,
+        description: newVehicleDescription,
+        image: '',
+        order: maxOrder + 1
+      }
+      
+      return [...data, newVehicle]
     })
 
     setNewVehicleTitle('')
     setNewVehicleDescription('')
-    toast.success('Vehicle added successfully')
+    toast.success('Véhicule ajouté avec succès')
   }
 
   const handleDeleteVehicle = (vehicleId: string) => {
-    if (confirm('Are you sure you want to delete this vehicle?')) {
-      setFleetData((current) => {
-        const data = Array.isArray(current) ? current : DEFAULT_FLEET
-        return data.filter((vehicle) => vehicle.id !== vehicleId)
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) {
+      setFleetData((currentFleet) => {
+        const data = Array.isArray(currentFleet) ? currentFleet : DEFAULT_FLEET
+        const filteredData = data.filter((vehicle) => vehicle.id !== vehicleId)
+        return filteredData
       })
-      toast.success('Vehicle deleted')
+      toast.success('Véhicule supprimé avec succès')
     }
   }
 
