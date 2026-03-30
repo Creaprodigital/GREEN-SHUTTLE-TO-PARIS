@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,38 +8,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Trash, Plus, Tag, Percent, CurrencyEur } from '@phosphor-icons/react'
 import { toast } from 'sonner'
-import { useCloudSync } from '@/hooks/useCloudSync'
-import { CloudSyncIndicator } from '@/components/CloudSyncIndicator'
-import { SyncNotification } from '@/components/SyncNotification'
+import { useKV } from '@github/spark/hooks'
 import { PromoCode, DEFAULT_PROMO_CODES } from '@/types/promo'
 
 export default function PromoCodeManager() {
-  const [userEmail, setUserEmail] = useState<string>('')
-  const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle')
-  const [showSyncNotification, setShowSyncNotification] = useState(false)
-  const [syncNotificationMessage, setSyncNotificationMessage] = useState('')
-  
-  const { 
-    data: promoCodes, 
-    setData: setPromoCodes, 
-    syncToCloud, 
-    syncMeta, 
-    isLatestVersion 
-  } = useCloudSync<PromoCode[]>('promo-codes', DEFAULT_PROMO_CODES, {
-    onSyncComplete: (data) => {
-      console.log('Codes promo synchronisés:', data.length, 'codes')
-      if (syncMeta?.lastModifiedBy && syncMeta.lastModifiedBy !== userEmail) {
-        setSyncNotificationMessage(`Codes promo mis à jour par ${syncMeta.lastModifiedBy}`)
-        setShowSyncNotification(true)
-      }
-    },
-    onSyncError: (error) => {
-      console.error('Erreur de synchronisation:', error)
-      toast.error('Erreur de synchronisation cloud')
-      setSyncStatus('error')
-    },
-    syncInterval: 2000
-  })
+  const [promoCodes, setPromoCodes] = useKV<PromoCode[]>('promo-codes', DEFAULT_PROMO_CODES)
   
   const [newCode, setNewCode] = useState('')
   const [newType, setNewType] = useState<'percentage' | 'fixed'>('percentage')
@@ -50,19 +23,7 @@ export default function PromoCodeManager() {
   const [newUsageLimit, setNewUsageLimit] = useState('')
   const [newExpiresAt, setNewExpiresAt] = useState('')
 
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const user = await spark.user()
-        setUserEmail(user.email || user.login)
-      } catch (error) {
-        console.error('Error loading user:', error)
-      }
-    }
-    loadUser()
-  }, [])
-
-  const handleAddPromoCode = async () => {
+  const handleAddPromoCode = () => {
     if (!newCode || !newValue) {
       toast.error('Veuillez remplir tous les champs obligatoires')
       return
@@ -99,13 +60,7 @@ export default function PromoCodeManager() {
       isActive: true
     }
 
-    const updatedCodes = [...(promoCodes || []), promoCode]
-    setPromoCodes(updatedCodes)
-    
-    setSyncStatus('syncing')
-    await syncToCloud(updatedCodes, userEmail)
-    setSyncStatus('synced')
-    setTimeout(() => setSyncStatus('idle'), 2000)
+    setPromoCodes((current) => [...(current || []), promoCode])
     
     setNewCode('')
     setNewValue('')
@@ -115,56 +70,30 @@ export default function PromoCodeManager() {
     setNewUsageLimit('')
     setNewExpiresAt('')
     
-    toast.success('Code promo créé et synchronisé')
+    toast.success('Code promo créé avec succès')
   }
 
-  const handleDeletePromoCode = async (id: string) => {
-    const updatedCodes = (promoCodes || []).filter(p => p.id !== id)
-    setPromoCodes(updatedCodes)
-    
-    setSyncStatus('syncing')
-    await syncToCloud(updatedCodes, userEmail)
-    setSyncStatus('synced')
-    setTimeout(() => setSyncStatus('idle'), 2000)
-    
-    toast.success('Code promo supprimé et synchronisé')
+  const handleDeletePromoCode = (id: string) => {
+    setPromoCodes((current) => (current || []).filter(p => p.id !== id))
+    toast.success('Code promo supprimé')
   }
 
-  const handleToggleActive = async (id: string) => {
-    const updatedCodes = (promoCodes || []).map(p =>
-      p.id === id ? { ...p, isActive: !p.isActive } : p
+  const handleToggleActive = (id: string) => {
+    setPromoCodes((current) =>
+      (current || []).map(p =>
+        p.id === id ? { ...p, isActive: !p.isActive } : p
+      )
     )
-    setPromoCodes(updatedCodes)
-    
-    setSyncStatus('syncing')
-    await syncToCloud(updatedCodes, userEmail)
-    setSyncStatus('synced')
-    setTimeout(() => setSyncStatus('idle'), 2000)
   }
 
   return (
-    <>
-      <SyncNotification
-        show={showSyncNotification}
-        message={syncNotificationMessage}
-        onClose={() => setShowSyncNotification(false)}
-      />
-      
-      <Card className="bg-card border-2 border-border">
-        <CardHeader className="border-b border-border">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-lg uppercase tracking-wide">
-              <Tag size={24} weight="fill" className="text-accent" />
-              Codes Promo
-            </CardTitle>
-            <CloudSyncIndicator
-              status={syncStatus}
-              isLatestVersion={isLatestVersion}
-              lastModifiedBy={syncMeta?.lastModifiedBy}
-              lastSyncTimestamp={syncMeta?.lastSyncTimestamp}
-            />
-          </div>
-        </CardHeader>
+    <Card className="bg-card border-2 border-border">
+      <CardHeader className="border-b border-border">
+        <CardTitle className="flex items-center gap-2 text-lg uppercase tracking-wide">
+          <Tag size={24} weight="fill" className="text-accent" />
+          Codes Promo
+        </CardTitle>
+      </CardHeader>
       <CardContent className="pt-6 space-y-6">
         <div className="space-y-4">
           <h3 className="text-sm font-semibold uppercase tracking-wide flex items-center gap-2">
@@ -403,6 +332,5 @@ export default function PromoCodeManager() {
         )}
       </CardContent>
     </Card>
-    </>
   )
 }
