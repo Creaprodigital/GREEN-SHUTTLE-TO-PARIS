@@ -93,21 +93,33 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
 
   useEffect(() => {
     const initializeDefaults = async () => {
-      if ((!adminAccounts || adminAccounts.length === 0)) {
-        setAdminAccounts([{ email: 'admin@greenshuttle.com', password: 'admin123', createdAt: new Date().toISOString() }])
-      }
+      setAdminAccounts((current) => {
+        if (!current || current.length === 0) {
+          return [{ email: 'admin@greenshuttle.com', password: 'admin123', createdAt: new Date().toISOString() }]
+        }
+        return current
+      })
       
-      if (!fleetData || fleetData.length === 0) {
-        setFleetData(DEFAULT_FLEET)
-      }
+      setFleetData((current) => {
+        if (!current || current.length === 0) {
+          return DEFAULT_FLEET
+        }
+        return current
+      })
       
-      if (!pricingData || pricingData.length === 0) {
-        setPricingData(DEFAULT_PRICING)
-      }
+      setPricingData((current) => {
+        if (!current || current.length === 0) {
+          return DEFAULT_PRICING
+        }
+        return current
+      })
       
-      if (!optionsData || optionsData.length === 0) {
-        setOptionsData(DEFAULT_OPTIONS)
-      }
+      setOptionsData((current) => {
+        if (!current || current.length === 0) {
+          return DEFAULT_OPTIONS
+        }
+        return current
+      })
     }
     
     initializeDefaults()

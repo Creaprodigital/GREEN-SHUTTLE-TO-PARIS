@@ -40,11 +40,6 @@ export default function PromoCodeManager() {
       return
     }
 
-    if (promoCodes && promoCodes.some(p => p.code.toLowerCase() === newCode.toLowerCase())) {
-      toast.error('Ce code promo existe déjà')
-      return
-    }
-
     const promoCode: PromoCode = {
       id: `promo-${Date.now()}-${Math.random().toString(36).substring(7)}`,
       code: newCode.toUpperCase(),
@@ -60,7 +55,16 @@ export default function PromoCodeManager() {
       isActive: true
     }
 
-    setPromoCodes((current) => [...(current || []), promoCode])
+    setPromoCodes((current) => {
+      const currentCodes = current || []
+      
+      if (currentCodes.some(p => p.code.toLowerCase() === newCode.toLowerCase())) {
+        toast.error('Ce code promo existe déjà')
+        return currentCodes
+      }
+      
+      return [...currentCodes, promoCode]
+    })
     
     setNewCode('')
     setNewValue('')
