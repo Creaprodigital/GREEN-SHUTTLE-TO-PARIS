@@ -1,182 +1,151 @@
-# Planning Guide
+# Configuration Supabase - Guide de Démarrage Rapide
 
-Green Shuttle To Paris - A premium chauffeur service booking platform that enables users to reserve professional transportation to Paris and beyond with an elegant, trustworthy interface. Now includes comprehensive client and admin portals for booking management.
+Une interface de configuration Supabase élégante et interactive avec un guide pas à pas, un testeur de connexion en temps réel, et des instructions visuelles.
 
-**Experience Qualities**: 
-1. **Luxurious** - The interface should feel refined and premium, reflecting the high-end nature of the service
-2. **Trustworthy** - Clean, professional design that builds confidence in the booking process
-3. **Effortless** - Streamlined booking flow that makes reserving a ride feel simple and intuitive
+**Experience Qualities**:
+1. **Guidant** - L'interface accompagne l'utilisateur étape par étape avec des instructions claires et visuelles
+2. **Rassurant** - Feedback immédiat sur l'état de la configuration avec des messages d'erreur constructifs
+3. **Professionnel** - Design technique et moderne qui inspire confiance et crédibilité
 
-**Complexity Level**: Complex Application (advanced functionality with multiple views)
-This is a comprehensive booking platform with multi-step forms, client/admin authentication, dashboard views for booking management, and persistent data storage. It requires state management, role-based access control, and CRUD operations on bookings.
+**Complexity Level**: Light Application (multiple features with basic state)
+L'application combine un guide multi-étapes, un formulaire de configuration, et un testeur de connexion en temps réel.
 
 ## Essential Features
 
-**Booking Form**
-- Functionality: Multi-step form collecting pickup location, destination, date/time, service type, and user email
-- Purpose: Core conversion point - enables users to request a chauffeur service
-- Trigger: User interaction with prominent booking widget on homepage
-- Progression: Select service type → Enter pickup location → Enter destination → Choose date/time → Enter email → Submit request
-- Success criteria: Form validates inputs, stores booking data with pending status, displays confirmation message
+### Guide de Configuration Étape par Étape
+- **Functionality**: Affiche les 5 étapes de configuration Supabase avec progression visuelle
+- **Purpose**: Simplifier le processus de configuration pour les développeurs
+- **Trigger**: Au chargement de l'application
+- **Progression**: Affichage des étapes → Sélection d'une étape → Affichage des instructions détaillées → Validation → Passage à l'étape suivante
+- **Success criteria**: L'utilisateur peut naviguer entre les étapes et comprendre chaque action requise
 
-**Client Authentication & Dashboard**
-- Functionality: Email-based login system allowing clients to access their personal booking dashboard
-- Purpose: Enable users to view and track all their reservations in one place
-- Trigger: User clicks "Client / Admin" button and logs in as client
-- Progression: Enter email → Access dashboard → View all personal bookings with status, details, and pricing
-- Success criteria: Users can see only their own bookings filtered by email, with clear status indicators
+### Testeur de Connexion en Temps Réel
+- **Functionality**: Vérifie la validité des credentials Supabase et affiche le statut de connexion
+- **Purpose**: Donner un feedback immédiat sur la configuration
+- **Trigger**: Saisie des credentials ou clic sur "Test Connection"
+- **Progression**: Saisie des credentials → Validation du format → Test de connexion → Affichage du résultat (succès/erreur)
+- **Success criteria**: L'utilisateur voit immédiatement si sa configuration fonctionne
 
-**Admin Dashboard**
-- Functionality: Administrative panel with full booking management capabilities
-- Purpose: Allow administrators to view all bookings, update statuses, set prices, and manage reservations
-- Trigger: User logs in with admin checkbox selected
-- Progression: Enter email + check admin → Access admin panel → View/search/filter all bookings → Update status/price → Delete bookings
-- Success criteria: Admin can manage all bookings, filter by status, search by details, modify booking information in real-time
+### Générateur de Script SQL
+- **Functionality**: Affiche le script SQL nécessaire pour créer les tables Supabase
+- **Purpose**: Faciliter la configuration de la base de données
+- **Trigger**: Clic sur l'étape 2 "Créer les tables"
+- **Progression**: Affichage du script → Copie dans le presse-papiers → Confirmation visuelle
+- **Success criteria**: L'utilisateur peut copier facilement le script SQL complet
 
-**Booking Management System**
-- Functionality: Persistent storage and CRUD operations for all bookings
-- Purpose: Maintain booking history and allow modifications from admin side
-- Trigger: Booking creation from homepage form or updates from admin dashboard
-- Progression: Create booking → Store with unique ID → Allow admin updates → Reflect changes in client/admin views
-- Success criteria: All bookings persist between sessions, updates are immediate, data integrity maintained
+### Éditeur de Variables d'Environnement
+- **Functionality**: Interface pour saisir et visualiser les variables VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY
+- **Purpose**: Configurer les credentials de manière sécurisée
+- **Trigger**: Navigation vers l'étape 4
+- **Progression**: Saisie de l'URL → Saisie de la clé → Validation du format → Génération du fichier .env.local → Instructions de redémarrage
+- **Success criteria**: Les variables sont formatées correctement et sauvegardées
 
-**Status Tracking**
-- Functionality: Visual status indicators for bookings (pending, confirmed, completed, cancelled)
-- Purpose: Provide clear visibility into booking lifecycle for both clients and admins
-- Trigger: Booking creation or admin status update
-- Progression: Initial "pending" status → Admin confirms → Changes to "confirmed" → Eventually "completed" or "cancelled"
-- Success criteria: Color-coded badges, status changes reflected in real-time, intuitive status workflow
-
-**Service Type Selection**
-- Functionality: Display available service tiers (Business, First Class, SUV) with descriptions and features
-- Purpose: Help users choose the right service level for their needs
-- Trigger: User clicks service selector in booking flow or browses service cards
-- Progression: View service options → Compare features → Select preferred service → Continue to booking
-- Success criteria: Clear differentiation between services, smooth selection experience
-
-**Location & DateTime Input**
-- Functionality: Smart input fields for pickup/dropoff locations and scheduling
-- Purpose: Capture essential trip details with minimal friction
-- Trigger: User progresses through booking form
-- Progression: Enter pickup address → Enter destination → Select date → Select time → Confirm
-- Success criteria: Intuitive input with helpful labels, clear validation
-
-**Service Highlights Showcase**
-- Functionality: Display key benefits (professional drivers, premium vehicles, reliability, global coverage)
-- Purpose: Build trust and communicate value proposition
-- Trigger: Page load, user scrolls through homepage
-- Progression: User views hero → Reads service benefits → Explores service types → Initiates booking
-- Success criteria: Compelling content presentation, smooth scroll experience
-
-**404 Error Page**
-- Functionality: Elegant error page displayed when users navigate to non-existent routes
-- Purpose: Maintain brand experience even during errors and guide users back to valid pages
-- Trigger: User attempts to access invalid URL or broken link
-- Progression: View 404 message → See helpful navigation options → Return to home, services, or contact
-- Success criteria: Clear error communication, maintains luxury aesthetic, provides easy navigation back to site
+### Visualisateur d'État de Configuration
+- **Functionality**: Dashboard montrant l'état actuel de la configuration Supabase
+- **Purpose**: Donner une vue d'ensemble rapide de la configuration
+- **Trigger**: Au chargement de l'application
+- **Progression**: Vérification des variables → Vérification de la connexion → Affichage du statut global → Actions recommandées
+- **Success criteria**: L'utilisateur voit immédiatement si Supabase est configuré et fonctionnel
 
 ## Edge Case Handling
 
-- **Empty Form Submission**: Validate all required fields (including email) before submission, highlight missing inputs with clear error messages
-- **Invalid Email Format**: Check for valid email format, show helpful error if @ symbol missing or format incorrect
-- **Unauthorized Access**: Login required to access client/admin dashboards, redirect to login if attempting direct access
-- **No Bookings Found**: Display empty state with helpful message and icon when user has no bookings
-- **Admin vs Client Access**: Clearly differentiate admin capabilities (full CRUD) from client view (read-only)
-- **Concurrent Updates**: Handle potential conflicts when admin updates booking while client is viewing
-- **Invalid Price Input**: Validate numeric price input, only accept positive numbers
-- **Search/Filter No Results**: Show appropriate message when filters return no bookings
-- **Past Date/Time Selection**: Prevent selection of past dates in booking form, default to current date/time + 1 hour minimum
-- **Logout Confirmation**: Clear user session and redirect to home when logging out
-- **Incomplete Booking**: Persist partial form data so users can return to complete booking
-- **Invalid Navigation**: Display 404 page for broken links or non-existent routes with branded design and easy navigation back to site
+- **Variables manquantes**: Afficher un message clair indiquant quelles variables sont manquantes avec des liens vers les étapes appropriées
+- **Format d'URL invalide**: Validation en temps réel avec message d'erreur spécifique (ex: "L'URL doit commencer par https://")
+- **Clé API invalide**: Détection du format JWT et messages d'erreur descriptifs
+- **Connexion échouée**: Afficher le message d'erreur exact et des suggestions de résolution
+- **Copie échouée**: Fallback manuel si l'API clipboard n'est pas disponible
 
 ## Design Direction
 
-The design should evoke sophisticated luxury, exclusivity, and timeless elegance - inspired by high-end hospitality and premium lifestyle brands. The aesthetic uses a dramatic black background with crisp white typography and rich gold accents, creating a refined and prestigious atmosphere reminiscent of luxury hotels and exclusive chauffeur services.
+Le design doit évoquer un tableau de bord technique moderne avec une esthétique de développeur, inspiré des outils DevOps et des interfaces de configuration cloud. L'interface doit être claire, structurée et inspirante, avec des éléments visuels qui guident naturellement l'œil à travers le processus de configuration.
 
 ## Color Selection
 
-A sophisticated monochromatic palette with rich black backgrounds, crisp whites, and luxurious gold accents.
+Palette technique et énergisante avec des accents vifs pour les états de succès et d'erreur.
 
-- **Primary Color**: Deep Black (oklch(0.15 0 0)) - Conveys sophistication, exclusivity, and premium luxury
-- **Secondary Colors**: Charcoal (oklch(0.22 0 0)) for subtle backgrounds and layering depth
-- **Accent Color**: Rich Gold (oklch(0.75 0.14 75)) - Luxury highlights for CTAs, borders, and emphasis
-- **Foreground/Background Pairings**: 
-  - Primary Black (oklch(0.15 0 0)): White text (oklch(0.98 0 0)) - Ratio 14.2:1 ✓
-  - Accent Gold (oklch(0.75 0.14 75)): Black text (oklch(0.15 0 0)) - Ratio 7.8:1 ✓
-  - Card Dark (oklch(0.18 0 0)): White text (oklch(0.98 0 0)) - Ratio 13.1:1 ✓
-  - Muted Dark (oklch(0.25 0 0)): Muted White text (oklch(0.65 0 0)) - Ratio 4.9:1 ✓
+- **Primary Color**: Violet profond `oklch(0.35 0.15 285)` - Évoque la technologie et l'innovation, utilisé pour les titres et éléments principaux
+- **Secondary Colors**: 
+  - Gris ardoise foncé `oklch(0.20 0.02 260)` pour les cartes et conteneurs
+  - Gris moyen `oklch(0.40 0.02 260)` pour les bordures et séparateurs
+- **Accent Color**: Cyan électrique `oklch(0.70 0.20 200)` - Pour les boutons d'action, états actifs et focus
+- **Success Color**: Vert néon `oklch(0.75 0.20 140)` - Confirmation de connexion réussie
+- **Error Color**: Rouge corail `oklch(0.65 0.22 25)` - Erreurs et avertissements
+
+**Foreground/Background Pairings**:
+- Background principal (Noir profond `oklch(0.12 0.02 260)`): Texte blanc `oklch(0.98 0 0)` - Ratio 16.8:1 ✓
+- Cartes (Gris ardoise `oklch(0.20 0.02 260)`): Texte blanc `oklch(0.98 0 0)` - Ratio 13.2:1 ✓
+- Accent (Cyan `oklch(0.70 0.20 200)`): Texte noir `oklch(0.12 0.02 260)` - Ratio 10.5:1 ✓
+- Success (Vert néon `oklch(0.75 0.20 140)`): Texte noir `oklch(0.12 0.02 260)` - Ratio 11.8:1 ✓
 
 ## Font Selection
 
-Typography should convey timeless elegance and sophistication - refined serif for headlines creating luxury appeal, clean sans-serif for modern readability.
+Typo technique et moderne qui évoque les éditeurs de code et les interfaces de développement.
 
-- **Typographic Hierarchy**: 
-  - H1 (Hero Title): Cormorant Garamond Bold/56px/tight letter spacing/leading-none - Elegant, sophisticated impact
-  - H2 (Section Headers): Cormorant Garamond SemiBold/40px/tight/leading-tight - Refined section divisions
-  - H3 (Card Titles): Montserrat SemiBold/24px/normal/leading-snug - Modern, clean
-  - Body (Main Content): Montserrat Regular/16px/normal/leading-relaxed - Professional readability
-  - Small (Supporting): Montserrat Light/14px/normal/leading-normal - Subtle, refined details
-  - Button Text: Montserrat Medium/16px/wider letter spacing - Prestigious CTAs
+- **Primary Font**: JetBrains Mono - Police monospace élégante pour les codes et identifiants techniques
+- **Secondary Font**: Inter - Sans-serif moderne pour le texte courant et les instructions
+
+**Typographic Hierarchy**:
+- H1 (Titre principal): JetBrains Mono Bold/36px/tight letter spacing
+- H2 (Titres d'étapes): Inter SemiBold/24px/normal spacing
+- H3 (Sous-titres): Inter Medium/18px/normal spacing
+- Body (Instructions): Inter Regular/16px/relaxed line-height (1.6)
+- Code (Credentials): JetBrains Mono Regular/14px/monospace spacing
+- Labels (Formulaires): Inter Medium/14px/uppercase tracking-wide
 
 ## Animations
 
-Animations should feel refined and purposeful - subtle entrance effects as content scrolls into view, smooth state transitions for form interactions, and gentle hover effects that respond to user attention without distraction.
+Les animations doivent renforcer la progression dans le guide et donner du feedback immédiat sur les interactions.
+
+- **Progression des étapes**: Transition fluide avec effet de slide horizontal lors du changement d'étape
+- **Test de connexion**: Animation de pulse sur le bouton pendant le test, puis transition vers l'icône de succès/erreur
+- **Copie dans le presse-papiers**: Micro-interaction avec bounce léger et changement d'icône
+- **Validation de formulaire**: Shake subtil sur les champs invalides, glow sur les champs valides
+- **Accordéons**: Expansion/collapse fluide avec ease-in-out pour les sections d'instructions
 
 ## Component Selection
 
 - **Components**: 
-  - Card (service showcases, booking cards in dashboards with custom shadows and subtle hover lifts)
-  - Button (primary with gold accent for CTAs, secondary with outline, logout/login actions)
-  - Input (clean fields with floating labels, custom focus states, email/text/date/time types)
-  - Select (custom dropdown for service type, status updates, filters, passengers)
-  - Tabs (for switching between one-way/round-trip/hourly booking types)
-  - Badge (status indicators with color coding: yellow=pending, green=confirmed, blue=completed, red=cancelled)
-  - Separator (subtle dividers between content sections)
-  - Table-like Card Grid (for displaying booking information in structured format)
-  - Search & Filter Controls (admin dashboard filtering by status and search term)
-
+  - Card pour chaque étape de configuration
+  - Accordion pour les sections détaillées d'instructions
+  - Input pour les champs de credentials avec validation en temps réel
+  - Button avec variants (primary pour actions, outline pour secondaire, ghost pour copier)
+  - Badge pour afficher les statuts (configuré/non configuré)
+  - Alert pour les messages d'erreur et de succès
+  - Separator pour diviser les sections logiques
+  - Tabs pour naviguer entre "Guide", "Test" et "Status"
+  - Progress pour afficher la progression dans le guide (1/5, 2/5, etc.)
+  - Code block (custom) pour afficher le SQL et les variables d'environnement
+  
 - **Customizations**: 
-  - Custom booking form card with elevated shadow and rounded corners
-  - Service cards with image overlays and gradient backgrounds
-  - Custom date/time picker with brand colors
-  - Hero section with full-width background treatment
-
+  - Composant CodeBlock personnalisé avec syntax highlighting (SQL, bash, env)
+  - StepIndicator personnalisé avec numéros et lignes de connexion
+  - ConnectionStatus personnalisé avec animation de pulse
+  
 - **States**: 
-  - Buttons: Subtle scale on hover (1.02x), deeper shadow on hover, smooth color transitions, fixed position "Client/Admin" button in top-right
-  - Inputs: Border color shift and subtle glow on focus, smooth label animation, icon integration on left side
-  - Cards: Gentle lift effect (translateY -4px) with enhanced shadow on hover, status-based border coloring
-  - Badges: Color-coded by status with semi-transparent backgrounds and matching borders
-  - Form steps: Progress indicator showing current step with gold accent
-  - Login: Checkbox for admin mode selection
-  - Dashboard Navigation: Header with user info and logout button
-
+  - Boutons: hover avec glow subtle, active avec scale légère, disabled avec opacity 50%
+  - Inputs: focus avec border cyan brillant, error avec border rouge et shake, success avec border verte
+  - Cards: hover avec subtle lift (shadow), active step avec border accent
+  
 - **Icon Selection**: 
-  - Car (vehicle service type indicator, empty states)
-  - MapPin (location inputs - filled and outline variants)
-  - Calendar/Clock (date/time selection)
-  - CheckCircle (service features, confirmation, status updates)
-  - XCircle (cancellation, errors)
-  - ArrowRight (navigation, CTAs, form progression)
-  - Users/User (passenger count, user profile, authentication)
-  - Shield (safety/insurance highlights)
-  - SignIn/SignOut (authentication actions)
-  - EnvelopeSimple (email input field)
-  - Trash (delete booking action in admin)
-
+  - CheckCircle pour succès et étapes complétées
+  - XCircle pour erreurs
+  - Copy pour copier dans le presse-papiers
+  - Database pour les tables
+  - Key pour les credentials
+  - ArrowRight pour navigation suivante
+  - Lightning pour test de connexion
+  - Eye/EyeSlash pour afficher/masquer les clés API
+  
 - **Spacing**: 
-  - Container max-width: max-w-7xl
-  - Section padding: py-16 lg:py-24
-  - Card padding: p-6 lg:p-8
-  - Grid gaps: gap-6 lg:gap-8
-  - Form field spacing: space-y-4
-
+  - Padding des cards: p-6
+  - Gap entre éléments: gap-4 (1rem)
+  - Gap entre sections: gap-8 (2rem)
+  - Margin entre composants majeurs: mb-8
+  
 - **Mobile**: 
-  - Single column layout for service cards and booking details on mobile, 2 columns on desktop
-  - Fixed "Client/Admin" button remains accessible in top-right corner
-  - Collapsible form sections to reduce vertical scroll
-  - Touch-optimized input sizes (min-h-12)
-  - Simplified hero with smaller typography scale
-  - Dashboard tables stack vertically on mobile
-  - Statistics cards in admin dashboard: 2 columns on mobile, 5 columns on desktop
-  - Filter controls stack vertically on mobile devices
+  - Stack vertical sur mobile (<768px)
+  - Réduction du padding des cards à p-4
+  - Font sizes légèrement réduits (H1: 28px, Body: 15px)
+  - Boutons full-width sur mobile
+  - Navigation par onglets collapsible
+  - Code blocks avec scroll horizontal
