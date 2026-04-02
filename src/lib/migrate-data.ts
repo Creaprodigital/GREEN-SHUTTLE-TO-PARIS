@@ -6,10 +6,10 @@ export async function migrateOldDataToNewKeys() {
   if (oldPricingData) {
     const newPricingData = await spark.kv.get(newPricingKey)
     if (!newPricingData) {
-      await spark.kv.set(newPricingKey, oldPricingData)
-      await spark.kv.delete(oldPricingKey)
-    }
-  }
+  
+    const newOptionsData = await spark.kv.
+     
+   
 
   const oldOptionsKey = 'vehicle-options'
   const newOptionsKey = 'vehicle-options-data'
@@ -23,4 +23,3 @@ export async function migrateOldDataToNewKeys() {
     }
   }
 }
-
