@@ -1,46 +1,28 @@
 export async function migrateOldDataToNewKeys() {
-    con
-    const oldPricingKey = 'pric
-    const oldOptionsKey = 'service-o
+  try {
     const oldPricingKey = 'pricing'
     const newPricingKey = 'pricing-data'
     const oldOptionsKey = 'service-options'
     const newOptionsKey = 'service-options-data'
-        console.log('✅ Fleet data mig
 
-    const oldPricingData = await spark.kv.get(oldPricing
-      const newPricingD
-        console.log('🔄 Migration: Copying pricing data fr
-        console.log('✅ Pri
+    const oldPricingData = await spark.kv.get(oldPricingKey)
+    if (oldPricingData) {
+      const newPricingData = await spark.kv.get(newPricingKey)
+      if (!newPricingData) {
+        console.log('🔄 Migration: Copying pricing data from old key to new key')
+        await spark.kv.set(newPricingKey, oldPricingData)
+        console.log('✅ Pricing data migrated successfully')
+      }
     }
-    const oldOptionsData = await spark.kv.get(oldOpti
-      const newOptionsData = await spark.kv.get(newOption
-       
-     
 
-    const promoData = await spark.kv.get(oldPromoKey)
-      console.log('✅ Prom
-
-  } catch (error) {
-  }
-
-
-
-
-
-
-
+    const oldOptionsData = await spark.kv.get(oldOptionsKey)
+    if (oldOptionsData) {
       const newOptionsData = await spark.kv.get(newOptionsKey)
       if (!newOptionsData) {
         console.log('🔄 Migration: Copying options data from old key to new key')
         await spark.kv.set(newOptionsKey, oldOptionsData)
         console.log('✅ Options data migrated successfully')
       }
-    }
-
-    const promoData = await spark.kv.get(oldPromoKey)
-    if (promoData) {
-      console.log('✅ Promo codes already exist:', promoData)
     }
 
     console.log('✅ Data migration complete')
