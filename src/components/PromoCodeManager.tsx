@@ -249,14 +249,19 @@ export default function PromoCodeManager() {
           </Button>
         </div>
 
-        {promoCodes && promoCodes.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold uppercase tracking-wide">
-              Codes promo existants ({promoCodes.length})
-            </h3>
-            
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold uppercase tracking-wide">
+            Codes promo existants ({(promoCodes || []).length})
+          </h3>
+          
+          {(promoCodes || []).length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Tag size={48} className="mx-auto mb-3 opacity-30" weight="light" />
+              <p className="text-sm">Aucun code promo créé pour le moment</p>
+            </div>
+          ) : (
             <div className="space-y-2">
-              {promoCodes.map((promo) => {
+              {(promoCodes || []).map((promo) => {
                 const isExpired = promo.expiresAt && promo.expiresAt < Date.now()
                 const isLimitReached = promo.usageLimit && promo.usageCount >= promo.usageLimit
                 
@@ -328,8 +333,8 @@ export default function PromoCodeManager() {
                 )
               })}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </CardContent>
     </Card>
   )

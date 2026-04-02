@@ -769,19 +769,28 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
               </CardContent>
             </Card>
 
-            <div className="space-y-4">
-              {(Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET)
-                .sort((a, b) => a.order - b.order)
-                .map((vehicle, index) => {
-                  const isEditing = editingVehicle === vehicle.id
-                  
-                  return (
-                    <motion.div
-                      key={vehicle.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                    >
+            {(Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET).length === 0 ? (
+              <Card className="border-2 border-accent/20">
+                <CardContent className="py-16 text-center">
+                  <Car size={64} className="mx-auto text-muted-foreground mb-4" weight="thin" />
+                  <p className="text-lg text-muted-foreground">Aucun véhicule créé pour le moment</p>
+                  <p className="text-sm text-muted-foreground/70 mt-2">Utilisez le formulaire ci-dessus pour ajouter votre premier véhicule</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {(Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET)
+                  .sort((a, b) => a.order - b.order)
+                  .map((vehicle, index) => {
+                    const isEditing = editingVehicle === vehicle.id
+                    
+                    return (
+                      <motion.div
+                        key={vehicle.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                      >
                       <Card className="border-2 border-accent/20">
                         <CardContent className="py-6">
                           <div className="flex flex-col md:flex-row gap-6">
@@ -947,7 +956,8 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                     </motion.div>
                   )
                 })}
-            </div>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="pricing" className="space-y-6">
