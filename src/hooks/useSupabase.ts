@@ -23,7 +23,7 @@ export function useSupabase<T>(table: SupabaseTable, defaultValue: T) {
   const [error, setError] = useState<Error | null>(null)
 
   const fetchFromSupabase = useCallback(async () => {
-    if (!useSupabaseBackend) {
+    if (!useSupabaseBackend || !supabase) {
       setIsLoading(false)
       return
     }
@@ -66,7 +66,7 @@ export function useSupabase<T>(table: SupabaseTable, defaultValue: T) {
   }, [table, defaultValue, useSupabaseBackend])
 
   useEffect(() => {
-    if (useSupabaseBackend) {
+    if (useSupabaseBackend && supabase) {
       fetchFromSupabase()
 
       const channel = supabase
@@ -91,7 +91,7 @@ export function useSupabase<T>(table: SupabaseTable, defaultValue: T) {
   }, [fetchFromSupabase, table, useSupabaseBackend])
 
   const saveToSupabase = useCallback(async (newData: T) => {
-    if (!useSupabaseBackend) return
+    if (!useSupabaseBackend || !supabase) return
 
     try {
       if (table === 'system_settings') {
@@ -145,7 +145,7 @@ export function useSupabase<T>(table: SupabaseTable, defaultValue: T) {
   }, [useSupabaseBackend, setKvData, saveToSupabase])
 
   const deleteValue = useCallback(async () => {
-    if (useSupabaseBackend) {
+    if (useSupabaseBackend && supabase) {
       try {
         await supabase
           .from(table)
@@ -173,7 +173,7 @@ export async function insertIntoSupabase<T extends { id: string }>(
   table: SupabaseTable,
   item: T
 ): Promise<T | null> {
-  if (!isSupabaseConfigured()) {
+  if (!isSupabaseConfigured() || !supabase) {
     console.warn('Supabase non configuré')
     return null
   }
@@ -198,7 +198,7 @@ export async function updateInSupabase<T extends { id: string }>(
   id: string,
   updates: Partial<T>
 ): Promise<T | null> {
-  if (!isSupabaseConfigured()) {
+  if (!isSupabaseConfigured() || !supabase) {
     console.warn('Supabase non configuré')
     return null
   }
@@ -223,7 +223,7 @@ export async function deleteFromSupabase(
   table: SupabaseTable,
   id: string
 ): Promise<void> {
-  if (!isSupabaseConfigured()) {
+  if (!isSupabaseConfigured() || !supabase) {
     console.warn('Supabase non configuré')
     return
   }
