@@ -1095,7 +1095,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                           </SelectTrigger>
                           <SelectContent>
                             {(Array.isArray(circuits) && circuits.length > 0) ? (
-                              (circuits || []).map((circuit) => (
+                              circuits.map((circuit) => (
                                 <SelectItem key={circuit.id} value={circuit.id}>
                                   {circuit.name}
                                 </SelectItem>
@@ -1333,7 +1333,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                     <RadioGroup value={vehicleType} onValueChange={setVehicleType}>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {(Array.isArray(fleet) && fleet.length > 0) ? (
-                          (fleet || []).sort((a, b) => a.order - b.order).map((vehicle) => {
+                          fleet.sort((a, b) => a.order - b.order).map((vehicle) => {
                             const vehiclePrice = calculatePrice(vehicle.id)
                             return (
                               <div key={vehicle.id}>
@@ -1357,9 +1357,6 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                                   )}
                                   <div className="w-full text-center">
                                     <div className="font-semibold text-sm">{vehicle.title}</div>
-                                    <div className="text-xs text-muted-foreground mt-1">
-                                      {vehicle.capacity} passagers • {vehicle.luggage} bagages
-                                    </div>
                                     <div className="mt-2">
                                       {vehiclePrice !== null && vehiclePrice > 0 ? (
                                         <>
@@ -1437,7 +1434,7 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                     <div className="space-y-3 pt-3 border-t border-border">
                       <Label className="text-xs font-medium uppercase tracking-wide">Options Supplémentaires</Label>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        {(serviceOptions || []).map((option) => (
+                        {serviceOptions.map((option) => (
                           <div key={option.id} className="flex items-start space-x-2 p-2.5 border border-border rounded-lg hover:border-accent/50 transition-colors">
                             <Checkbox
                               id={option.id}
