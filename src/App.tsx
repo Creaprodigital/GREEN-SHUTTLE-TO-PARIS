@@ -19,6 +19,7 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home')
   const [isAdmin, setIsAdmin] = useState(false)
   const [currentServiceId, setCurrentServiceId] = useState<string>('')
+  const [userEmail, setUserEmail] = useState<string>('')
 
   const handleNavigateToLogin = (admin: boolean) => {
     setIsAdmin(admin)
@@ -30,13 +31,16 @@ export default function App() {
     setCurrentPage('service')
   }
 
-  const handleLoginSuccess = () => {
-    setCurrentPage(isAdmin ? 'admin' : 'client')
+  const handleLogin = (email: string, admin: boolean) => {
+    setUserEmail(email)
+    setIsAdmin(admin)
+    setCurrentPage(admin ? 'admin' : 'client')
   }
 
   const handleLogout = () => {
     setCurrentPage('home')
     setIsAdmin(false)
+    setUserEmail('')
   }
 
   const renderPage = () => {
@@ -58,23 +62,39 @@ export default function App() {
       case 'login':
         return (
           <Login
-            isAdmin={isAdmin}
-            onLoginSuccess={handleLoginSuccess}
-            onBack={() => setCurrentPage('home')}
+            onLogin={handleLogin}
+            onNavigateToHome={() => setCurrentPage('home')}
+            onNavigateToServices={() => setCurrentPage('services')}
+            onNavigateToAbout={() => setCurrentPage('about')}
+            onNavigateToContact={() => setCurrentPage('contact')}
+            onNavigateToService={handleNavigateToService}
+            isAdminMode={isAdmin}
           />
         )
       case 'admin':
         return (
           <AdminDashboard
+            userEmail={userEmail}
             onLogout={handleLogout}
+            onUpdateBooking={() => {}}
+            onDeleteBooking={() => {}}
             onNavigateToHome={() => setCurrentPage('home')}
+            onNavigateToServices={() => setCurrentPage('services')}
+            onNavigateToAbout={() => setCurrentPage('about')}
+            onNavigateToContact={() => setCurrentPage('contact')}
+            onNavigateToService={handleNavigateToService}
           />
         )
       case 'client':
         return (
           <ClientDashboard
+            userEmail={userEmail}
             onLogout={handleLogout}
             onNavigateToHome={() => setCurrentPage('home')}
+            onNavigateToServices={() => setCurrentPage('services')}
+            onNavigateToAbout={() => setCurrentPage('about')}
+            onNavigateToContact={() => setCurrentPage('contact')}
+            onNavigateToService={handleNavigateToService}
           />
         )
       case 'services':
@@ -85,6 +105,9 @@ export default function App() {
             onNavigateToService={handleNavigateToService}
             onNavigateToAbout={() => setCurrentPage('about')}
             onNavigateToContact={() => setCurrentPage('contact')}
+            userEmail={userEmail}
+            isAdmin={isAdmin}
+            onLogout={userEmail ? handleLogout : undefined}
           />
         )
       case 'about':
@@ -94,6 +117,9 @@ export default function App() {
             onNavigateToLogin={handleNavigateToLogin}
             onNavigateToServices={() => setCurrentPage('services')}
             onNavigateToContact={() => setCurrentPage('contact')}
+            userEmail={userEmail}
+            isAdmin={isAdmin}
+            onLogout={userEmail ? handleLogout : undefined}
           />
         )
       case 'contact':
@@ -103,6 +129,9 @@ export default function App() {
             onNavigateToLogin={handleNavigateToLogin}
             onNavigateToServices={() => setCurrentPage('services')}
             onNavigateToAbout={() => setCurrentPage('about')}
+            userEmail={userEmail}
+            isAdmin={isAdmin}
+            onLogout={userEmail ? handleLogout : undefined}
           />
         )
       case 'service':
