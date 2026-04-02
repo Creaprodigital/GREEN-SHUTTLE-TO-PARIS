@@ -61,13 +61,11 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [])
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
-  const [adminAccounts, setAdminAccounts] = useKV<AdminAccount[]>('admin-accounts', [
-    { email: 'admin@greenshuttle.com', password: 'admin123', createdAt: new Date().toISOString() }
-  ])
+  const [adminAccounts, setAdminAccounts] = useKV<AdminAccount[]>('admin-accounts', [])
   const [newAdminEmail, setNewAdminEmail] = useState('')
   const [newAdminPassword, setNewAdminPassword] = useState('')
   
-  const [fleetData, setFleetData] = useKV<VehicleClass[]>('fleet', DEFAULT_FLEET)
+  const [fleetData, setFleetData] = useKV<VehicleClass[]>('fleet-data', [])
   const [editingVehicle, setEditingVehicle] = useState<string | null>(null)
   const [uploadingImage, setUploadingImage] = useState<string | null>(null)
   const [editedTitle, setEditedTitle] = useState<string>('')
@@ -80,8 +78,8 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
   const [newVehicleTitle, setNewVehicleTitle] = useState('')
   const [newVehicleDescription, setNewVehicleDescription] = useState('')
 
-  const [pricingData, setPricingData] = useKV<VehiclePricing[]>('pricing', DEFAULT_PRICING)
-  const [optionsData, setOptionsData] = useKV<ServiceOption[]>('service-options', DEFAULT_OPTIONS)
+  const [pricingData, setPricingData] = useKV<VehiclePricing[]>('pricing-data', [])
+  const [optionsData, setOptionsData] = useKV<ServiceOption[]>('service-options-data', [])
   const [newOptionName, setNewOptionName] = useState('')
   const [newOptionDescription, setNewOptionDescription] = useState('')
   const [newOptionPrice, setNewOptionPrice] = useState('')
@@ -92,6 +90,28 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
   const [roundTripDiscount, setRoundTripDiscount] = useKV<RoundTripDiscount>('roundtrip-discount', DEFAULT_ROUNDTRIP_DISCOUNT)
   const [emailSettings, setEmailSettings] = useKV<EmailSettings>('email-settings', DEFAULT_EMAIL_SETTINGS)
   const [stripeSettings, setStripeSettings] = useKV<StripeSettings>('stripe-settings', DEFAULT_STRIPE_SETTINGS)
+
+  useEffect(() => {
+    const initializeDefaults = async () => {
+      if ((!adminAccounts || adminAccounts.length === 0)) {
+        setAdminAccounts([{ email: 'admin@greenshuttle.com', password: 'admin123', createdAt: new Date().toISOString() }])
+      }
+      
+      if (!fleetData || fleetData.length === 0) {
+        setFleetData(DEFAULT_FLEET)
+      }
+      
+      if (!pricingData || pricingData.length === 0) {
+        setPricingData(DEFAULT_PRICING)
+      }
+      
+      if (!optionsData || optionsData.length === 0) {
+        setOptionsData(DEFAULT_OPTIONS)
+      }
+    }
+    
+    initializeDefaults()
+  }, [])
 
 
 
@@ -232,7 +252,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
       })
 
       setFleetData((currentData) => {
-        const data = Array.isArray(currentData) ? currentData : DEFAULT_FLEET
+        const data = Array.isArray(currentData) && currentData.length > 0 ? currentData : []
         return data.map((vehicle) => {
           if (vehicle.id === vehicleId) {
             return { ...vehicle, image: result, imageName: uniqueFileName }
@@ -252,7 +272,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
 
   const handleUpdateVehicle = (vehicleId: string, updates: Partial<VehicleClass>) => {
     setFleetData((currentFleet) => {
-      const data = Array.isArray(currentFleet) ? currentFleet : DEFAULT_FLEET
+      const data = Array.isArray(currentFleet) && currentFleet.length > 0 ? currentFleet : []
       const updatedFleet = data.map((vehicle) =>
         vehicle.id === vehicleId
           ? { ...vehicle, ...updates }
@@ -272,8 +292,8 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
     }
 
     setFleetData((currentFleet) => {
-      const data = Array.isArray(currentFleet) ? currentFleet : DEFAULT_FLEET
-      const maxOrder = Math.max(...data.map(v => v.order), 0)
+      const data = Array.isArray(currentFleet) && currentFleet.length > 0 ? currentFleet : []
+      const maxOrder = data.length > 0 ? Math.max(...data.map(v => v.order), 0) : 0
       const newId = `vehicle-${Date.now()}`
       
       const newVehicle: VehicleClass = {
@@ -295,7 +315,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
   const handleDeleteVehicle = (vehicleId: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) {
       setFleetData((currentFleet) => {
-        const data = Array.isArray(currentFleet) ? currentFleet : DEFAULT_FLEET
+        const data = Array.isArray(currentFleet) && currentFleet.length > 0 ? currentFleet : []
         const filteredData = data.filter((vehicle) => vehicle.id !== vehicleId)
         return filteredData
       })
@@ -305,7 +325,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
 
   const handleUpdatePricing = (vehicleId: string, field: keyof VehiclePricing, value: number) => {
     setPricingData((current) => {
-      const data = Array.isArray(current) ? current : DEFAULT_PRICING
+      const data = Array.isArray(current) && current.length > 0 ? current : []
       const existingIndex = data.findIndex(p => p.vehicleId === vehicleId)
       
       if (existingIndex >= 0) {
@@ -313,23 +333,18 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
           idx === existingIndex ? { ...pricing, [field]: value } : pricing
         )
       } else {
-        const defaultPricing = DEFAULT_PRICING.find(p => p.vehicleId === vehicleId) || {
+        const newPricing: VehiclePricing = {
           vehicleId,
-          pricePerKm: 0,
-          pricePerMinute: 0,
-          pricePerHour: 0,
-          tourBasePrice: 0,
-          minimumTransferPrice: 0,
-          lowSeasonPricePerKm: 0,
-          lowSeasonPricePerMinute: 0,
-          lowSeasonPricePerHour: 0,
-          lowSeasonTourBasePrice: 0,
-          lowSeasonMinimumTransferPrice: 0
+          pricePerKm: field === 'pricePerKm' ? value : 0,
+          pricePerMinute: field === 'pricePerMinute' ? value : 0,
+          pricePerHour: field === 'pricePerHour' ? value : 0,
+          tourBasePrice: field === 'tourBasePrice' ? value : 0,
+          lowSeasonPricePerKm: field === 'lowSeasonPricePerKm' ? value : 0,
+          lowSeasonPricePerMinute: field === 'lowSeasonPricePerMinute' ? value : 0,
+          lowSeasonPricePerHour: field === 'lowSeasonPricePerHour' ? value : 0,
+          lowSeasonTourBasePrice: field === 'lowSeasonTourBasePrice' ? value : 0
         }
-        return [...data, {
-          ...defaultPricing,
-          [field]: value
-        }]
+        return [...data, newPricing]
       }
     })
     toast.success('Tarif mis à jour')
@@ -369,7 +384,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
 
   const handleUpdateOption = (id: string, updates: Partial<ServiceOption>) => {
     setOptionsData((current) => {
-      const data = Array.isArray(current) ? current : DEFAULT_OPTIONS
+      const data = Array.isArray(current) && current.length > 0 ? current : []
       return data.map((option) =>
         option.id === id ? { ...option, ...updates } : option
       )
@@ -380,7 +395,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
   const handleDeleteOption = (id: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette option?')) {
       setOptionsData((current) => {
-        const data = Array.isArray(current) ? current : DEFAULT_OPTIONS
+        const data = Array.isArray(current) && current.length > 0 ? current : []
         return data.filter((option) => option.id !== id)
       })
       toast.success('Option supprimée')
@@ -406,13 +421,12 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold uppercase tracking-wide">
-              {editingImage && (Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET).find(v => v.id === editingImage)?.title} - Modifier l'image
+              {editingImage && (fleetData || []).find(v => v.id === editingImage)?.title} - Modifier l'image
             </DialogTitle>
           </DialogHeader>
           
           {editingImage && (() => {
-            const data = Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET
-            const vehicle = data.find(v => v.id === editingImage)
+            const vehicle = (fleetData || []).find(v => v.id === editingImage)
             return vehicle?.image && (
             <div className="space-y-6 pt-4">
               <div 
@@ -537,7 +551,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
                       onClick={() => {
                         if (editingImage) {
                           setFleetData((current) => {
-                            const data = Array.isArray(current) ? current : DEFAULT_FLEET
+                            const data = current || []
                             return data.map((vehicle) =>
                               vehicle.id === editingImage
                                 ? {
@@ -769,7 +783,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
               </CardContent>
             </Card>
 
-            {(Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET).length === 0 ? (
+            {(!fleetData || fleetData.length === 0) ? (
               <Card className="border-2 border-accent/20">
                 <CardContent className="py-16 text-center">
                   <Car size={64} className="mx-auto text-muted-foreground mb-4" weight="thin" />
@@ -779,7 +793,7 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
               </Card>
             ) : (
               <div className="space-y-4">
-                {(Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET)
+                {(fleetData || [])
                   .sort((a, b) => a.order - b.order)
                   .map((vehicle, index) => {
                     const isEditing = editingVehicle === vehicle.id
@@ -1058,17 +1072,19 @@ export default function AdminDashboard({ userEmail, onLogout, onUpdateBooking, o
             </Card>
 
             <div className="space-y-4">
-              {(Array.isArray(fleetData) ? fleetData : DEFAULT_FLEET)
+              {(fleetData || [])
                 .sort((a, b) => a.order - b.order)
                 .map((vehicle, index) => {
-                  const pricing = (Array.isArray(pricingData) ? pricingData : DEFAULT_PRICING)
+                  const pricing = (pricingData || [])
                     .find(p => p.vehicleId === vehicle.id) || {
                       vehicleId: vehicle.id,
                       pricePerKm: 0,
                       pricePerMinute: 0,
+                      pricePerHour: 0,
                       tourBasePrice: 0,
                       lowSeasonPricePerKm: 0,
                       lowSeasonPricePerMinute: 0,
+                      lowSeasonPricePerHour: 0,
                       lowSeasonTourBasePrice: 0
                     }
 

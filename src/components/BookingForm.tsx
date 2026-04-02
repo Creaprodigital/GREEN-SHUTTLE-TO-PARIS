@@ -36,18 +36,18 @@ interface BookingFormProps {
 
 export default function BookingForm({ inline = false }: BookingFormProps) {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [] as Booking[])
-  const [fleet] = useKV<VehicleClass[]>('fleet', DEFAULT_FLEET)
+  const [fleet] = useKV<VehicleClass[]>('fleet-data', [])
   const [telegramSettings] = useKV<TelegramSettings>('telegram-settings', DEFAULT_TELEGRAM_SETTINGS)
   const [emailSettings] = useKV<EmailSettings>('email-settings', DEFAULT_EMAIL_SETTINGS)
   const [stripeSettings] = useKV<StripeSettings>('stripe-settings', DEFAULT_STRIPE_SETTINGS)
-  const [serviceOptions] = useKV<ServiceOption[]>('service-options', DEFAULT_OPTIONS)
-  const [pricing] = useKV<VehiclePricing[]>('pricing', DEFAULT_PRICING)
+  const [serviceOptions] = useKV<ServiceOption[]>('service-options-data', [])
+  const [pricing] = useKV<VehiclePricing[]>('pricing-data', [])
   const [circuits] = useKV<Circuit[]>('circuits', [])
   const [activePricingMode] = useKV<'high-demand' | 'low-season'>('active-pricing-mode', 'high-demand')
   const [pricingSettings] = useKV<PricingSettings>('pricing-settings', { roundToWholeEuro: false })
   const [pricingZones] = useKV<PricingZone[]>('pricing-zones', [])
   const [zoneForfaits] = useKV<ZoneForfait[]>('zone-forfaits', [])
-  const [promoCodes] = useKV<PromoCode[]>('promo-codes', DEFAULT_PROMO_CODES)
+  const [promoCodes] = useKV<PromoCode[]>('promo-codes', [])
   const [roundTripDiscount] = useKV<RoundTripDiscount>('roundtrip-discount', DEFAULT_ROUNDTRIP_DISCOUNT)
   const [currentStep, setCurrentStep] = useState(1)
   

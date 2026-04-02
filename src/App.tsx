@@ -27,6 +27,7 @@ import NotFound from '@/components/NotFound'
 import { useKV } from '@github/spark/hooks'
 import { Booking } from '@/types/booking'
 import { useSharedRideNotifications } from '@/hooks/useSharedRideNotifications'
+import { migrateOldDataToNewKeys } from '@/lib/migrate-data'
 
 function AppContent() {
   const navigate = useNavigate()
@@ -40,6 +41,10 @@ function AppContent() {
     userEmail: currentUser?.email,
     enabled: !!currentUser && !currentUser.isAdmin
   })
+
+  useEffect(() => {
+    migrateOldDataToNewKeys()
+  }, [])
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })

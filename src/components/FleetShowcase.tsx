@@ -4,7 +4,7 @@ import { useKV } from '@github/spark/hooks'
 import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 
 export default function FleetShowcase() {
-  const [fleet] = useKV<VehicleClass[]>('fleet', DEFAULT_FLEET)
+  const [fleet] = useKV<VehicleClass[]>('fleet-data', [])
   
   const vehicles = fleet && fleet.length > 0 
     ? fleet.sort((a, b) => a.order - b.order)
