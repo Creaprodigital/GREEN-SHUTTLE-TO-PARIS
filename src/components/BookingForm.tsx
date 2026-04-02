@@ -1094,8 +1094,8 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                             <SelectValue placeholder="Sélectionnez un circuit..." />
                           </SelectTrigger>
                           <SelectContent>
-                            {circuits && circuits.length > 0 ? (
-                              circuits.map((circuit) => (
+                            {(Array.isArray(circuits) && circuits.length > 0) ? (
+                              (circuits || []).map((circuit) => (
                                 <SelectItem key={circuit.id} value={circuit.id}>
                                   {circuit.name}
                                 </SelectItem>
@@ -1332,8 +1332,8 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                     <Label className="text-xs font-medium uppercase tracking-wide">Sélectionnez votre véhicule</Label>
                     <RadioGroup value={vehicleType} onValueChange={setVehicleType}>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {fleet && fleet.length > 0 ? (
-                          fleet.sort((a, b) => a.order - b.order).map((vehicle) => {
+                        {(Array.isArray(fleet) && fleet.length > 0) ? (
+                          (fleet || []).sort((a, b) => a.order - b.order).map((vehicle) => {
                             const vehiclePrice = calculatePrice(vehicle.id)
                             return (
                               <div key={vehicle.id}>
@@ -1433,11 +1433,11 @@ export default function BookingForm({ inline = false }: BookingFormProps) {
                     </RadioGroup>
                   </div>
 
-                  {serviceOptions && serviceOptions.length > 0 && (
+                  {(Array.isArray(serviceOptions) && serviceOptions.length > 0) && (
                     <div className="space-y-3 pt-3 border-t border-border">
                       <Label className="text-xs font-medium uppercase tracking-wide">Options Supplémentaires</Label>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        {serviceOptions.map((option) => (
+                        {(serviceOptions || []).map((option) => (
                           <div key={option.id} className="flex items-start space-x-2 p-2.5 border border-border rounded-lg hover:border-accent/50 transition-colors">
                             <Checkbox
                               id={option.id}

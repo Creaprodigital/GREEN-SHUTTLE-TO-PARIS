@@ -6,8 +6,8 @@ import { VehicleClass, DEFAULT_FLEET } from '@/types/fleet'
 export default function FleetShowcase() {
   const [fleet] = useKV<VehicleClass[]>('fleet-data', [])
   
-  const vehicles = fleet && fleet.length > 0 
-    ? fleet.sort((a, b) => a.order - b.order)
+  const vehicles = (Array.isArray(fleet) && fleet.length > 0)
+    ? (fleet || []).sort((a, b) => a.order - b.order)
     : DEFAULT_FLEET
 
   const features = [

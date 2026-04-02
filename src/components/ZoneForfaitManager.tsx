@@ -417,7 +417,7 @@ export default function ZoneForfaitManager() {
             Créer une zone
           </Button>
 
-          {zones && zones.length > 0 ? (
+          {(Array.isArray(zones) && zones.length > 0) ? (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -429,7 +429,7 @@ export default function ZoneForfaitManager() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {zones.map((zone) => (
+                {(zones || []).map((zone) => (
                   <TableRow key={zone.id}>
                     <TableCell className="font-medium">{zone.name}</TableCell>
                     <TableCell>{zone.description || '-'}</TableCell>
@@ -493,7 +493,7 @@ export default function ZoneForfaitManager() {
             <p className="text-sm text-muted-foreground">
               Vous devez créer au moins 2 zones pour définir des forfaits.
             </p>
-          ) : forfaits && forfaits.length > 0 ? (
+          ) : (Array.isArray(forfaits) && forfaits.length > 0) ? (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -507,7 +507,7 @@ export default function ZoneForfaitManager() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {forfaits.map((forfait) => (
+                {(forfaits || []).map((forfait) => (
                   <TableRow key={forfait.id}>
                     <TableCell className="font-medium">{getZoneName(forfait.fromZoneId)}</TableCell>
                     <TableCell>{getZoneName(forfait.toZoneId)}</TableCell>
@@ -626,7 +626,7 @@ export default function ZoneForfaitManager() {
                   <SelectValue placeholder="Sélectionner une zone" />
                 </SelectTrigger>
                 <SelectContent>
-                  {zones?.map((zone) => (
+                  {(zones || []).map((zone) => (
                     <SelectItem key={zone.id} value={zone.id}>
                       {zone.name}
                     </SelectItem>
@@ -641,7 +641,7 @@ export default function ZoneForfaitManager() {
                   <SelectValue placeholder="Sélectionner une zone" />
                 </SelectTrigger>
                 <SelectContent>
-                  {zones?.map((zone) => (
+                  {(zones || []).map((zone) => (
                     <SelectItem key={zone.id} value={zone.id}>
                       {zone.name}
                     </SelectItem>
@@ -656,7 +656,7 @@ export default function ZoneForfaitManager() {
                   <SelectValue placeholder="Sélectionner un véhicule" />
                 </SelectTrigger>
                 <SelectContent>
-                  {fleet.map((vehicle) => (
+                  {(fleet || []).map((vehicle) => (
                     <SelectItem key={vehicle.id} value={vehicle.id}>
                       {vehicle.title}
                     </SelectItem>
