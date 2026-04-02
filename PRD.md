@@ -1,151 +1,182 @@
-# Configuration Supabase - Guide de Démarrage Rapide
+# ELGOH - Plateforme de Réservation de Chauffeur Privé Premium
 
-Une interface de configuration Supabase élégante et interactive avec un guide pas à pas, un testeur de connexion en temps réel, et des instructions visuelles.
+Application web complète de réservation de chauffeur privé avec système d'administration avancé pour la gestion de flotte, tarification dynamique et réservations en Île-de-France.
 
 **Experience Qualities**:
-1. **Guidant** - L'interface accompagne l'utilisateur étape par étape avec des instructions claires et visuelles
-2. **Rassurant** - Feedback immédiat sur l'état de la configuration avec des messages d'erreur constructifs
-3. **Professionnel** - Design technique et moderne qui inspire confiance et crédibilité
+1. **Premium** - Design élégant et professionnel qui inspire confiance et luxe
+2. **Intuitif** - Navigation fluide et processus de réservation simplifié en quelques clics
+3. **Transparent** - Tarification claire et visible, sans frais cachés
 
-**Complexity Level**: Light Application (multiple features with basic state)
-L'application combine un guide multi-étapes, un formulaire de configuration, et un testeur de connexion en temps réel.
+**Complexity Level**: Complex Application (advanced functionality with multiple views)
+L'application combine un système de réservation client complet, un tableau de bord administrateur sophistiqué avec gestion de flotte, tarification dynamique, circuits touristiques, zones tarifaires, codes promo, et notifications multi-canaux.
 
 ## Essential Features
 
-### Guide de Configuration Étape par Étape
-- **Functionality**: Affiche les 5 étapes de configuration Supabase avec progression visuelle
-- **Purpose**: Simplifier le processus de configuration pour les développeurs
-- **Trigger**: Au chargement de l'application
-- **Progression**: Affichage des étapes → Sélection d'une étape → Affichage des instructions détaillées → Validation → Passage à l'étape suivante
-- **Success criteria**: L'utilisateur peut naviguer entre les étapes et comprendre chaque action requise
+### Réservation Client
+- **Functionality**: Système de réservation avec calcul d'itinéraire en temps réel et tarification automatique
+- **Purpose**: Permettre aux clients de réserver facilement un chauffeur privé
+- **Trigger**: Clic sur "Réserver" depuis la page d'accueil ou un service
+- **Progression**: Sélection du service → Saisie des adresses (pickup/destination) → Choix de la date/heure → Sélection du véhicule → Application code promo → Paiement Stripe → Confirmation
+- **Success criteria**: Le client reçoit une confirmation par email et peut suivre sa réservation
 
-### Testeur de Connexion en Temps Réel
-- **Functionality**: Vérifie la validité des credentials Supabase et affiche le statut de connexion
-- **Purpose**: Donner un feedback immédiat sur la configuration
-- **Trigger**: Saisie des credentials ou clic sur "Test Connection"
-- **Progression**: Saisie des credentials → Validation du format → Test de connexion → Affichage du résultat (succès/erreur)
-- **Success criteria**: L'utilisateur voit immédiatement si sa configuration fonctionne
+### Dashboard Administrateur
+- **Functionality**: Interface complète de gestion des réservations, flotte, tarifs, et paramètres
+- **Purpose**: Centraliser la gestion de l'entreprise de chauffeur
+- **Trigger**: Connexion avec compte administrateur
+- **Progression**: Login admin → Accès au dashboard → Gestion des modules (réservations, flotte, tarifs, etc.)
+- **Success criteria**: L'admin peut gérer toutes les données en temps réel avec sauvegarde automatique
 
-### Générateur de Script SQL
-- **Functionality**: Affiche le script SQL nécessaire pour créer les tables Supabase
-- **Purpose**: Faciliter la configuration de la base de données
-- **Trigger**: Clic sur l'étape 2 "Créer les tables"
-- **Progression**: Affichage du script → Copie dans le presse-papiers → Confirmation visuelle
-- **Success criteria**: L'utilisateur peut copier facilement le script SQL complet
+### Gestion de Flotte
+- **Functionality**: CRUD complet des véhicules avec photos, descriptions et tarification
+- **Purpose**: Gérer le parc de véhicules disponibles
+- **Trigger**: Onglet "Flotte" dans l'admin
+- **Progression**: Liste des véhicules → Ajout/Modification → Upload d'image → Ajustement visuel → Sauvegarde
+- **Success criteria**: Les modifications sont sauvegardées et visibles immédiatement côté client
 
-### Éditeur de Variables d'Environnement
-- **Functionality**: Interface pour saisir et visualiser les variables VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY
-- **Purpose**: Configurer les credentials de manière sécurisée
-- **Trigger**: Navigation vers l'étape 4
-- **Progression**: Saisie de l'URL → Saisie de la clé → Validation du format → Génération du fichier .env.local → Instructions de redémarrage
-- **Success criteria**: Les variables sont formatées correctement et sauvegardées
+### Tarification Dynamique
+- **Functionality**: Système de tarification par kilomètre, minute et heure avec modes haute/basse saison
+- **Purpose**: Adapter les prix selon la demande et optimiser la rentabilité
+- **Trigger**: Onglet "Tarification" dans l'admin
+- **Progression**: Sélection du véhicule → Modification des tarifs → Bascule haute/basse saison → Sauvegarde
+- **Success criteria**: Les nouveaux tarifs s'appliquent immédiatement aux nouvelles réservations
 
-### Visualisateur d'État de Configuration
-- **Functionality**: Dashboard montrant l'état actuel de la configuration Supabase
-- **Purpose**: Donner une vue d'ensemble rapide de la configuration
-- **Trigger**: Au chargement de l'application
-- **Progression**: Vérification des variables → Vérification de la connexion → Affichage du statut global → Actions recommandées
-- **Success criteria**: L'utilisateur voit immédiatement si Supabase est configuré et fonctionnel
+### Circuits Touristiques
+- **Functionality**: Création de circuits prédéfinis (Versailles, Normandie, etc.) avec étapes et tarifs
+- **Purpose**: Proposer des offres packagées pour les touristes
+- **Trigger**: Onglet "Circuits" dans l'admin
+- **Progression**: Création circuit → Ajout d'étapes → Configuration des tarifs par véhicule → Publication
+- **Success criteria**: Les circuits sont réservables depuis les pages de services
+
+### Zones Tarifaires et Forfaits
+- **Functionality**: Définition de zones géographiques avec tarifs forfaitaires entre zones
+- **Purpose**: Simplifier la tarification pour les trajets récurrents (aéroports, gares)
+- **Trigger**: Onglet "Zones & Forfaits" dans l'admin
+- **Progression**: Création de zones → Définition des forfaits inter-zones → Configuration par véhicule
+- **Success criteria**: Les forfaits s'appliquent automatiquement lors de la réservation
+
+### Codes Promotionnels
+- **Functionality**: Système de codes promo avec pourcentage ou montant fixe, validité et usage limité
+- **Purpose**: Fidéliser les clients et créer des campagnes marketing
+- **Trigger**: Onglet "Codes Promo" dans l'admin
+- **Progression**: Création du code → Configuration (type, valeur, dates, limite) → Activation
+- **Success criteria**: Les codes sont applicables lors de la réservation et le compteur d'usage se met à jour
+
+### Notifications Multi-Canaux
+- **Functionality**: Envoi automatique de confirmations et mises à jour par Email et Telegram
+- **Purpose**: Tenir informés clients et administrateurs
+- **Trigger**: Nouvelle réservation ou changement de statut
+- **Progression**: Événement → Envoi email client → Notification Telegram admin → Confirmation
+- **Success criteria**: Tous les acteurs reçoivent les notifications pertinentes en temps réel
 
 ## Edge Case Handling
 
-- **Variables manquantes**: Afficher un message clair indiquant quelles variables sont manquantes avec des liens vers les étapes appropriées
-- **Format d'URL invalide**: Validation en temps réel avec message d'erreur spécifique (ex: "L'URL doit commencer par https://")
-- **Clé API invalide**: Détection du format JWT et messages d'erreur descriptifs
-- **Connexion échouée**: Afficher le message d'erreur exact et des suggestions de résolution
-- **Copie échouée**: Fallback manuel si l'API clipboard n'est pas disponible
+- **Adresse introuvable**: Message d'erreur clair avec suggestions de reformulation
+- **Trajet impossible**: Calcul échoue → affichage d'un message invitant à contacter le service
+- **Code promo invalide**: Message d'erreur spécifique (expiré, limite atteinte, non existant)
+- **Paiement échoué**: Redirection vers formulaire avec message d'erreur Stripe
+- **Image de véhicule manquante**: Placeholder par défaut avec icône de voiture
+- **Données admin non sauvegardées**: Utilisation de `useKV` pour persistance automatique locale
+- **Conflits de réservations**: Affichage de toutes les réservations dans l'admin pour éviter les doublons
 
 ## Design Direction
 
-Le design doit évoquer un tableau de bord technique moderne avec une esthétique de développeur, inspiré des outils DevOps et des interfaces de configuration cloud. L'interface doit être claire, structurée et inspirante, avec des éléments visuels qui guident naturellement l'œil à travers le processus de configuration.
+Le design doit évoquer le luxe, la fiabilité et le professionnalisme d'un service de chauffeur premium. Ambiance sombre et élégante avec des accents lumineux pour guider l'utilisateur. Typographie moderne et lisible, animations subtiles pour fluidifier les transitions.
 
 ## Color Selection
 
-Palette technique et énergisante avec des accents vifs pour les états de succès et d'erreur.
+Palette sombre et sophistiquée avec des accents cyan lumineux pour un look technologique et premium.
 
-- **Primary Color**: Violet profond `oklch(0.35 0.15 285)` - Évoque la technologie et l'innovation, utilisé pour les titres et éléments principaux
-- **Secondary Colors**: 
-  - Gris ardoise foncé `oklch(0.20 0.02 260)` pour les cartes et conteneurs
-  - Gris moyen `oklch(0.40 0.02 260)` pour les bordures et séparateurs
-- **Accent Color**: Cyan électrique `oklch(0.70 0.20 200)` - Pour les boutons d'action, états actifs et focus
-- **Success Color**: Vert néon `oklch(0.75 0.20 140)` - Confirmation de connexion réussie
-- **Error Color**: Rouge corail `oklch(0.65 0.22 25)` - Erreurs et avertissements
+- **Primary Color**: Violet profond `oklch(0.35 0.15 285)` - Évoque le luxe et la sophistication
+- **Secondary Color**: Gris foncé `oklch(0.40 0.02 260)` - Équilibre et professionnalisme
+- **Accent Color**: Cyan vif `oklch(0.70 0.20 200)` - Dynamisme et modernité pour les CTA
+- **Success**: Vert lumineux `oklch(0.75 0.20 140)` - Confirmations et validations
+- **Destructive**: Rouge corail `oklch(0.65 0.22 25)` - Actions de suppression et erreurs
+- **Background**: Bleu-gris très sombre `oklch(0.12 0.02 260)` - Fond principal élégant
+- **Foreground**: Blanc cassé `oklch(0.98 0 0)` - Texte principal haute lisibilité
 
 **Foreground/Background Pairings**:
-- Background principal (Noir profond `oklch(0.12 0.02 260)`): Texte blanc `oklch(0.98 0 0)` - Ratio 16.8:1 ✓
-- Cartes (Gris ardoise `oklch(0.20 0.02 260)`): Texte blanc `oklch(0.98 0 0)` - Ratio 13.2:1 ✓
-- Accent (Cyan `oklch(0.70 0.20 200)`): Texte noir `oklch(0.12 0.02 260)` - Ratio 10.5:1 ✓
-- Success (Vert néon `oklch(0.75 0.20 140)`): Texte noir `oklch(0.12 0.02 260)` - Ratio 11.8:1 ✓
+- Background (oklch(0.12 0.02 260)): Foreground blanc (oklch(0.98 0 0)) - Ratio 15.8:1 ✓
+- Primary (oklch(0.35 0.15 285)): Foreground blanc (oklch(0.98 0 0)) - Ratio 6.2:1 ✓
+- Accent (oklch(0.70 0.20 200)): Background sombre (oklch(0.12 0.02 260)) - Ratio 8.1:1 ✓
+- Card (oklch(0.20 0.02 260)): Foreground blanc (oklch(0.98 0 0)) - Ratio 12.5:1 ✓
 
 ## Font Selection
 
-Typo technique et moderne qui évoque les éditeurs de code et les interfaces de développement.
+Combinaison moderne et professionnelle alliant lisibilité et caractère technique.
 
-- **Primary Font**: JetBrains Mono - Police monospace élégante pour les codes et identifiants techniques
-- **Secondary Font**: Inter - Sans-serif moderne pour le texte courant et les instructions
+- **Primary Font**: Inter - Police sans-serif moderne, optimale pour l'interface et le contenu
+- **Monospace Font**: JetBrains Mono - Pour les codes promo, prix et éléments techniques
 
 **Typographic Hierarchy**:
-- H1 (Titre principal): JetBrains Mono Bold/36px/tight letter spacing
-- H2 (Titres d'étapes): Inter SemiBold/24px/normal spacing
-- H3 (Sous-titres): Inter Medium/18px/normal spacing
-- Body (Instructions): Inter Regular/16px/relaxed line-height (1.6)
-- Code (Credentials): JetBrains Mono Regular/14px/monospace spacing
-- Labels (Formulaires): Inter Medium/14px/uppercase tracking-wide
+- H1 (Titres principaux): Inter Bold/48px/tight - Pages Hero
+- H2 (Titres sections): Inter Semibold/36px/tight - En-têtes de sections
+- H3 (Sous-titres): Inter Semibold/24px/normal - Cards et modules
+- Body (Texte courant): Inter Regular/16px/relaxed (1.6) - Descriptions et contenus
+- Small (Texte secondaire): Inter Regular/14px/normal - Labels et métadonnées
+- Code (Prix, codes): JetBrains Mono Medium/18px/tight - Éléments monospace
 
 ## Animations
 
-Les animations doivent renforcer la progression dans le guide et donner du feedback immédiat sur les interactions.
+Animations subtiles et fluides pour renforcer la perception de qualité premium et guider l'utilisateur sans distraire.
 
-- **Progression des étapes**: Transition fluide avec effet de slide horizontal lors du changement d'étape
-- **Test de connexion**: Animation de pulse sur le bouton pendant le test, puis transition vers l'icône de succès/erreur
-- **Copie dans le presse-papiers**: Micro-interaction avec bounce léger et changement d'icône
-- **Validation de formulaire**: Shake subtil sur les champs invalides, glow sur les champs valides
-- **Accordéons**: Expansion/collapse fluide avec ease-in-out pour les sections d'instructions
+- **Transitions de page**: Fade in/out doux (300ms) pour les changements de vues
+- **Cards hover**: Élévation subtile avec glow cyan (200ms) pour signaler l'interactivité
+- **Buttons**: Pulse lumineux au hover (150ms) pour les CTA principaux
+- **Formulaires**: Slide-in progressif des champs (stagger 50ms) pour guider l'attention
+- **Modals**: Scale + fade depuis le centre (300ms) pour apparition/disparition
+- **Status badges**: Pulse subtil pour les statuts "pending"
+- **Success states**: Checkmark avec scale bounce (400ms) après validation
 
 ## Component Selection
 
-- **Components**: 
-  - Card pour chaque étape de configuration
-  - Accordion pour les sections détaillées d'instructions
-  - Input pour les champs de credentials avec validation en temps réel
-  - Button avec variants (primary pour actions, outline pour secondaire, ghost pour copier)
-  - Badge pour afficher les statuts (configuré/non configuré)
-  - Alert pour les messages d'erreur et de succès
-  - Separator pour diviser les sections logiques
-  - Tabs pour naviguer entre "Guide", "Test" et "Status"
-  - Progress pour afficher la progression dans le guide (1/5, 2/5, etc.)
-  - Code block (custom) pour afficher le SQL et les variables d'environnement
-  
-- **Customizations**: 
-  - Composant CodeBlock personnalisé avec syntax highlighting (SQL, bash, env)
-  - StepIndicator personnalisé avec numéros et lignes de connexion
-  - ConnectionStatus personnalisé avec animation de pulse
-  
-- **States**: 
-  - Boutons: hover avec glow subtle, active avec scale légère, disabled avec opacity 50%
-  - Inputs: focus avec border cyan brillant, error avec border rouge et shake, success avec border verte
-  - Cards: hover avec subtle lift (shadow), active step avec border accent
-  
-- **Icon Selection**: 
-  - CheckCircle pour succès et étapes complétées
-  - XCircle pour erreurs
-  - Copy pour copier dans le presse-papiers
-  - Database pour les tables
-  - Key pour les credentials
-  - ArrowRight pour navigation suivante
-  - Lightning pour test de connexion
-  - Eye/EyeSlash pour afficher/masquer les clés API
-  
-- **Spacing**: 
-  - Padding des cards: p-6
-  - Gap entre éléments: gap-4 (1rem)
-  - Gap entre sections: gap-8 (2rem)
-  - Margin entre composants majeurs: mb-8
-  
-- **Mobile**: 
-  - Stack vertical sur mobile (<768px)
-  - Réduction du padding des cards à p-4
-  - Font sizes légèrement réduits (H1: 28px, Body: 15px)
-  - Boutons full-width sur mobile
-  - Navigation par onglets collapsible
-  - Code blocks avec scroll horizontal
+**Components**:
+- **Cards**: Shadcn Card avec background `card` et subtle border pour toutes les sections de contenu
+- **Buttons**: Shadcn Button avec variants (default pour primary actions, outline pour secondary, destructive pour suppression)
+- **Forms**: Shadcn Form + Input + Label + Textarea avec focus ring accent
+- **Selects**: Shadcn Select avec animation smooth pour dropdowns (véhicules, statuts)
+- **Dialogs**: Shadcn Dialog pour modals de confirmation et édition
+- **Tabs**: Shadcn Tabs pour navigation admin (Réservations, Flotte, Tarifs, etc.)
+- **Tables**: Shadcn Table pour liste des réservations et données structurées
+- **Toasts**: Sonner pour notifications (succès, erreurs, confirmations)
+- **Sliders**: Shadcn Slider pour ajustement d'images dans l'admin flotte
+- **Switches**: Shadcn Switch pour toggles (activation codes promo, paramètres)
+- **Tooltips**: Shadcn Tooltip pour infos contextuelles
+
+**Customizations**:
+- **Hero section**: Dégradé background custom avec overlay sombre
+- **Service cards**: Hover effect avec glow et élévation
+- **Fleet showcase**: Grid responsive avec image optimization
+- **Booking form**: Multi-step avec progress indicator custom
+- **Admin dashboard**: Sidebar navigation avec active states distinctifs
+- **Image editor**: Custom overlay avec controls de position/zoom pour photos de véhicules
+
+**States**:
+- **Buttons**: default (gradient subtil), hover (glow cyan), active (pressed), disabled (opacity 50%)
+- **Inputs**: default (border muted), focus (ring accent + border accent), error (border destructive), success (border success)
+- **Cards**: default (subtle border), hover (elevated + glow pour cartes interactives)
+- **Status badges**: pending (yellow), confirmed (green), completed (blue), cancelled (red)
+
+**Icon Selection** (Phosphor Icons):
+- Car, MapPin: Navigation et localisation
+- Calendar, Clock: Date et heure de réservation
+- User, UsersThree: Gestion utilisateurs et passagers
+- CurrencyCircleDollar, Sparkle: Tarification et promotions
+- Plus, Trash, Check, X: Actions CRUD
+- Upload, Image: Gestion des photos de véhicules
+- EnvelopeSimple, CreditCard: Email et paiement
+- ShieldCheck, Key: Sécurité et authentification
+
+**Spacing**:
+- Container: max-w-7xl mx-auto px-4 (mobile) / px-8 (desktop)
+- Sections: py-16 (desktop) / py-8 (mobile)
+- Cards: p-6 (desktop) / p-4 (mobile)
+- Form fields: gap-4 pour espacement vertical cohérent
+- Grid: gap-6 (desktop) / gap-4 (mobile)
+
+**Mobile**:
+- Navigation: Hamburger menu collapsible avec sidebar overlay
+- Forms: Stack vertical avec full-width inputs
+- Tables: Horizontal scroll wrapper ou card view pour réservations
+- Admin tabs: Scroll horizontal ou select dropdown sur petit écran
+- Fleet grid: 1 colonne mobile → 2 colonnes tablet → 3 colonnes desktop
+- Buttons: Full width sur mobile pour faciliter le touch
